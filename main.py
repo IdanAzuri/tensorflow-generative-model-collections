@@ -98,9 +98,9 @@ def main():
                             batch_size=args.batch_size,
                             z_dim=args.z_dim,
                             dataset_name=args.dataset,
-                            checkpoint_dir=args.checkpoint_dir,
-                            result_dir=args.result_dir,
-                            log_dir=args.log_dir,
+                            checkpoint_dir=args.checkpoint_dir + '/' +sampler,
+                            result_dir=args.result_dir+ '/'+sampler,
+                            log_dir=args.log_dir+ '/'+sampler,
                             sampler=sampler_method)
         if gan is None:
             raise Exception("[!] There is no option for " + args.gan_type)

@@ -34,7 +34,7 @@ class UniformSample(Sampler):
 
 class MultiModalUniformSample(Sampler):
 	def get_sample(self, batch_size, embedding_dim, n_distributions):
-		current_dist_states_indices = np.random.randint(low=0, high=n_distributions*2, size=n_distributions)
+		current_dist_states_indices = np.random.randint(0, n_distributions - 1, batch_size)
 
 		result_vec = np.zeros((batch_size, embedding_dim))
 		for i in range(batch_size):

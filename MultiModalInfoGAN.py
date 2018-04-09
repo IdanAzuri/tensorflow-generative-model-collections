@@ -74,6 +74,7 @@ class MultiModalInfoGAN(object):
 			self.output_height = 32
 			self.output_width = 32
 
+
 			self.z_dim = z_dim  # dimension of noise-vector
 			self.y_dim = 12  # dimension of code-vector (label+two features)
 			self.c_dim = 3
@@ -114,11 +115,14 @@ class MultiModalInfoGAN(object):
 			z = concat([z, y], 1)
 
 			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
-			net = lrelu(bn(linear(net, 128 * 8 * 8, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
-			net = tf.reshape(net, [self.batch_size, 8, 8, 128])
-			net = lrelu(bn(deconv2d(net, [self.batch_size, 16, 16, 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training, scope='g_bn3'))
+			net = lrelu(bn(linear(net, 128 * self.input_height/4 * self.input_width/4, scope='g_fc2'), is_training=is_training,
+			               scope='g_bn2'))
+			net = tf.reshape(net, [self.batch_size, int(self.input_height/4), int(self.input_width/4), 128])
+			net = lrelu(bn(deconv2d(net, [self.batch_size, int(self.input_height/2), int(self.input_width/2), 64], 4, 4, 2, 2,
+			                        name='g_dc3'),
+			               is_training=is_training, scope='g_bn3'))
 
-			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, 32, 32, 3], 4, 4, 2, 2, name='g_dc4'))
+			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
 			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
 
 			return out
