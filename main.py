@@ -12,10 +12,13 @@ from DRAGAN import DRAGAN
 from LSGAN import LSGAN
 from BEGAN import BEGAN
 
+
 ## VAE Variants
 from VAE import VAE
 from CVAE import CVAE
-
+from MultiModalInfoGAN import MultiModalInfoGAN
+from Sampler import *
+from infoGAN import infoGAN
 from utils import show_all_variables
 from utils import check_folder
 
@@ -28,9 +31,9 @@ def parse_args():
     parser = argparse.ArgumentParser(description=desc)
 
     parser.add_argument('--gan_type', type=str, default='GAN',
-                        choices=['GAN', 'CGAN', 'infoGAN', 'ACGAN', 'EBGAN', 'BEGAN', 'WGAN', 'WGAN_GP', 'DRAGAN', 'LSGAN', 'VAE', 'CVAE'],
+                        choices=['GAN', 'CGAN', 'infoGAN', 'ACGAN', 'EBGAN', 'BEGAN', 'WGAN', 'WGAN_GP', 'DRAGAN', 'LSGAN', 'VAE', 'CVAE','MultiModalInfoGAN'],
                         help='The type of GAN', required=True)
-    parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist', 'fashion-mnist', 'celebA'],
+    parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist', 'fashion-mnist', 'cifar10'],
                         help='The name of dataset')
     parser.add_argument('--epoch', type=int, default=20, help='The number of epochs to run')
     parser.add_argument('--batch_size', type=int, default=64, help='The size of batch')
@@ -41,6 +44,8 @@ def parse_args():
                         help='Directory name to save the generated images')
     parser.add_argument('--log_dir', type=str, default='logs',
                         help='Directory name to save training logs')
+    parser.add_argument('--sampler', type=str, default='uniform',
+                        choices=['uniform','multi-uniform','multi-gaussian'])
 
     return check_args(parser.parse_args())
 
@@ -75,7 +80,13 @@ def main():
 
     # open session
     models = [GAN, CGAN, infoGAN, ACGAN, EBGAN, WGAN, WGAN_GP, DRAGAN,
-              LSGAN, BEGAN, VAE, CVAE]
+              LSGAN, BEGAN, VAE, CVAE, MultiModalInfoGAN, infoGAN]
+    sampler = args.sampler
+    sampler_method= UniformSample()
+    if sampler == 'multi-uniform':
+        sampler_method = MultiModalUniformSample()
+    elif sampler =='multi-gaussian':
+        sampler_method = MultivariateSamplerSmallVariance()
     with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         # declare instance for GAN
 
@@ -89,7 +100,8 @@ def main():
                             dataset_name=args.dataset,
                             checkpoint_dir=args.checkpoint_dir,
                             result_dir=args.result_dir,
-                            log_dir=args.log_dir)
+                            log_dir=args.log_dir,
+                            sampler=sampler_method)
         if gan is None:
             raise Exception("[!] There is no option for " + args.gan_type)
 

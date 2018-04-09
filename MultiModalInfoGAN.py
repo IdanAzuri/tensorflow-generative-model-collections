@@ -3,13 +3,30 @@ from __future__ import division
 
 import time
 
+from Sampler import *
+from cifar10 import *
 from ops import *
 from utils import *
 
-class infoGAN(object):
-	model_name = "infoGAN"  # name for checkpoint
 
-	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir,sampler, SUPERVISED=False):
+# def _multivariate_dist(batch_size, embedding_dim, n_distributions):
+# 	current_dist_states_indices = np.random.randint(0, n_distributions - 1, batch_size)
+# 	mean_vec = np.random.randint(low=-1,high=1,size=n_distributions)
+# 	cov_mat = np.eye(n_distributions) * 1 #np.random.randint(1, 5, n_distributions)  # this is diagonal beacuse we want iid
+#
+# 	result_vec = np.zeros((batch_size, embedding_dim))
+# 	for i in range(batch_size):
+# 		result_vec[i] = np.random.multivariate_normal(mean_vec, cov_mat, size=batch_size * embedding_dim).reshape(embedding_dim,
+# 		                                                                                                          n_distributions,
+# 		                                                                                                          batch_size)[:,
+# 		                current_dist_states_indices[i], i]
+# 	return np.asarray(result_vec, dtype=np.float32)
+
+
+class MultiModalInfoGAN(object):
+	model_name = "MultiModalInfoGAN"  # name for checkpoint
+
+	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, SUPERVISED=True):
 		self.sess = sess
 		self.dataset_name = dataset_name
 		self.checkpoint_dir = checkpoint_dir
@@ -17,6 +34,20 @@ class infoGAN(object):
 		self.log_dir = log_dir
 		self.epoch = epoch
 		self.batch_size = batch_size
+		self.sampler = sampler
+
+		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
+
+		# train
+		self.learning_rate = 0.0002
+		self.beta1 = 0.5
+
+		# test
+		self.sample_num = 64  # number of generated images to be saved
+
+		# code
+		self.len_discrete_code = 10  # categorical distribution (i.e. label)
+		self.len_continuous_code = 2  # gaussian distribution (e.g. rotation, thickness)
 
 		if dataset_name == 'mnist' or dataset_name == 'fashion-mnist':
 			# parameters
@@ -29,26 +60,26 @@ class infoGAN(object):
 			self.y_dim = 12  # dimension of code-vector (label+two features)
 			self.c_dim = 1
 
-			self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 
-			# train
-			self.learning_rate = 0.0002
-			self.beta1 = 0.5
-
-			# test
-			self.sample_num = 64  # number of generated images to be saved
-
-			# code
-			self.len_discrete_code = 10  # categorical distribution (i.e. label)
-			self.len_continuous_code = 2  # gaussian distribution (e.g. rotation, thickness)
 
 			# load mnist
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
 
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
-		else:
-			raise NotImplementedError
+		elif dataset_name == 'cifar10':
+			# parameters
+			self.input_height = 32
+			self.input_width = 32
+			self.output_height = 32
+			self.output_width = 32
+
+			self.z_dim = z_dim  # dimension of noise-vector
+			self.y_dim = 12  # dimension of code-vector (label+two features)
+			self.c_dim = 3
+			self.data_X, self.data_y = get_train_test_data()
+			# get number of batches for a single epoch
+			self.num_batches = len(self.data_X) // self.batch_size
 
 	def classifier(self, x, is_training=True, reuse=False):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
@@ -83,12 +114,11 @@ class infoGAN(object):
 			z = concat([z, y], 1)
 
 			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
-			net = lrelu(bn(linear(net, 128 * 7 * 7, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
-			net = tf.reshape(net, [self.batch_size, 7, 7, 128])
-			net = lrelu(
-				bn(deconv2d(net, [self.batch_size, 14, 14, 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training, scope='g_bn3'))
+			net = lrelu(bn(linear(net, 128 * 8 * 8, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
+			net = tf.reshape(net, [self.batch_size, 8, 8, 128])
+			net = lrelu(bn(deconv2d(net, [self.batch_size, 16, 16, 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training, scope='g_bn3'))
 
-			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, 28, 28, 1], 4, 4, 2, 2, name='g_dc4'))
+			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, 32, 32, 3], 4, 4, 2, 2, name='g_dc4'))
 			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
 
 			return out
@@ -158,7 +188,6 @@ class infoGAN(object):
 		"""" Testing """
 		# for test
 		self.fake_images = self.generator(self.z, self.y, is_training=False, reuse=True)
-
 		""" Summary """
 		d_loss_real_sum = tf.summary.scalar("d_loss_real", d_loss_real)
 		d_loss_fake_sum = tf.summary.scalar("d_loss_fake", d_loss_fake)
@@ -180,7 +209,8 @@ class infoGAN(object):
 		tf.global_variables_initializer().run()
 
 		# graph inputs for visualize training results
-		self.sample_z = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
+		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)  # np.random.uniform(-1, 1,
+		# size=(self.batch_size, self.z_dim))
 		self.test_labels = self.data_y[0:self.batch_size]
 		self.test_codes = np.concatenate((self.test_labels, np.zeros([self.batch_size, self.len_continuous_code])), axis=1)
 
@@ -215,12 +245,14 @@ class infoGAN(object):
 				if self.SUPERVISED == True:
 					batch_labels = self.data_y[idx * self.batch_size:(idx + 1) * self.batch_size]
 				else:
+					# batch_labels = _multivariate_dist(self.batch_size, self.z_dim, 10)
 					batch_labels = np.random.multinomial(1, self.len_discrete_code * [float(1.0 / self.len_discrete_code)],
 					                                     size=[self.batch_size])
 
 				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, 2))), axis=1)
-
-				batch_z = np.random.uniform(-1, 1, [self.batch_size, self.z_dim]).astype(np.float32)
+				# batch_codes = np.concatenate((batch_labels, _multivariate_dist(self.batch_size, 2, 2)), axis=1)
+				batch_z_unif = np.random.uniform(-1, 1, [self.batch_size, self.z_dim]).astype(np.float32)
+				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 
 				# update D network
 				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss],
@@ -237,7 +269,7 @@ class infoGAN(object):
 				# display training status
 				counter += 1
 				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (
-				epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss))
+					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss))
 
 				# save training results for every 300 steps
 				if np.mod(counter, 300) == 0:
@@ -270,7 +302,8 @@ class infoGAN(object):
 		y_one_hot = np.zeros((self.batch_size, self.y_dim))
 		y_one_hot[np.arange(self.batch_size), y] = 1
 
-		z_sample = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
+		# z_sample = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
+		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
 
@@ -323,7 +356,7 @@ class infoGAN(object):
 		z_fixed = np.zeros([self.batch_size, self.z_dim])
 
 		for l in range(self.len_discrete_code):
-			y = np.zeros(self.batch_size, dtype=np.int64) + l # ones in the discrete_code idx * batch_size
+			y = np.zeros(self.batch_size, dtype=np.int64) + l  # ones in the discrete_code idx * batch_size
 			y_one_hot = np.zeros((self.batch_size, self.y_dim))
 			y_one_hot[np.arange(self.batch_size), y] = 1
 			# cartesian multiplication of the two latent codes
