@@ -46,7 +46,15 @@ if __name__ == '__main__':
 	import matplotlib.pyplot as plt
 
 	test = MultiModalUniformSample()
+	test_uni = UniformSample()
+	test_mul_uni=MultiModalUniformSample()
 	a = test.get_sample(10, 5, 10)
+	b = test_uni.get_sample(10, 5, 10)
+	c = test_mul_uni.get_sample(10, 5, 10)
 	print(a)
 	plt.plot(a)
+	plt.show()
+	plt.plot(b)
+	plt.show()
+	plt.plot(c)
 	plt.show()
