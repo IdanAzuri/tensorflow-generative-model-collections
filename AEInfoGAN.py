@@ -276,7 +276,9 @@ class MultiModalInfoGAN(object):
 
 		# optimizers
 		with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
-			self.ae_optim = tf.train.AdamOptimizer(self.learning_rate).minimize(self.ae_loss)
+			self.ae_optim = tf.train.AdamOptimizer(self.learning_rate).minimize(self.ae_loss+tf.nn.l2_normalize(self.embedding,
+			                                                                                                    dim=1)) #adding
+			# normalization of the embedding
 			self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss, var_list=d_vars)
 			self.g_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.g_loss, var_list=g_vars)
 			self.q_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
