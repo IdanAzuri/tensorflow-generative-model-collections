@@ -159,9 +159,9 @@ class MultiModalInfoGAN(object):
 
 		## 2. Information Loss
 		code_fake, code_logit_fake = self.classifier(input4classifier_fake, is_training=True, reuse=False)
-		self.classifier_last_layer = tf.reduce_max(code_logit_fake/tf.norm(code_logit_fake)) # I use to get the confidence
 		# discrete code : categorical
 		disc_code_est = code_logit_fake[:, :self.len_discrete_code]
+		self.classifier_last_layer = tf.reduce_max(tf.nn.softmax(disc_code_est)) # I use to get the confidence
 		disc_code_tg = self.y[:, :self.len_discrete_code]
 		q_disc_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=disc_code_est, labels=disc_code_tg))
 
@@ -258,25 +258,23 @@ class MultiModalInfoGAN(object):
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 
 				# update D network
-				_, summary_str, d_loss, classifier_confidence_summary, classifier_last_layer_max = self.sess.run([self.d_optim, self.d_sum,
-				                                                                                              self.d_loss,
-				                                                                       self.confidence,self.classifier_last_layer],
+				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum,self.d_loss,],
 					feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
 				self.writer.add_summary(summary_str, counter)
-				self.writer.add_summary(classifier_confidence_summary, counter)
 
 				# update G and Q network
-				_, summary_str_g, g_loss, _, summary_str_q, q_loss = self.sess.run(
-					[self.g_optim, self.g_sum, self.g_loss, self.q_optim, self.q_sum, self.q_loss],
+				_, summary_str_g, g_loss, _, summary_str_q, q_loss, classifier_confidence_summary, classifier_last_layer_max  = self.sess.run(
+					[self.g_optim, self.g_sum, self.g_loss, self.q_optim, self.q_sum, self.q_loss, self.confidence,self.classifier_last_layer],
 					feed_dict={self.x: batch_images, self.z: batch_z, self.y: batch_codes})
 				self.writer.add_summary(summary_str_g, counter)
 				self.writer.add_summary(summary_str_q, counter)
+				self.writer.add_summary(classifier_confidence_summary, counter)
 
 				# display training status
 				counter += 1
-				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f, classifier_last_layer_max: %.8f" % (
-					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss,classifier_last_layer_max))
-
+				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (
+					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss,))
+				print ("classifier_last_layer_max:{}".format(classifier_last_layer_max))
 				# save training results for every 300 steps
 				if np.mod(counter, 300) == 0:
 					samples = self.sess.run(self.fake_images, feed_dict={self.z: self.sample_z, self.y: self.test_codes})
