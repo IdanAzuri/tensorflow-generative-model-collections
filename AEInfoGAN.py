@@ -3,6 +3,8 @@ from __future__ import division
 
 import time
 
+from sklearn.manifold import TSNE
+
 from Sampler import *
 from cifar10 import *
 from ops import *
@@ -64,10 +66,56 @@ def dropout(input, name, keep_rate):
 		out = tf.nn.dropout(input, keep_rate)
 		return out
 
+def tsne(X, k=2, perplexity=100):
+	tsne = TSNE(n_components=k, init='pca', random_state=0, perplexity=perplexity)
+	X_transformed = tsne.fit_transform(X)
+	# pca = RandomizedPCA(n_components=2)
+	# X_transformed = pca.fit_transform(X)
 
+	return X_transformed
+
+
+def plot_with_images(X, images, title="", image_num=25):
+	'''
+	A plot function for viewing images in their embedded locations. The
+	function receives the embedding (X) and the original images (images) and
+	plots the images along with the embeddings.
+
+	:param X: Nxd embedding matrix (after dimensionality reduction).
+	:param images: NxD original data matrix of images.
+	:param title: The title of the plot.
+	:param num_to_plot: Number of images to plot along with the scatter plot.
+	:return: the figure object.
+	'''
+
+	n, pixels = np.shape(images)
+	img_size = int(pixels ** 0.5)
+
+	fig = plt.figure()
+	ax = fig.add_subplot(111)
+	ax.set_title(title)
+
+	# get the size of the embedded images for plotting:
+	x_size = (max(X[:, 0]) - min(X[:, 0])) * 0.08
+	y_size = (max(X[:, 1]) - min(X[:, 1])) * 0.08
+
+	# draw random images and plot them in their relevant place:
+	for i in range(image_num):
+		img_num = np.random.choice(n)
+		x0, y0 = X[img_num, 0] - x_size / 2., X[img_num, 1] - y_size / 2.
+		x1, y1 = X[img_num, 0] + x_size / 2., X[img_num, 1] + y_size / 2.
+		img = images[img_num, :].reshape(img_size, img_size)
+		ax.imshow(img, aspect='auto', cmap=plt.cm.gray, zorder=100000,
+		          extent=(x0, x1, y0, y1))
+
+	# draw the scatter plot of the embedded data points:
+	ax.scatter(X[:, 0], X[:, 1], marker='.', alpha=0.7)
+	plt.savefig("autoencoder_mnist_dim100.jpeg")
+	plt.show()
+	return fig
 #   ---------------------------------
-class MultiModalInfoGAN(object):
-	model_name = "MultiModalInfoGAN"  # name for checkpoint
+class AEMultiModalInfoGAN(object):
+	model_name = "AEMultiModalInfoGAN"  # name for checkpoint
 
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, SUPERVISED=True):
 		self.sess = sess
@@ -104,10 +152,10 @@ class MultiModalInfoGAN(object):
 			self.c_dim = 1
 
 			# load mnist
-			self.data_X, self.data_y = load_mnist(self.dataset_name)
+			self.train_x, self.train_labels = load_mnist(self.dataset_name)
 
 			# get number of batches for a single epoch
-			self.num_batches = len(self.data_X) // self.batch_size
+			self.num_batches = len(self.train_x) // self.batch_size
 		elif dataset_name == 'cifar10':
 			# parameters
 			self.input_height = 32
@@ -118,9 +166,9 @@ class MultiModalInfoGAN(object):
 			self.z_dim = z_dim  # dimension of noise-vector
 			self.y_dim = 12  # dimension of code-vector (label+two features)
 			self.c_dim = 3
-			self.data_X, self.data_y = get_train_test_data()
+			self.train_x, self.train_labels, self.test_x ,self.test_labels = get_train_test_data()
 			# get number of batches for a single epoch
-			self.num_batches = len(self.data_X) // self.batch_size
+			self.num_batches = len(self.train_x) // self.batch_size
 
 	def ConvAutoEncoder(self):
 		with tf.name_scope("ConvAutoEncoder"):
@@ -236,7 +284,7 @@ class MultiModalInfoGAN(object):
 
 		## 1. GAN Loss
 		# output of D for real images
-		D_real, D_real_logits, _ = self.discriminator(self.x, is_training=True, reuse=False)
+		D_real, D_real_logits, _ = self.discriminator(self.embedding, is_training=True, reuse=False)
 
 		# output of D for fake images
 		self.x_ = self.generator(self.z, self.y, is_training=True, reuse=False)
@@ -253,7 +301,7 @@ class MultiModalInfoGAN(object):
 
 		## 2. Information Loss
 		code_fake, code_logit_fake = self.classifier(input4classifier_fake, is_training=True, reuse=False)
-
+		self.classifier_last_layer = tf.maximum(code_logit_fake) #I use to get the confidence
 		# discrete code : categorical
 		disc_code_est = code_logit_fake[:, :self.len_discrete_code]
 		disc_code_tg = self.y[:, :self.len_discrete_code]
@@ -276,9 +324,7 @@ class MultiModalInfoGAN(object):
 
 		# optimizers
 		with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
-			self.ae_optim = tf.train.AdamOptimizer(self.learning_rate).minimize(self.ae_loss+tf.nn.l2_normalize(self.embedding,
-			                                                                                                    dim=1)) #adding
-			# normalization of the embedding
+			self.ae_optim = tf.train.AdamOptimizer(self.learning_rate).minimize(self.ae_loss)
 			self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss, var_list=d_vars)
 			self.g_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.g_loss, var_list=g_vars)
 			self.q_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
@@ -299,6 +345,7 @@ class MultiModalInfoGAN(object):
 		q_cont_sum = tf.summary.scalar("q_cont_loss", q_cont_loss)
 
 		# final summary operations
+		self.confidence = tf.summary.merge([self.classifier_last_layer])
 		self.ae_sum = tf.summary.merge([ae_loss_sum])
 		self.g_sum = tf.summary.merge([d_loss_fake_sum, g_loss_sum])
 		self.d_sum = tf.summary.merge([d_loss_real_sum, d_loss_sum])
@@ -312,7 +359,7 @@ class MultiModalInfoGAN(object):
 		# graph inputs for visualize training results
 		# self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)  # np.random.uniform(-1, 1,
 		# size=(self.batch_size, self.z_dim))
-		self.test_labels = self.data_y[0:self.batch_size]
+		self.test_labels = self.train_labels[0:self.batch_size]
 		self.test_codes = np.concatenate((self.test_labels, np.zeros([self.batch_size, self.len_continuous_code])), axis=1)
 
 		# saver to save model
@@ -330,7 +377,7 @@ class MultiModalInfoGAN(object):
 			print(" [*] Load SUCCESS")
 		else:
 			start_epoch = 0
-			start_batch_id = 0
+			start_batch_id = 1
 			counter = 1
 			print(" [!] Load failed...")
 
@@ -340,11 +387,12 @@ class MultiModalInfoGAN(object):
 
 			# get batch data
 			for idx in range(start_batch_id, self.num_batches):
-				batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
+				batch_images = self.train_x[idx * self.batch_size:(idx + 1) * self.batch_size]
+				self.test_batch_images = self.train_x[0 * self.batch_size:(0 + 1) * self.batch_size]
 
 				# generate code
 				if self.SUPERVISED == True:
-					batch_labels = self.data_y[idx * self.batch_size:(idx + 1) * self.batch_size]
+					batch_labels = self.train_labels[idx * self.batch_size:(idx + 1) * self.batch_size]
 				else:
 					# batch_labels = _multivariate_dist(self.batch_size, self.z_dim, 10)
 					batch_labels = np.random.multinomial(1, self.len_discrete_code * [float(1.0 / self.len_discrete_code)],
@@ -361,9 +409,11 @@ class MultiModalInfoGAN(object):
 				self.writer.add_summary(ae_summ, counter)
 
 				# update D network
-				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss],
+				_, summary_str, d_loss, classifier_confidence_summary = self.sess.run([self.d_optim, self.d_sum, self.d_loss,
+				                                                                      self.confidence],
 				                                       feed_dict={self.x: batch_images, self.y: batch_codes, self.z: embedding})
 				self.writer.add_summary(summary_str, counter)
+				self.writer.add_summary(classifier_confidence_summary, counter)
 
 				# update G and Q network
 				_, summary_str_g, g_loss, _, summary_str_q, q_loss = self.sess.run(
@@ -410,8 +460,9 @@ class MultiModalInfoGAN(object):
 
 		# z_sample = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
 		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
-
-		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
+		_, ae_loss, ae_summ, embedding_test = self.sess.run([self.ae_optim, self.ae_loss, self.ae_sum, self.embedding],
+		                                               feed_dict={self.x: self.test_batch_images})
+		samples = self.sess.run(self.fake_images, feed_dict={self.z: embedding_test, self.y: y_one_hot})
 
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
 			self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
@@ -427,7 +478,7 @@ class MultiModalInfoGAN(object):
 			y_one_hot = np.zeros((self.batch_size, self.y_dim))
 			y_one_hot[np.arange(self.batch_size), y] = 1
 
-			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
+			samples = self.sess.run(self.fake_images, feed_dict={self.z: embedding_test, self.y: y_one_hot})
 			# save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 			#             check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_%d.png' % l)
 
@@ -470,9 +521,13 @@ class MultiModalInfoGAN(object):
 			y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
 
 			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
+			samples_2 = self.sess.run(self.fake_images, feed_dict={self.z: embedding_test, self.y: y_one_hot})
 
 			save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
 				self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2_%d.png' % l)
+			save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
+				self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch +
+			            '_test_class_c1c2_%d_with_prior.png' % l)
 
 	@property
 	def model_dir(self):

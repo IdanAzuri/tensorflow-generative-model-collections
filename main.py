@@ -1,6 +1,7 @@
 import os
 
 ## GAN Variants
+from AEInfoGAN import AEMultiModalInfoGAN
 from GAN import GAN
 from CGAN import CGAN
 from infoGAN import infoGAN
@@ -31,7 +32,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description=desc)
 
     parser.add_argument('--gan_type', type=str, default='GAN',
-                        choices=['GAN', 'CGAN', 'infoGAN', 'ACGAN', 'EBGAN', 'BEGAN', 'WGAN', 'WGAN_GP', 'DRAGAN', 'LSGAN', 'VAE', 'CVAE','MultiModalInfoGAN'],
+                        choices=['GAN', 'CGAN', 'infoGAN', 'ACGAN', 'EBGAN', 'BEGAN', 'WGAN', 'WGAN_GP', 'DRAGAN', 'LSGAN', 'VAE',
+                                 'CVAE','MultiModalInfoGAN','AEMultiModalInfoGAN'],
                         help='The type of GAN', required=True)
     parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist', 'fashion-mnist', 'cifar10'],
                         help='The name of dataset')
@@ -80,7 +82,7 @@ def main():
 
     # open session
     models = [GAN, CGAN, infoGAN, ACGAN, EBGAN, WGAN, WGAN_GP, DRAGAN,
-              LSGAN, BEGAN, VAE, CVAE, MultiModalInfoGAN, infoGAN]
+              LSGAN, BEGAN, VAE, CVAE, MultiModalInfoGAN, infoGAN,AEMultiModalInfoGAN]
     sampler = args.sampler
     sampler_method= UniformSample()
     if sampler == 'multi-uniform':
