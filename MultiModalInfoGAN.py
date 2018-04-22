@@ -159,7 +159,7 @@ class MultiModalInfoGAN(object):
 
 		## 2. Information Loss
 		code_fake, code_logit_fake = self.classifier(input4classifier_fake, is_training=True, reuse=False)
-		self.classifier_last_layer = tf.nn.l2_normalize(code_logit_fake)  # I use to get the confidence
+		self.classifier_last_layer = tf.reduce_max(code_logit_fake/tf.norm(code_logit_fake)) # I use to get the confidence
 		# discrete code : categorical
 		disc_code_est = code_logit_fake[:, :self.len_discrete_code]
 		disc_code_tg = self.y[:, :self.len_discrete_code]
