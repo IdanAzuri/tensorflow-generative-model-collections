@@ -277,7 +277,9 @@ class MultiModalInfoGAN(object):
 				# save training results for every 300 steps
 				if np.mod(counter, 300) == 0:
 					samples = self.sess.run(self.fake_images, feed_dict={self.z: self.sample_z, self.y: self.test_codes})
-					self.pretrained_classifier.test(samples, np.ones_like(samples),counter)
+					self.pretrained_classifier.test(samples.reshape(-1, self.input_width*self.input_height), np.ones((self.batch_size,
+					                                                                                                 self.len_discrete_code)),
+					                                counter)
 					tot_num_samples = min(self.sample_num, self.batch_size)
 					manifold_h = int(np.floor(np.sqrt(tot_num_samples)))
 					manifold_w = int(np.floor(np.sqrt(tot_num_samples)))
