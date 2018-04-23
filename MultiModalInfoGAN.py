@@ -5,6 +5,7 @@ import time
 
 from Sampler import *
 from cifar10 import *
+from classifier import CNNClassifier
 from ops import *
 from utils import *
 
@@ -35,6 +36,7 @@ class MultiModalInfoGAN(object):
 		self.epoch = epoch
 		self.batch_size = batch_size
 		self.sampler = sampler
+		self.pretrained_classifier = CNNClassifier("mnist")
 
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 
@@ -275,6 +277,7 @@ class MultiModalInfoGAN(object):
 				# save training results for every 300 steps
 				if np.mod(counter, 300) == 0:
 					samples = self.sess.run(self.fake_images, feed_dict={self.z: self.sample_z, self.y: self.test_codes})
+					self.pretrained_classifier.test(samples, np.ones_like(samples),counter)
 					tot_num_samples = min(self.sample_num, self.batch_size)
 					manifold_h = int(np.floor(np.sqrt(tot_num_samples)))
 					manifold_w = int(np.floor(np.sqrt(tot_num_samples)))

@@ -203,6 +203,4 @@ class CNNClassifier():
 
 if __name__ == '__main__':
 	c = CNNClassifier("mnist")
-	c.load_model()
-	# c.train()
 	c.test(c.test_images, c.test_labels, 1)
