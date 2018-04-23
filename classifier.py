@@ -151,8 +151,7 @@ class CNNClassifier():
 		self.accuracy = tf.reduce_mean(correct_prediction)
 		tf.summary.scalar('accuracy', self.accuracy)
 
-		confidence = tf.cast(tf.reduce_max(self.y_conv), tf.float32)
-		self.confidence = tf.reduce_mean(tf.nn.softmax(confidence))
+		self.confidence = tf.cast(tf.reduce_mean(tf.reduce_max(tf.nn.softmax(self.y_conv),axis=-1),axis=0), tf.float32)
 		tf.summary.scalar('confidence', self.confidence)
 
 		graph_location = self.log_dir + '/train'
