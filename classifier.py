@@ -79,7 +79,8 @@ class CNNClassifier():
 			mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
 			self.test_images = mnist.test.images
 			self.test_labels = mnist.test.labels
-			self.get_batch = mnist.train.next_batch(self.batch_size)
+			# self.get_batch = mnist.train.next_batch(self.batch_size)
+			self.mnist = mnist
 
 		# init_variables try to load from pickle:
 		try:
@@ -167,7 +168,7 @@ class CNNClassifier():
 		self.sess.run(tf.global_variables_initializer())
 
 		for i in range(10000):
-			batch = self.get_batch
+			batch =  self.mnist.train.next_batch(self.batch_size)
 
 			if i % 300 == 0:
 				self.test(self.test_images, self.test_labels, i)
