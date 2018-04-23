@@ -5,6 +5,7 @@ import time
 
 from Sampler import *
 from cifar10 import *
+from classifier import CNNClassifier
 from ops import *
 from utils import *
 
@@ -35,6 +36,7 @@ class MultiModalInfoGAN(object):
 		self.epoch = epoch
 		self.batch_size = batch_size
 		self.sampler = sampler
+		self.pretrained_classifier = CNNClassifier("mnist")
 
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 
@@ -60,8 +62,6 @@ class MultiModalInfoGAN(object):
 			self.y_dim = 12  # dimension of code-vector (label+two features)
 			self.c_dim = 1
 
-
-
 			# load mnist
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
 
@@ -74,11 +74,10 @@ class MultiModalInfoGAN(object):
 			self.output_height = 32
 			self.output_width = 32
 
-
 			self.z_dim = z_dim  # dimension of noise-vector
 			self.y_dim = 12  # dimension of code-vector (label+two features)
 			self.c_dim = 3
-			self.data_X, self.data_y = get_train_test_data()
+			self.data_X, self.data_y, self.test_x ,self.test_labels = get_train_test_data()
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
 
@@ -115,12 +114,12 @@ class MultiModalInfoGAN(object):
 			z = concat([z, y], 1)
 
 			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
-			net = lrelu(bn(linear(net, 128 * self.input_height/4 * self.input_width/4, scope='g_fc2'), is_training=is_training,
-			               scope='g_bn2'))
-			net = tf.reshape(net, [self.batch_size, int(self.input_height/4), int(self.input_width/4), 128])
-			net = lrelu(bn(deconv2d(net, [self.batch_size, int(self.input_height/2), int(self.input_width/2), 64], 4, 4, 2, 2,
-			                        name='g_dc3'),
-			               is_training=is_training, scope='g_bn3'))
+			net = lrelu(
+				bn(linear(net, 128 * self.input_height / 4 * self.input_width / 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
+			net = tf.reshape(net, [self.batch_size, int(self.input_height / 4), int(self.input_width / 4), 128])
+			net = lrelu(
+				bn(deconv2d(net, [self.batch_size, int(self.input_height / 2), int(self.input_width / 2), 64], 4, 4, 2, 2, name='g_dc3'),
+				   is_training=is_training, scope='g_bn3'))
 
 			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
 			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
@@ -162,9 +161,9 @@ class MultiModalInfoGAN(object):
 
 		## 2. Information Loss
 		code_fake, code_logit_fake = self.classifier(input4classifier_fake, is_training=True, reuse=False)
-
 		# discrete code : categorical
 		disc_code_est = code_logit_fake[:, :self.len_discrete_code]
+
 		disc_code_tg = self.y[:, :self.len_discrete_code]
 		q_disc_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=disc_code_est, labels=disc_code_tg))
 
@@ -201,6 +200,7 @@ class MultiModalInfoGAN(object):
 		q_loss_sum = tf.summary.scalar("g_loss", self.q_loss)
 		q_disc_sum = tf.summary.scalar("q_disc_loss", q_disc_loss)
 		q_cont_sum = tf.summary.scalar("q_cont_loss", q_cont_loss)
+
 
 		# final summary operations
 		self.g_sum = tf.summary.merge([d_loss_fake_sum, g_loss_sum])
@@ -259,8 +259,8 @@ class MultiModalInfoGAN(object):
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 
 				# update D network
-				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss],
-				                                       feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
+				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum,self.d_loss,],
+					feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
 				self.writer.add_summary(summary_str, counter)
 
 				# update G and Q network
@@ -273,11 +273,11 @@ class MultiModalInfoGAN(object):
 				# display training status
 				counter += 1
 				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (
-					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss))
-
+					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss,))
 				# save training results for every 300 steps
 				if np.mod(counter, 300) == 0:
 					samples = self.sess.run(self.fake_images, feed_dict={self.z: self.sample_z, self.y: self.test_codes})
+
 					tot_num_samples = min(self.sample_num, self.batch_size)
 					manifold_h = int(np.floor(np.sqrt(tot_num_samples)))
 					manifold_w = int(np.floor(np.sqrt(tot_num_samples)))
@@ -310,7 +310,8 @@ class MultiModalInfoGAN(object):
 		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
-
+		self.pretrained_classifier.test(samples.reshape(-1, self.input_width*self.input_height), np.ones((self.batch_size,
+		                                                                                                  self.len_discrete_code)), epoch)
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
 			self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
 
