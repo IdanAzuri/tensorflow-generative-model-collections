@@ -25,91 +25,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import argparse
-import os
-import sys
-import tempfile
+import pickle
 
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
 FLAGS = None
-
-
-def deepcnn(x):
-	"""deepnn builds the graph for a deep net for classifying digits.
-  Args:
-	x: an input tensor with the dimensions (N_examples, 784), where 784 is the
-	number of pixels in a standard MNIST image.
-  Returns:
-	A tuple (y, keep_prob). y is a tensor of shape (N_examples, 10), with values
-	equal to the logits of classifying the digit into one of 10 classes (the
-	digits 0-9). keep_prob is a scalar placeholder for the probability of
-	dropout.
-  """
-	# Reshape to use within a convolutional neural net.
-	# Last dimension is for "features" - there is only one here, since images are
-	# grayscale -- it would be 3 for an RGB image, 4 for RGBA, etc.
-	with tf.name_scope('reshape'):
-		x_image = tf.reshape(x, [-1, 28, 28, 1])
-
-	# First convolutional layer - maps one grayscale image to 32 feature maps.
-	with tf.name_scope('conv1'):
-		W_conv1 = weight_variable([5, 5, 1, 32])
-		b_conv1 = bias_variable([32])
-		h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
-
-	# Pooling layer - downsamples by 2X.
-	with tf.name_scope('pool1'):
-		h_pool1 = max_pool_2x2(h_conv1)
-
-	# Second convolutional layer -- maps 32 feature maps to 64.
-	with tf.name_scope('conv2'):
-		W_conv2 = weight_variable([5, 5, 32, 64])
-		b_conv2 = bias_variable([64])
-		preactivation = conv2d(h_pool1, W_conv2) + b_conv2
-		tf.summary.histogram('pre_activations', preactivation)
-		h_conv2 = tf.nn.relu(preactivation)
-		tf.summary.histogram('activations', h_conv1)
-
-	# Second pooling layer.
-	with tf.name_scope('pool2'):
-		h_pool2 = max_pool_2x2(h_conv2)
-
-	# Fully connected layer 1 -- after 2 round of downsampling, our 28x28 image
-	# is down to 7x7x64 feature maps -- maps this to 1024 features.
-	with tf.name_scope('fc1'):
-		W_fc1 = weight_variable([7 * 7 * 64, 1024])
-		b_fc1 = bias_variable([1024])
-
-		h_pool2_flat = tf.reshape(h_pool2, [-1, 7 * 7 * 64])
-		fc_ = tf.matmul(h_pool2_flat, W_fc1) + b_fc1
-		h_fc1 = tf.nn.relu(fc_)
-		preactivation = conv2d(h_pool1, W_conv2) + b_conv2
-
-	# Dropout - controls the complexity of the model, prevents co-adaptation of
-	# features.
-	with tf.name_scope('dropout'):
-		keep_prob = tf.placeholder(tf.float32)
-		h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
-
-	# Map the 1024 features to 10 classes, one for each digit
-	with tf.name_scope('fc2'):
-		W_fc2 = weight_variable([1024, 10])
-		b_fc2 = bias_variable([10])
-
-		y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
-
-	# summary
-	variable_summaries(W_conv1, 'W_conv1')
-	variable_summaries(W_conv2, 'W_conv2')
-	variable_summaries(b_conv1, 'b_conv1')
-	variable_summaries(b_conv2, 'b_conv2')
-	variable_summaries(W_fc1, 'W_fc1')
-	variable_summaries(W_fc2, 'W_fc2')
-	variable_summaries(b_fc1, 'b_fc1')
-	variable_summaries(b_fc2, 'b_fc2')
-	return y_conv, keep_prob
 
 
 def conv2d(x, W):
@@ -147,62 +68,134 @@ def variable_summaries(var, name):
 		tf.summary.histogram('histogram', var)
 
 
-def main(_):
-	# Import data
-	mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
+class CNNClassifier():
+	def __init__(self, classifier_name):
+		self.classifier_name = classifier_name
+		self.log_dir = 'logs/mnist'
+		self.batch_size = 64
+		self.dropout_prob = 0.9
+		self.save_to = classifier_name + "_classifier.pkl"
+		if self.classifier_name == 'mnist':
+			mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
+			self.test_images = mnist.test.images
+			self.test_labels = mnist.test.labels
+			self.get_batch = mnist.train.next_batch(self.batch_size)
 
-	# Create the model
-	x = tf.placeholder(tf.float32, [None, 784])
+		# init_variables try to load from pickle:
+		try:
+			model = pickle.load(open(self.save_to, 'rb'))
+			self.W_conv1 = tf.Variable(tf.constant(model[0]))
+			self.b_conv1 = tf.Variable(tf.constant(model[1]))
+			self.W_conv2 = tf.Variable(tf.constant(model[2]))
+			self.b_conv2 = tf.Variable(tf.constant(model[3]))
+			self.W_fc1 = tf.Variable(tf.constant(model[4]))
+			self.b_fc1 = tf.Variable(tf.constant(model[5]))
+			self.W_fc2 = tf.Variable(tf.constant(model[6]))
+			self.b_fc2 = tf.Variable(tf.constant(model[7]))
+			print("model has been loaded from {}".format(self.save_to))
+		except:
+			# Model params
+			self.W_conv1 = weight_variable([5, 5, 1, 32])
+			self.b_conv1 = bias_variable([32])
+			self.W_conv2 = weight_variable([5, 5, 32, 64])
+			self.b_conv2 = bias_variable([64])
+			self.W_fc1 = weight_variable([7 * 7 * 64, 1024])
+			self.b_fc1 = bias_variable([1024])
+			self.W_fc2 = weight_variable([1024, 10])
+			self.b_fc2 = bias_variable([10])
+		self._create_model()
 
-	# Define loss and optimizer
-	y_ = tf.placeholder(tf.float32, [None, 10])
+	def _deepcnn(self, x, keep_prob):
+		with tf.name_scope('reshape'):
+			x_image = tf.reshape(x, [-1, 28, 28, 1])
+		h_conv1 = tf.nn.relu(conv2d(x_image, self.W_conv1) + self.b_conv1)
+		h_pool1 = max_pool_2x2(h_conv1)
 
-	# Build the graph for the deep net
-	y_conv, keep_prob = deepcnn(x)
+		h_conv2 = tf.nn.relu(conv2d(h_pool1, self.W_conv2) + self.b_conv2)
+		h_pool2 = max_pool_2x2(h_conv2)
+		h_pool2_flat = tf.reshape(h_pool2, [-1, 7 * 7 * 64])
 
-	with tf.name_scope('loss'):
-		cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y_conv)
-	cross_entropy = tf.reduce_mean(cross_entropy)
-	tf.summary.scalar('cross_entropy', cross_entropy)
+		h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1)
 
-	with tf.name_scope('adam_optimizer'):
-		train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+		h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+		y_conv = tf.matmul(h_fc1_drop, self.W_fc2) + self.b_fc2
 
-	with tf.name_scope('accuracy'):
-		correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
+		# summary
+		variable_summaries(self.W_conv1, 'W_conv1')
+		variable_summaries(self.W_conv2, 'W_conv2')
+		variable_summaries(self.b_conv1, 'b_conv1')
+		variable_summaries(self.b_conv2, 'b_conv2')
+		variable_summaries(self.W_fc1, 'W_fc1')
+		variable_summaries(self.W_fc2, 'W_fc2')
+		variable_summaries(self.b_fc1, 'b_fc1')
+		variable_summaries(self.b_fc2, 'b_fc2')
+		return y_conv
+
+	def _create_model(self):
+		self.x = tf.placeholder(tf.float32, [None, 784])
+		self.y_ = tf.placeholder(tf.float32, [None, 10])
+		self.keep_prob = tf.placeholder(tf.float32)
+		# Build the graph for the deep net
+		self.y_conv = self._deepcnn(self.x, self.keep_prob)
+
+		# loss
+		cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=self.y_, logits=self.y_conv)
+		cross_entropy = tf.reduce_mean(cross_entropy)
+		tf.summary.scalar('cross_entropy', cross_entropy)
+
+		self.train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+
+		correct_prediction = tf.equal(tf.argmax(self.y_conv, 1), tf.argmax(self.y_, 1))
 		correct_prediction = tf.cast(correct_prediction, tf.float32)
-	accuracy = tf.reduce_mean(correct_prediction)
-	tf.summary.scalar('accuracy', accuracy)
+		self.accuracy = tf.reduce_mean(correct_prediction)
+		tf.summary.scalar('accuracy', self.accuracy)
 
-	graph_location = 'logs/mnist/train'
-	graph_location_test = 'logs/mnist/test'
-	merged = tf.summary.merge_all()
-	print('Saving graph to: %s' % graph_location)
-	train_writer = tf.summary.FileWriter(graph_location)
-	test_writer = tf.summary.FileWriter(graph_location_test)
+		confidence = tf.cast(tf.reduce_max(self.y_conv, 1), tf.float32)
+		self.confidence = tf.reduce_mean(tf.nn.softmax(confidence))
+		tf.summary.scalar('confidence', self.confidence)
 
-	with tf.Session() as sess:
-		train_writer.add_graph(sess.graph)
-		sess.run(tf.global_variables_initializer())
+		graph_location = self.log_dir + '/train'
+		graph_location_test = self.log_dir + '/test'
+		self.merged = tf.summary.merge_all()
+		print('Saving graph to: %s' % graph_location)
+		self.train_writer = tf.summary.FileWriter(graph_location)
+		self.test_writer = tf.summary.FileWriter(graph_location_test)
 
-		for i in range(1000):
-			batch = mnist.train.next_batch(50)
+	def train(self):
+		self.sess = tf.Session()
+		self.train_writer.add_graph(self.sess.graph)
+		self.sess.run(tf.global_variables_initializer())
 
-			if i % 100 == 0:
-				summary, _ = sess.run([merged, accuracy], feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1})
+		for i in range(10000):
+			batch = self.get_batch
 
-				print('test accuracy step {}'.format(i))
-				test_writer.add_summary(summary, i)
-
-				summary, _ = sess.run([merged, train_step], feed_dict={x: batch[0], y_: batch[1], keep_prob: 1})
-				train_writer.add_summary(summary, i)
+			if i % 300 == 0:
+				self.test(self.test_images, self.test_labels, i)
+				summary, _ = self.sess.run([self.merged, self.train_step],
+				                           feed_dict={self.x: batch[0], self.y_: batch[1], self.keep_prob: 1})
+				self.train_writer.add_summary(summary, i)
 				print('train accuracy step {}'.format(i))
 			else:
-				train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.8})
+				self.train_step.run(session=self.sess, feed_dict={self.x: batch[0], self.y_: batch[1], self.keep_prob: self.dropout_prob})
+		self.save_model()
+
+	def test(self, test_batch, test_labels, counter):
+		summary, accuracy, confidence = self.sess.run([self.merged, self.accuracy, self.confidence],
+		                              feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1})
+
+		print('step {}: accuracy:{}, confidence:{}'.format(counter,accuracy, confidence))
+		self.test_writer.add_summary(summary, counter)
+
+	def save_model(self):
+
+		# Save the model for a pickle
+		pickle.dump([self.sess.run(self.W_conv1), self.sess.run(self.b_conv1), self.sess.run(self.W_conv2), self.sess.run(self.b_conv2),
+		             self.sess.run(self.W_fc1), self.sess.run(self.b_fc1), self.sess.run(self.W_fc2), self.sess.run(self.b_fc2)],
+		            open(self.save_to, 'wb'))
+
+	print("Model has been saved!")
 
 
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser()
-	parser.add_argument('--data_dir', type=str, default='data/mnist', help='Directory for storing input data')
-	FLAGS, unparsed = parser.parse_known_args()
-tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
+	c = CNNClassifier("mnist")
+	c.train()
