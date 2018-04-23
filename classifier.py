@@ -75,6 +75,7 @@ class CNNClassifier():
 		self.batch_size = 64
 		self.dropout_prob = 0.9
 		self.save_to = classifier_name + "_classifier.pkl"
+		self.lamb = 1e-3
 		if self.classifier_name == 'mnist':
 			mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
 			self.test_images = mnist.test.images
@@ -84,16 +85,7 @@ class CNNClassifier():
 
 		# init_variables try to load from pickle:
 		try:
-			model = pickle.load(open(self.save_to, 'rb'))
-			self.W_conv1 = tf.Variable(tf.constant(model[0]))
-			self.b_conv1 = tf.Variable(tf.constant(model[1]))
-			self.W_conv2 = tf.Variable(tf.constant(model[2]))
-			self.b_conv2 = tf.Variable(tf.constant(model[3]))
-			self.W_fc1 = tf.Variable(tf.constant(model[4]))
-			self.b_fc1 = tf.Variable(tf.constant(model[5]))
-			self.W_fc2 = tf.Variable(tf.constant(model[6]))
-			self.b_fc2 = tf.Variable(tf.constant(model[7]))
-			print("model has been loaded from {}".format(self.save_to))
+			self.load_model()
 		except:
 			# Model params
 			self.W_conv1 = weight_variable([5, 5, 1, 32])
@@ -141,7 +133,9 @@ class CNNClassifier():
 
 		# loss
 		cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=self.y_, logits=self.y_conv)
-		cross_entropy = tf.reduce_mean(cross_entropy)
+		self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
+			self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)
+		cross_entropy = tf.reduce_mean(cross_entropy + self.l2_regularization)
 		tf.summary.scalar('cross_entropy', cross_entropy)
 
 		self.train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
@@ -151,7 +145,7 @@ class CNNClassifier():
 		self.accuracy = tf.reduce_mean(correct_prediction)
 		tf.summary.scalar('accuracy', self.accuracy)
 
-		self.confidence = tf.cast(tf.reduce_mean(tf.reduce_max(tf.nn.softmax(self.y_conv),axis=-1),axis=0), tf.float32)
+		self.confidence = tf.cast(tf.reduce_mean(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), axis=0), tf.float32)
 		tf.summary.scalar('confidence', self.confidence)
 
 		graph_location = self.log_dir + '/train'
@@ -160,14 +154,13 @@ class CNNClassifier():
 		print('Saving graph to: %s' % graph_location)
 		self.train_writer = tf.summary.FileWriter(graph_location)
 		self.test_writer = tf.summary.FileWriter(graph_location_test)
+		self.sess = tf.Session()
+		self.sess.run(tf.global_variables_initializer())
+		self.train_writer.add_graph(self.sess.graph)
 
 	def train(self):
-		self.sess = tf.Session()
-		self.train_writer.add_graph(self.sess.graph)
-		self.sess.run(tf.global_variables_initializer())
-
 		for i in range(10000):
-			batch =  self.mnist.train.next_batch(self.batch_size)
+			batch = self.mnist.train.next_batch(self.batch_size)
 
 			if i % 300 == 0:
 				self.test(self.test_images, self.test_labels, i)
@@ -181,9 +174,9 @@ class CNNClassifier():
 
 	def test(self, test_batch, test_labels, counter):
 		summary, accuracy, confidence = self.sess.run([self.merged, self.accuracy, self.confidence],
-		                              feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1})
+		                                              feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1})
 
-		print('step {}: accuracy:{}, confidence:{}'.format(counter,accuracy, confidence))
+		print('step {}: accuracy:{}, confidence:{}'.format(counter, accuracy, confidence))
 		self.test_writer.add_summary(summary, counter)
 
 	def save_model(self):
@@ -193,9 +186,23 @@ class CNNClassifier():
 		             self.sess.run(self.W_fc1), self.sess.run(self.b_fc1), self.sess.run(self.W_fc2), self.sess.run(self.b_fc2)],
 		            open(self.save_to, 'wb'))
 
-	print("Model has been saved!")
+		print("Model has been saved!")
+
+	def load_model(self):
+		model = pickle.load(open(self.save_to, 'rb'))
+		self.W_conv1 = tf.Variable(tf.constant(model[0]))
+		self.b_conv1 = tf.Variable(tf.constant(model[1]))
+		self.W_conv2 = tf.Variable(tf.constant(model[2]))
+		self.b_conv2 = tf.Variable(tf.constant(model[3]))
+		self.W_fc1 = tf.Variable(tf.constant(model[4]))
+		self.b_fc1 = tf.Variable(tf.constant(model[5]))
+		self.W_fc2 = tf.Variable(tf.constant(model[6]))
+		self.b_fc2 = tf.Variable(tf.constant(model[7]))
+		print("model has been loaded from {}".format(self.save_to))
 
 
 if __name__ == '__main__':
 	c = CNNClassifier("mnist")
-	c.train()
+	c.load_model()
+	# c.train()
+	c.test(c.test_images, c.test_labels, 1)
