@@ -139,6 +139,7 @@ class AEMultiModalInfoGAN(object):
 		# code
 		self.len_discrete_code = 10  # categorical distribution (i.e. label)
 		self.len_continuous_code = 2  # gaussian distribution (e.g. rotation, thickness)
+		self.embedding_size = 32
 
 		if dataset_name == 'mnist' or dataset_name == 'fashion-mnist':
 			# parameters
@@ -202,7 +203,7 @@ class AEMultiModalInfoGAN(object):
 			do1 = tf.reshape(do1, shape=[-1, 14 * 14 * 25])
 			fc1 = fullyConnected(do1, name='fc1', output_size=14 * 14 * 5)
 			do2 = dropout(fc1, name='do2', keep_rate=0.75)
-			embedding = fullyConnected(do2, name='fc2', output_size=62)
+			embedding = fullyConnected(do2, name='fc2', output_size=self.embedding_size)
 			# Decoding part
 			fc3 = fullyConnected(embedding, name='fc3', output_size=14 * 14 * 5)
 			do3 = dropout(fc3, name='do3', keep_rate=0.75)
@@ -232,17 +233,7 @@ class AEMultiModalInfoGAN(object):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
 		# Architecture : (64)4c2s-(128)4c2s_BL-FC1024_BL-FC1_S
 		with tf.variable_scope("discriminator", reuse=reuse):
-
-
-
-
-
-
-
-
-			print(x.shape)
-
-			x= tf.reshape(x[0],[self.batch_size, 31,31,1])
+			x= tf.reshape(x, shape=[-1, self.input_height, self.input_width, 1])
 			net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
 			net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
 			net = tf.reshape(net, [self.batch_size, -1])

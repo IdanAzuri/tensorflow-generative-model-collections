@@ -30,6 +30,8 @@ import pickle
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
+from utils import load_mnist
+
 FLAGS = None
 
 
@@ -76,12 +78,14 @@ class CNNClassifier():
 		self.dropout_prob = 0.9
 		self.save_to = classifier_name + "_classifier.pkl"
 		self.lamb = 1e-3
-		if self.classifier_name == 'mnist':
-			mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
-			self.test_images = mnist.test.images
-			self.test_labels = mnist.test.labels
+		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
+			# mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
+			self.data_X, self.data_y = load_mnist(self.classifier_name)
+
+			self.test_images = self.data_X[:1000].reshape(-1,784)
+			self.test_labels =  self.data_y[:1000]
 			# self.get_batch = mnist.train.next_batch(self.batch_size)
-			self.mnist = mnist
+			# self.mnist = mnist
 
 		# init_variables try to load from pickle:
 		try:
@@ -159,17 +163,22 @@ class CNNClassifier():
 		self.train_writer.add_graph(self.sess.graph)
 
 	def train(self):
-		for i in range(10000):
-			batch = self.mnist.train.next_batch(self.batch_size)
+		start_batch_id = int(1000/self.batch_size)
+		self.num_batches = self.num_batches = len(self.data_X) // self.batch_size
+		for i in range(start_batch_id, self.num_batches):
+			batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size]
+			batch_images = batch_images.reshape(-1,784)
+
+			batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
 			if i % 300 == 0:
 				self.test(self.test_images, self.test_labels, i)
 				summary, _ = self.sess.run([self.merged, self.train_step],
-				                           feed_dict={self.x: batch[0], self.y_: batch[1], self.keep_prob: 1})
+				                           feed_dict={self.x: batch_images, self.y_:batch_labels, self.keep_prob: 1})
 				self.train_writer.add_summary(summary, i)
-				print('train accuracy step {}'.format(i))
+				print('train accuracy step {}/{}'.format(i,self.num_batches))
 			else:
-				self.train_step.run(session=self.sess, feed_dict={self.x: batch[0], self.y_: batch[1], self.keep_prob: self.dropout_prob})
+				self.train_step.run(session=self.sess, feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
 		self.save_model()
 
 	def test(self, test_batch, test_labels, counter):
@@ -203,4 +212,4 @@ class CNNClassifier():
 
 if __name__ == '__main__':
 	c = CNNClassifier("mnist")
-	c.test(c.test_images, c.test_labels, 1)
+	c.train()
