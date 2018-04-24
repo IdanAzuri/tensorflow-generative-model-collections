@@ -166,7 +166,7 @@ class CNNClassifier():
 	def train(self):
 		start_batch_id = int(1000/self.batch_size)
 		self.num_batches = self.num_batches = len(self.data_X) // self.batch_size
-		for epoch in self.num_epochs:
+		for epoch in range(self.num_epochs):
 			for i in range(start_batch_id, self.num_batches):
 				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size]
 				batch_images = batch_images.reshape(-1,784)
