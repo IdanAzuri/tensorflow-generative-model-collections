@@ -72,6 +72,7 @@ def variable_summaries(var, name):
 
 class CNNClassifier():
 	def __init__(self, classifier_name):
+		self.num_epochs = 100
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/mnist'
 		self.batch_size = 64
@@ -165,21 +166,22 @@ class CNNClassifier():
 	def train(self):
 		start_batch_id = int(1000/self.batch_size)
 		self.num_batches = self.num_batches = len(self.data_X) // self.batch_size
-		for i in range(start_batch_id, self.num_batches):
-			batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size]
-			batch_images = batch_images.reshape(-1,784)
+		for epoch in self.num_epochs:
+			for i in range(start_batch_id, self.num_batches):
+				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size]
+				batch_images = batch_images.reshape(-1,784)
 
-			batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
+				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
-			if i % 300 == 0:
-				self.test(self.test_images, self.test_labels, i)
-				summary, _ = self.sess.run([self.merged, self.train_step],
-				                           feed_dict={self.x: batch_images, self.y_:batch_labels, self.keep_prob: 1})
-				self.train_writer.add_summary(summary, i)
-				print('train accuracy step {}/{}'.format(i,self.num_batches))
-			else:
-				self.train_step.run(session=self.sess, feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
-		self.save_model()
+				if i % 300 == 0:
+					self.test(self.test_images, self.test_labels, i)
+					summary, _ = self.sess.run([self.merged, self.train_step],
+					                           feed_dict={self.x: batch_images, self.y_:batch_labels, self.keep_prob: 1})
+					self.train_writer.add_summary(summary, i)
+					print('train accuracy epoch{}: step{}/{}'.format(epoch, i,self.num_batches))
+				else:
+					self.train_step.run(session=self.sess, feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
+			self.save_model()
 
 	def test(self, test_batch, test_labels, counter):
 		summary, accuracy, confidence = self.sess.run([self.merged, self.accuracy, self.confidence],
