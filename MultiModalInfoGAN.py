@@ -298,7 +298,7 @@ class MultiModalInfoGAN(object):
 			# show temporal results
 			self.visualize_results(epoch)
 		#plotting train/test loss
-		plot_train_test_loss(self.accuracy_list,self.confidence_list, self.loss_list)
+		self.plot_train_test_loss("{}_{}".format(self.dataset_name,self.sampler), self.accuracy_list,self.confidence_list, self.loss_list)
 
 		# save model for final step
 		self.save(self.checkpoint_dir, counter)
@@ -411,23 +411,23 @@ class MultiModalInfoGAN(object):
 			return False, 0
 
 
-def plot_train_test_loss(dataset_name, accuracy, confidence, loss):
-	plt.Figure()
-	lower_bound = 0
-	upper_bound = np.mean(accuracy)
-	plt.title('{} Loss Train/Test'.format(dataset_name), fontsize=18)
-	samples = len(accuracy)
-	x_range = np.linspace(0, samples, samples)
-	accuracy, = plt.plot(x_range, accuracy, color="r",marker="o" ,label='accuracy', linewidth=1)
-	confidence, = plt.plot(x_range, confidence, color="b",marker="P", label='confidence', linewidth=2)
-	loss, = plt.plot(x_range, loss, color="g", label='loss',marker="^", linewidth=2)
-	plt.legend(handler_map={accuracy: HandlerLine2D(numpoints=1)})
-	plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
-	plt.yscale('linear')
-	plt.xlabel('Iterations')
-	plt.ylabel('Loss')
-	plt.show()
+	def plot_train_test_loss(self, accuracy, confidence, loss):
+		plt.Figure()
+		lower_bound = 0
+		upper_bound = np.mean(accuracy)
+		plt.title('{} Loss Train/Test'.format(dataset_name), fontsize=18)
+		samples = len(accuracy)
+		x_range = np.linspace(0, samples, samples)
+		accuracy, = plt.plot(x_range, accuracy, color="r",marker="o" ,label='accuracy', linewidth=1)
+		confidence, = plt.plot(x_range, confidence, color="b",marker="P", label='confidence', linewidth=2)
+		loss, = plt.plot(x_range, loss, color="g", label='loss',marker="^", linewidth=2)
+		plt.legend(handler_map={accuracy: HandlerLine2D(numpoints=1)})
+		plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
+		plt.yscale('linear')
+		plt.xlabel('Iterations')
+		plt.ylabel('Loss')
+		plt.show()
+		plt.savefig("{}_{}".format(self.dataset_name,type(self.sampler).__name__))
 
 
-if __name__ == '__main__':
-	plot_train_test_loss("testing", np.linspace(1, 10, num=10), np.linspace(1, 100, num=10),np.linspace(1, 1000, num=10))
+
