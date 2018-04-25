@@ -138,8 +138,9 @@ class CNNClassifier():
 		cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=self.y_, logits=self.y_conv)
 		self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
 			self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)
-		cross_entropy = tf.reduce_mean(cross_entropy) + self.l2_regularization
+		cross_entropy = tf.reduce_mean(cross_entropy)
 		self.cross_entropy = cross_entropy
+		cross_entropy+= self.l2_regularization
 		tf.summary.scalar('cross_entropy', cross_entropy)
 
 		self.train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
@@ -190,7 +191,7 @@ class CNNClassifier():
 
 		print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
 		self.test_writer.add_summary(summary, counter)
-		return accuracy, confidence, self.cross_entropy
+		return accuracy, confidence, loss
 
 	def save_model(self):
 

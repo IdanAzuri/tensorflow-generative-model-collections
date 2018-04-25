@@ -278,7 +278,7 @@ class MultiModalInfoGAN(object):
 				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (
 					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss,))
 				# save training results for every 300 steps
-				if np.mod(counter, 300) == 0:
+				if np.mod(counter, 1000) == 0:
 					samples = self.sess.run(self.fake_images, feed_dict={self.z: self.sample_z, self.y: self.test_codes})
 
 					tot_num_samples = min(self.sample_num, self.batch_size)
@@ -296,8 +296,10 @@ class MultiModalInfoGAN(object):
 
 			# show temporal results
 			self.visualize_results(epoch)
-		#plotting train/test loss
-		self.plot_train_test_loss(self.accuracy_list,self.confidence_list, self.loss_list)
+		#plotting
+		self.plot_train_test_loss("confidence", self.confidence_list)
+		# self.plot_train_test_loss("cross_entropy", self.loss_list, color="g",marker="^")
+		# self.plot_train_test_loss("accuracy", self.accuracy_list, color='r',marker="o")
 
 		# save model for final step
 		self.save(self.checkpoint_dir, counter)
@@ -317,9 +319,9 @@ class MultiModalInfoGAN(object):
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
 		accuracy, confidence, loss = self.pretrained_classifier.test(samples.reshape(-1, self.input_width * self.input_height),
 		                                np.ones((self.batch_size, self.len_discrete_code)), epoch)
-		self.accuracy_list.append(accuracy)
+		# self.accuracy_list.append(accuracy)
 		self.confidence_list.append(confidence)
-		self.loss_list.append(loss)
+		# self.loss_list.append(loss)
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
 			self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
 
@@ -410,23 +412,22 @@ class MultiModalInfoGAN(object):
 			return False, 0
 
 
-	def plot_train_test_loss(self, accuracy, confidence, loss):
+	def plot_train_test_loss(self, name_of_measure, array, color="b",marker="P"):
 		plt.Figure()
-		lower_bound = 0
-		upper_bound = np.mean(accuracy)
-		plt.title('{} Loss Train/Test'.format(self.dataset_name), fontsize=18)
-		samples = len(accuracy)
-		x_range = np.linspace(0, samples, samples)
-		accuracy, = plt.plot(x_range, accuracy, color="r",marker="o" ,label='accuracy', linewidth=1)
-		confidence, = plt.plot(x_range, confidence, color="b",marker="P", label='confidence', linewidth=2)
-		loss, = plt.plot(x_range, loss, color="g", label='loss',marker="^", linewidth=2)
-		plt.legend(handler_map={accuracy: HandlerLine2D(numpoints=1)})
+		plt.title('{} {} Score'.format(self.dataset_name, name_of_measure), fontsize=18)
+		x_range = np.linspace(1, len(array)-1, len(array))
+
+		confidence, = plt.plot(x_range, array, color=color,marker=marker, label=name_of_measure, linewidth=2)
+		plt.legend(handler_map={confidence: HandlerLine2D(numpoints=1)})
 		plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
 		plt.yscale('linear')
-		plt.xlabel('Iterations')
-		plt.ylabel('Loss')
+		plt.xlabel('Epoch')
+		plt.ylabel('Score')
+		plt.grid()
 		plt.show()
-		plt.savefig("{}_{}".format(self.dataset_name,type(self.sampler).__name__))
+		plt.savefig("{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure))
+
+		plt.close()
 
 
 
