@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
-
-import time
-import matplotlib
-matplotlib.use('Agg')
 from matplotlib.legend_handler import HandlerLine2D
+import time
+
 
 from Sampler import *
 from cifar10 import *

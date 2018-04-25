@@ -25,6 +25,9 @@ from utils import check_folder
 
 import tensorflow as tf
 import argparse
+import matplotlib
+matplotlib.use('Agg')
+
 
 """parsing and configuration"""
 def parse_args():

@@ -1,5 +1,6 @@
 import numpy as np
 
+import matplotlib.pyplot as plt
 
 class Sampler(object):
 	def __init__(self):
@@ -43,7 +44,7 @@ class MultiModalUniformSample(Sampler):
 
 
 if __name__ == '__main__':
-	import matplotlib.pyplot as plt
+
 
 	test = MultiModalUniformSample()
 	test_uni = UniformSample()
