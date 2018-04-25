@@ -298,7 +298,7 @@ class MultiModalInfoGAN(object):
 			# show temporal results
 			self.visualize_results(epoch)
 		#plotting train/test loss
-		self.plot_train_test_loss("{}_{}".format(self.dataset_name,self.sampler), self.accuracy_list,self.confidence_list, self.loss_list)
+		self.plot_train_test_loss(self.accuracy_list,self.confidence_list, self.loss_list)
 
 		# save model for final step
 		self.save(self.checkpoint_dir, counter)
@@ -415,7 +415,7 @@ class MultiModalInfoGAN(object):
 		plt.Figure()
 		lower_bound = 0
 		upper_bound = np.mean(accuracy)
-		plt.title('{} Loss Train/Test'.format(dataset_name), fontsize=18)
+		plt.title('{} Loss Train/Test'.format(self.dataset_name), fontsize=18)
 		samples = len(accuracy)
 		x_range = np.linspace(0, samples, samples)
 		accuracy, = plt.plot(x_range, accuracy, color="r",marker="o" ,label='accuracy', linewidth=1)
