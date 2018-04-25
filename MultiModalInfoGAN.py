@@ -2,7 +2,8 @@
 from __future__ import division
 
 import time
-
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib.legend_handler import HandlerLine2D
 
 from Sampler import *
