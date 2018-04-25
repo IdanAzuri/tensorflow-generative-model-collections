@@ -83,10 +83,8 @@ class CNNClassifier():
 			# mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
 			self.data_X, self.data_y = load_mnist(self.classifier_name)
 
-			self.test_images = self.data_X[:1000].reshape(-1,784)
-			self.test_labels =  self.data_y[:1000]
-			# self.get_batch = mnist.train.next_batch(self.batch_size)
-			# self.mnist = mnist
+			self.test_images = self.data_X[:1000].reshape(-1, 784)
+			self.test_labels = self.data_y[:1000]  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
 
 		# init_variables try to load from pickle:
 		try:
@@ -138,9 +136,10 @@ class CNNClassifier():
 
 		# loss
 		cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=self.y_, logits=self.y_conv)
-		self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
-			self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)
-		cross_entropy = tf.reduce_mean(cross_entropy + self.l2_regularization)
+		self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
+			self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)
+		cross_entropy = tf.reduce_mean(cross_entropy) + self.l2_regularization
+		self.cross_entropy = cross_entropy
 		tf.summary.scalar('cross_entropy', cross_entropy)
 
 		self.train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
@@ -162,33 +161,36 @@ class CNNClassifier():
 		self.sess = tf.Session()
 		self.sess.run(tf.global_variables_initializer())
 		self.train_writer.add_graph(self.sess.graph)
+		self.test_writer.add_graph(self.sess.graph)
 
 	def train(self):
-		start_batch_id = int(1000/self.batch_size)
+		start_batch_id = int(1000 / self.batch_size)
 		self.num_batches = self.num_batches = len(self.data_X) // self.batch_size
 		for epoch in range(self.num_epochs):
 			for i in range(start_batch_id, self.num_batches):
 				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size]
-				batch_images = batch_images.reshape(-1,784)
+				batch_images = batch_images.reshape(-1, 784)
 
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
 				if i % 300 == 0:
-					self.test(self.test_images, self.test_labels, i)
+					self.test(self.test_images, self.test_labels, epoch * i)
 					summary, _ = self.sess.run([self.merged, self.train_step],
-					                           feed_dict={self.x: batch_images, self.y_:batch_labels, self.keep_prob: 1})
+					                           feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1})
 					self.train_writer.add_summary(summary, i)
-					print('train accuracy epoch{}: step{}/{}'.format(epoch, i,self.num_batches))
+					print('train accuracy epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
 				else:
-					self.train_step.run(session=self.sess, feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
-			self.save_model()
+					self.train_step.run(session=self.sess,
+					                    feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
+		self.save_model()
 
 	def test(self, test_batch, test_labels, counter):
-		summary, accuracy, confidence = self.sess.run([self.merged, self.accuracy, self.confidence],
-		                                              feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1})
+		summary, accuracy, confidence, loss = self.sess.run([self.merged, self.accuracy, self.confidence, self.cross_entropy],
+		                                                    feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1})
 
-		print('step {}: accuracy:{}, confidence:{}'.format(counter, accuracy, confidence))
+		print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
 		self.test_writer.add_summary(summary, counter)
+		return accuracy, confidence, self.cross_entropy
 
 	def save_model(self):
 
@@ -214,4 +216,4 @@ class CNNClassifier():
 
 if __name__ == '__main__':
 	c = CNNClassifier("mnist")
-	c.train()
+	c.test(c.test_images, c.test_labels, 1)

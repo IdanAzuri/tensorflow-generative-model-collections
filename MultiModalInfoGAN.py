@@ -3,6 +3,8 @@ from __future__ import division
 
 import time
 
+from matplotlib.legend_handler import HandlerLine2D
+
 from Sampler import *
 from cifar10 import *
 from classifier import CNNClassifier
@@ -28,6 +30,9 @@ class MultiModalInfoGAN(object):
 	model_name = "MultiModalInfoGAN"  # name for checkpoint
 
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, SUPERVISED=True):
+		self.loss_list = []
+		self.accuracy_list = []
+		self.confidence_list = []
 		self.sess = sess
 		self.dataset_name = dataset_name
 		self.checkpoint_dir = checkpoint_dir
@@ -36,7 +41,7 @@ class MultiModalInfoGAN(object):
 		self.epoch = epoch
 		self.batch_size = batch_size
 		self.sampler = sampler
-		self.pretrained_classifier = CNNClassifier("mnist")
+		self.pretrained_classifier = CNNClassifier(dataset_name)
 
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 
@@ -77,7 +82,7 @@ class MultiModalInfoGAN(object):
 			self.z_dim = z_dim  # dimension of noise-vector
 			self.y_dim = 12  # dimension of code-vector (label+two features)
 			self.c_dim = 3
-			self.data_X, self.data_y, self.test_x ,self.test_labels = get_train_test_data()
+			self.data_X, self.data_y, self.test_x, self.test_labels = get_train_test_data()
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
 
@@ -201,7 +206,6 @@ class MultiModalInfoGAN(object):
 		q_disc_sum = tf.summary.scalar("q_disc_loss", q_disc_loss)
 		q_cont_sum = tf.summary.scalar("q_cont_loss", q_cont_loss)
 
-
 		# final summary operations
 		self.g_sum = tf.summary.merge([d_loss_fake_sum, g_loss_sum])
 		self.d_sum = tf.summary.merge([d_loss_real_sum, d_loss_sum])
@@ -259,8 +263,8 @@ class MultiModalInfoGAN(object):
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 
 				# update D network
-				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum,self.d_loss,],
-					feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
+				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss, ],
+				                                       feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
 				self.writer.add_summary(summary_str, counter)
 
 				# update G and Q network
@@ -293,6 +297,8 @@ class MultiModalInfoGAN(object):
 
 			# show temporal results
 			self.visualize_results(epoch)
+		#plotting train/test loss
+		plot_train_test_loss(self.accuracy_list,self.confidence_list, self.loss_list)
 
 		# save model for final step
 		self.save(self.checkpoint_dir, counter)
@@ -310,8 +316,11 @@ class MultiModalInfoGAN(object):
 		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
-		self.pretrained_classifier.test(samples.reshape(-1, self.input_width*self.input_height), np.ones((self.batch_size,
-		                                                                                                  self.len_discrete_code)), epoch)
+		accuracy, confidence, loss = self.pretrained_classifier.test(samples.reshape(-1, self.input_width * self.input_height),
+		                                np.ones((self.batch_size, self.len_discrete_code)), epoch)
+		self.accuracy_list.append(accuracy)
+		self.confidence_list.append(confidence)
+		self.loss_list.append(loss)
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
 			self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
 
@@ -400,3 +409,25 @@ class MultiModalInfoGAN(object):
 		else:
 			print(" [*] Failed to find a checkpoint")
 			return False, 0
+
+
+def plot_train_test_loss(dataset_name, accuracy, confidence, loss):
+	plt.Figure()
+	lower_bound = 0
+	upper_bound = np.mean(accuracy)
+	plt.title('{} Loss Train/Test'.format(dataset_name), fontsize=18)
+	samples = len(accuracy)
+	x_range = np.linspace(0, samples, samples)
+	accuracy, = plt.plot(x_range, accuracy, color="r",marker="o" ,label='accuracy', linewidth=1)
+	confidence, = plt.plot(x_range, confidence, color="b",marker="P", label='confidence', linewidth=2)
+	loss, = plt.plot(x_range, loss, color="g", label='loss',marker="^", linewidth=2)
+	plt.legend(handler_map={accuracy: HandlerLine2D(numpoints=1)})
+	plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
+	plt.yscale('linear')
+	plt.xlabel('Iterations')
+	plt.ylabel('Loss')
+	plt.show()
+
+
+if __name__ == '__main__':
+	plot_train_test_loss("testing", np.linspace(1, 10, num=10), np.linspace(1, 100, num=10),np.linspace(1, 1000, num=10))
