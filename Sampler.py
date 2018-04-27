@@ -12,7 +12,7 @@ class Sampler(object):
 		pass
 
 
-class MultivariateSamplerSmallVariance(Sampler):
+class MultivariateGaussianSampler(Sampler):
 	def get_sample(self, batch_size, embedding_dim, n_distributions):
 		current_dist_states_indices = np.random.randint(0, n_distributions - 1, batch_size)
 		mean_vec = np.random.randint(low=0, high=20, size=n_distributions)

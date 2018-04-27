@@ -91,7 +91,7 @@ def main():
     if sampler == 'multi-uniform':
         sampler_method = MultiModalUniformSample()
     elif sampler =='multi-gaussian':
-        sampler_method = MultivariateSamplerSmallVariance()
+        sampler_method = MultivariateGaussianSampler()
     with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         # declare instance for GAN
 

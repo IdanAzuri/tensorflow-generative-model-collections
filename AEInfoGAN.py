@@ -3,10 +3,12 @@ from __future__ import division
 
 import time
 
+from matplotlib.legend_handler import HandlerLine2D
 from sklearn.manifold import TSNE
 
 from Sampler import *
 from cifar10 import *
+from classifier import CNNClassifier
 from ops import *
 from utils import *
 
@@ -118,6 +120,7 @@ class AEMultiModalInfoGAN(object):
 	model_name = "AEMultiModalInfoGAN"  # name for checkpoint
 
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, SUPERVISED=True):
+		self.confidence_list = []
 		self.sess = sess
 		self.dataset_name = dataset_name
 		self.checkpoint_dir = checkpoint_dir
@@ -126,6 +129,7 @@ class AEMultiModalInfoGAN(object):
 		self.epoch = epoch
 		self.batch_size = batch_size
 		self.sampler = sampler
+		self.pretrained_classifier = CNNClassifier("mnist")
 
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 
@@ -139,7 +143,7 @@ class AEMultiModalInfoGAN(object):
 		# code
 		self.len_discrete_code = 10  # categorical distribution (i.e. label)
 		self.len_continuous_code = 2  # gaussian distribution (e.g. rotation, thickness)
-		self.embedding_size = 32
+		self.embedding_size = z_dim
 
 		if dataset_name == 'mnist' or dataset_name == 'fashion-mnist':
 			# parameters
@@ -153,10 +157,11 @@ class AEMultiModalInfoGAN(object):
 			self.c_dim = 1
 
 			# load mnist
-			self.train_x, self.train_labels = load_mnist(self.dataset_name)
+			self.data_X, self.data_y = load_mnist(self.dataset_name)
+
 
 			# get number of batches for a single epoch
-			self.num_batches = len(self.train_x) // self.batch_size
+			self.num_batches = len(self.data_X) // self.batch_size
 		elif dataset_name == 'cifar10':
 			# parameters
 			self.input_height = 32
@@ -167,9 +172,10 @@ class AEMultiModalInfoGAN(object):
 			self.z_dim = z_dim  # dimension of noise-vector
 			self.y_dim = 12  # dimension of code-vector (label+two features)
 			self.c_dim = 3
-			self.train_x, self.train_labels, self.test_x ,self.test_labels = get_train_test_data()
+			self.data_X, self.data_y, self.test_x ,self.test_labels = get_train_test_data()
+
 			# get number of batches for a single epoch
-			self.num_batches = len(self.train_x) // self.batch_size
+			self.num_batches = len(self.data_X) // self.batch_size
 
 	def ConvAutoEncoder(self):
 		with tf.name_scope("ConvAutoEncoder"):
@@ -233,7 +239,6 @@ class AEMultiModalInfoGAN(object):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
 		# Architecture : (64)4c2s-(128)4c2s_BL-FC1024_BL-FC1_S
 		with tf.variable_scope("discriminator", reuse=reuse):
-			x= tf.reshape(x, shape=[-1, self.input_height, self.input_width, 1])
 			net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
 			net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
 			net = tf.reshape(net, [self.batch_size, -1])
@@ -286,7 +291,7 @@ class AEMultiModalInfoGAN(object):
 
 		## 1. GAN Loss
 		# output of D for real images
-		D_real, D_real_logits, _ = self.discriminator(self.embedding, is_training=True, reuse=False)
+		D_real, D_real_logits, _ = self.discriminator(self.x, is_training=True, reuse=False)
 
 		# output of D for fake images
 		self.x_ = self.generator(self.z, self.y, is_training=True, reuse=False)
@@ -303,7 +308,6 @@ class AEMultiModalInfoGAN(object):
 
 		## 2. Information Loss
 		code_fake, code_logit_fake = self.classifier(input4classifier_fake, is_training=True, reuse=False)
-		self.classifier_last_layer = tf.maximum(code_logit_fake) #I use to get the confidence
 		# discrete code : categorical
 		disc_code_est = code_logit_fake[:, :self.len_discrete_code]
 		disc_code_tg = self.y[:, :self.len_discrete_code]
@@ -347,7 +351,6 @@ class AEMultiModalInfoGAN(object):
 		q_cont_sum = tf.summary.scalar("q_cont_loss", q_cont_loss)
 
 		# final summary operations
-		self.confidence = tf.summary.merge([self.classifier_last_layer])
 		self.ae_sum = tf.summary.merge([ae_loss_sum])
 		self.g_sum = tf.summary.merge([d_loss_fake_sum, g_loss_sum])
 		self.d_sum = tf.summary.merge([d_loss_real_sum, d_loss_sum])
@@ -361,7 +364,7 @@ class AEMultiModalInfoGAN(object):
 		# graph inputs for visualize training results
 		# self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)  # np.random.uniform(-1, 1,
 		# size=(self.batch_size, self.z_dim))
-		self.test_labels = self.train_labels[0:self.batch_size]
+		self.test_labels = self.data_y[0:self.batch_size]
 		self.test_codes = np.concatenate((self.test_labels, np.zeros([self.batch_size, self.len_continuous_code])), axis=1)
 
 		# saver to save model
@@ -389,12 +392,12 @@ class AEMultiModalInfoGAN(object):
 
 			# get batch data
 			for idx in range(start_batch_id, self.num_batches):
-				batch_images = self.train_x[idx * self.batch_size:(idx + 1) * self.batch_size]
-				self.test_batch_images = self.train_x[0 * self.batch_size:(0 + 1) * self.batch_size]
+				batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
+				self.test_batch_images = self.data_X[0 * self.batch_size:(0 + 1) * self.batch_size]
 
 				# generate code
 				if self.SUPERVISED == True:
-					batch_labels = self.train_labels[idx * self.batch_size:(idx + 1) * self.batch_size]
+					batch_labels = self.data_y[idx * self.batch_size:(idx + 1) * self.batch_size]
 				else:
 					# batch_labels = _multivariate_dist(self.batch_size, self.z_dim, 10)
 					batch_labels = np.random.multinomial(1, self.len_discrete_code * [float(1.0 / self.len_discrete_code)],
@@ -407,15 +410,13 @@ class AEMultiModalInfoGAN(object):
 
 				# update AE
 				_, ae_loss, ae_summ, embedding = self.sess.run([self.ae_optim, self.ae_loss, self.ae_sum, self.embedding],
-				                                         feed_dict={self.x: batch_images})
+				                                               feed_dict={self.x: batch_images})
 				self.writer.add_summary(ae_summ, counter)
 
 				# update D network
-				_, summary_str, d_loss, classifier_confidence_summary = self.sess.run([self.d_optim, self.d_sum, self.d_loss,
-				                                                                      self.confidence],
-				                                       feed_dict={self.x: batch_images, self.y: batch_codes, self.z: embedding})
+				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss],
+				                                                                      feed_dict={self.x: batch_images, self.y: batch_codes, self.z: embedding})
 				self.writer.add_summary(summary_str, counter)
-				self.writer.add_summary(classifier_confidence_summary, counter)
 
 				# update G and Q network
 				_, summary_str_g, g_loss, _, summary_str_q, q_loss = self.sess.run(
@@ -430,7 +431,7 @@ class AEMultiModalInfoGAN(object):
 					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss, ae_loss))
 
 				# save training results for every 300 steps
-				if np.mod(counter, 300) == 0:
+				if np.mod(counter, 1) == 0:
 					samples = self.sess.run(self.fake_images, feed_dict={self.z: embedding, self.y: self.test_codes})
 					tot_num_samples = min(self.sample_num, self.batch_size)
 					manifold_h = int(np.floor(np.sqrt(tot_num_samples)))
@@ -447,6 +448,7 @@ class AEMultiModalInfoGAN(object):
 
 			# show temporal results
 			self.visualize_results(epoch)
+		self.plot_train_test_loss("confidence", self.confidence_list)
 
 		# save model for final step
 		self.save(self.checkpoint_dir, counter)
@@ -463,9 +465,11 @@ class AEMultiModalInfoGAN(object):
 		# z_sample = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
 		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 		_, ae_loss, ae_summ, embedding_test = self.sess.run([self.ae_optim, self.ae_loss, self.ae_sum, self.embedding],
-		                                               feed_dict={self.x: self.test_batch_images})
+		                                                    feed_dict={self.x: self.test_batch_images})
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: embedding_test, self.y: y_one_hot})
-
+		accuracy, confidence, loss = self.pretrained_classifier.test(samples.reshape(-1, self.input_width * self.input_height),
+		                                                             np.ones((self.batch_size, self.len_discrete_code)), epoch)
+		self.confidence_list.append(confidence)
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
 			self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
 
@@ -531,6 +535,7 @@ class AEMultiModalInfoGAN(object):
 				self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch +
 			            '_test_class_c1c2_%d_with_prior.png' % l)
 
+
 	@property
 	def model_dir(self):
 		return "{}_{}_{}_{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim)
@@ -558,3 +563,20 @@ class AEMultiModalInfoGAN(object):
 		else:
 			print(" [*] Failed to find a checkpoint")
 			return False, 0
+
+	def plot_train_test_loss(self, name_of_measure, array, color="b",marker="P"):
+		plt.Figure()
+		plt.title('{} {} score'.format(self.dataset_name, name_of_measure), fontsize=18)
+		x_range = np.linspace(1, len(array)-1, len(array))
+
+		confidence, = plt.plot(x_range, array, color=color,marker=marker, label=name_of_measure, linewidth=2)
+		plt.legend(handler_map={confidence: HandlerLine2D(numpoints=1)})
+		plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
+		plt.yscale('linear')
+		plt.xlabel('Epoch')
+		plt.ylabel('Score')
+		plt.grid()
+		plt.show()
+		plt.savefig("AEMultiModalInfoGAN_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure))
+
+		plt.close()

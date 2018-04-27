@@ -414,7 +414,7 @@ class MultiModalInfoGAN(object):
 
 	def plot_train_test_loss(self, name_of_measure, array, color="b",marker="P"):
 		plt.Figure()
-		plt.title('{} {} Score'.format(self.dataset_name, name_of_measure), fontsize=18)
+		plt.title('{} {} score'.format(self.dataset_name, name_of_measure), fontsize=18)
 		x_range = np.linspace(1, len(array)-1, len(array))
 
 		confidence, = plt.plot(x_range, array, color=color,marker=marker, label=name_of_measure, linewidth=2)
