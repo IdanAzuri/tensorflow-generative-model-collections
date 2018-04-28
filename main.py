@@ -46,7 +46,7 @@ def parse_args():
 	parser.add_argument('--result_dir', type=str, default='results', help='Directory name to save the generated images')
 	parser.add_argument('--log_dir', type=str, default='logs', help='Directory name to save training logs')
 	parser.add_argument('--sampler', type=str, default='uniform', choices=['uniform', 'multi-uniform', 'multi-gaussian',
-	                                                                       'multi-gaussianTF','GaussianSample'])
+	                                                                       'multi-gaussianTF','gaussian'])
 
 	return check_args(parser.parse_args())
 
