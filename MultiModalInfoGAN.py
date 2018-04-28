@@ -425,9 +425,10 @@ class MultiModalInfoGAN(object):
 		plt.ylabel('Score')
 		plt.grid()
 		plt.show()
-		plt.savefig("{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure))
-
+		name_figure = "{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
 		plt.close()
+		plt.savefig(name_figure)
+		pickle.dump(array,open("{}.pkl".format(name_figure), 'wb'))
 
 
 
