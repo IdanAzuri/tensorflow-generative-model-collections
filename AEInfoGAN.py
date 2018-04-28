@@ -178,7 +178,7 @@ class AEMultiModalInfoGAN(object):
 			self.num_batches = len(self.data_X) // self.batch_size
 
 	def ConvAutoEncoder(self):
-		with tf.name_scope("ConvAutoEncoder"):
+		with tf.variable_scope(tf.get_variable_scope()):
 			"""
 			We want to get dimensionality reduction of 784 to 196
 			Layers:
@@ -220,7 +220,7 @@ class AEMultiModalInfoGAN(object):
 			up1 = upsample(dc1, name='up1', factor=[2, 2])
 			output = fullyConnected(up1, name='output', output_size=28 * 28)
 			with tf.name_scope('cost'):
-				cost = tf.reduce_mean(tf.square(tf.subtract(output, x)))
+				cost = tf.reduce_mean(tf.square(output - x))
 			return output, cost, embedding
 
 	def classifier(self, x, is_training=True, reuse=False):
@@ -285,7 +285,7 @@ class AEMultiModalInfoGAN(object):
 
 		""" Loss Function """
 		## 0. AE
-		prediction, ae_loss, embedding = self.ConvAutoEncoder()
+		_, ae_loss, embedding = self.ConvAutoEncoder()
 		self.embedding = embedding
 		self.ae_loss = ae_loss
 
@@ -431,7 +431,7 @@ class AEMultiModalInfoGAN(object):
 					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss, ae_loss))
 
 				# save training results for every 300 steps
-				if np.mod(counter, 1) == 0:
+				if np.mod(counter, 500) == 0:
 					samples = self.sess.run(self.fake_images, feed_dict={self.z: embedding, self.y: self.test_codes})
 					tot_num_samples = min(self.sample_num, self.batch_size)
 					manifold_h = int(np.floor(np.sqrt(tot_num_samples)))
