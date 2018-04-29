@@ -41,8 +41,9 @@ class GaussianSample(Sampler):
 
 class MultiModalUniformSample(Sampler):
 	def get_sample(self, batch_size, embedding_dim, n_distributions):
-		current_dist_states_indices = np.random.randint(0, n_distributions - 1, batch_size)
-
+		means = np.linspace(-0.1,0.1,n_distributions)
+		rand = np.random.randint(0, n_distributions - 1, batch_size)
+		current_dist_states_indices= means[rand]
 		result_vec = np.zeros((batch_size, embedding_dim))
 		for i in range(batch_size):
 			result_vec[i] = np.random.uniform(-1 + current_dist_states_indices[i], 1 + current_dist_states_indices[i], size=embedding_dim)
@@ -73,10 +74,10 @@ if __name__ == '__main__':
 	test = MultivariateGaussianSampler()
 	a = test.get_sample(10, 5, 3)
 	test_uni = UniformSample()
-	# test_mul_uni=MultiModalUniformSample()
+	test_mul_uni=MultiModalUniformSample()
 	b = test_uni.get_sample(10, 5, 10)
-	# c = test_mul_uni.get_sample(10, 5, 10)
-	print(a)
+	c = test_mul_uni.get_sample(10, 5, 10)
+	print(c)
 	# print(d)
 	# print(b)
 	# print(c)
@@ -85,9 +86,9 @@ if __name__ == '__main__':
 	# plt.plot(d)
 	# plt.show()
 	# print(gg)
-	plt.plot(gg)
-	plt.show()
-	plt.plot(b)
+	# plt.plot(gg)
+	# plt.show()
+	# plt.plot(b)
 	plt.show()
 	# plt.plot(c)
 	# plt.show()
