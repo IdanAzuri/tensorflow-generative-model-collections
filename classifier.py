@@ -30,7 +30,10 @@ import pickle
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
+from cifar10 import get_train_test_data
 from utils import load_mnist
+
+
 
 FLAGS = None
 
@@ -80,11 +83,21 @@ class CNNClassifier():
 		self.save_to = classifier_name + "_classifier.pkl"
 		self.lamb = 1e-3
 		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
+			self.IMAGE_WIDTH = 28
+			self.IMAGE_HEIGHT = 28
 			# mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
 			self.data_X, self.data_y = load_mnist(self.classifier_name)
 
 			self.test_images = self.data_X[:1000].reshape(-1, 784)
 			self.test_labels = self.data_y[:1000]  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
+		elif self.classifier_name =="cifar10":
+			self.IMAGE_WIDTH = 32
+			self.IMAGE_HEIGHT = 32
+			self.c_dim = 3
+			self.data_X, self.data_y, self.test_images, self.test_labels = get_train_test_data()
+			self.test_images= self.test_images.reshape(-1,1024)
+			# get number of batches for a single epoch
+			self.num_batches = len(self.data_X) // self.batch_size
 
 		# init_variables try to load from pickle:
 		try:
@@ -103,7 +116,7 @@ class CNNClassifier():
 
 	def _deepcnn(self, x, keep_prob):
 		with tf.name_scope('reshape'):
-			x_image = tf.reshape(x, [-1, 28, 28, 1])
+			x_image = tf.reshape(x, [-1, self.IMAGE_WIDTH, self.IMAGE_HEIGHT, 1])
 		h_conv1 = tf.nn.relu(conv2d(x_image, self.W_conv1) + self.b_conv1)
 		h_pool1 = max_pool_2x2(h_conv1)
 
@@ -128,7 +141,7 @@ class CNNClassifier():
 		return y_conv
 
 	def _create_model(self):
-		self.x = tf.placeholder(tf.float32, [None, 784])
+		self.x = tf.placeholder(tf.float32, [None, self.IMAGE_HEIGHT*self.IMAGE_WIDTH])
 		self.y_ = tf.placeholder(tf.float32, [None, 10])
 		self.keep_prob = tf.placeholder(tf.float32)
 		# Build the graph for the deep net
@@ -170,7 +183,7 @@ class CNNClassifier():
 		for epoch in range(self.num_epochs):
 			for i in range(start_batch_id, self.num_batches):
 				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size]
-				batch_images = batch_images.reshape(-1, 784)
+				batch_images = batch_images.reshape(-1, self.IMAGE_WIDTH*self.IMAGE_HEIGHT)
 
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
@@ -216,5 +229,5 @@ class CNNClassifier():
 
 
 if __name__ == '__main__':
-	c = CNNClassifier("mnist")
+	c = CNNClassifier("cifar10")
 	c.test(c.test_images, c.test_labels, 1)

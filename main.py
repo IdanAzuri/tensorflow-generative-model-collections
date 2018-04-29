@@ -47,6 +47,9 @@ def parse_args():
 	parser.add_argument('--log_dir', type=str, default='logs', help='Directory name to save training logs')
 	parser.add_argument('--sampler', type=str, default='uniform', choices=['uniform', 'multi-uniform', 'multi-gaussian',
 	                                                                       'multi-gaussianTF','gaussian'])
+	parser.add_argument('--gpus', type=str, default='0')
+
+
 
 	return check_args(parser.parse_args())
 
@@ -85,6 +88,7 @@ def main():
 	if args is None:
 		exit()
 
+	os.environ['CUDA_VISIBLE_DEVICES'] = args.gpus
 	# open session
 	models = [GAN, CGAN, infoGAN, ACGAN, EBGAN, WGAN, WGAN_GP, DRAGAN, LSGAN, BEGAN, VAE, CVAE, MultiModalInfoGAN, infoGAN,
 	          AEMultiModalInfoGAN]

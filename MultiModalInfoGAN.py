@@ -434,6 +434,8 @@ def plot_from_pkl():
 	import numpy as np
 	import matplotlib.pyplot as plt
 	import pickle
+	plt.Figure(figsize=(15,15))
+	plt.title('Comparison InfoGAN Confidence by Sampling Method', fontsize=14)
 	a = pickle.load(open("fashion-mnist_MultiModalUniformSample_confidence.pkl","rb"))
 	b = pickle.load(open("fashion-mnist_MultivariateGaussianSampler_confidence.pkl","rb"))
 	c = pickle.load(open("fashion-mnist_UniformSample_confidence.pkl","rb"))
@@ -444,8 +446,29 @@ def plot_from_pkl():
 
 
 	# red dashes, blue squares and green triangles
-	plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'bs',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"yo")
+	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
+	a_range=np.arange(len(a))
+	b_range=np.arange(len(b))
+	c_range=np.arange(len(c))
+	d_range=np.arange(len(d))
+	aa, = plt.plot(a_range, a, color='b', marker="P",label="Multimodal Uniform Sample", linewidth=1)
+	bb, = plt.plot(b_range, b, color='g',marker='p', label="Multimodal Gaussian Sample", linewidth=1)
+	cc, = plt.plot(c_range, c, color='r',marker='^', label="Uniform Sample", linewidth=1)
+	dd, = plt.plot(d_range, d, color='y', marker="o",label="Gaussian Sample", linewidth=1)
+	mean_line = plt.plot(c_range,np.ones_like(d_range)*0.95, label='Benchmark', linestyle='--')
+
+	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
+	plt.legend([aa,bb,cc,dd],["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+	           handler_map={aa:HandlerLine2D(numpoints=1), bb:HandlerLine2D(numpoints=1),cc:HandlerLine2D(numpoints=1),dd:HandlerLine2D(
+		           numpoints=1)}, loc='lower right')
+	# plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
+	plt.xlabel("Epoch")
+	plt.ylabel("Confidence Score")
+	# plt.axis("auto")
+	plt.grid(True)
 	plt.show()
+	plt.savefig("all_plots.png")
+	plt.close()
 
 if __name__ == '__main__':
 

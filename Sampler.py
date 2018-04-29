@@ -14,10 +14,10 @@ class Sampler(object):
 
 
 class MultivariateGaussianSampler(Sampler):
-	def get_sample(self, batch_size, embedding_dim, n_distributions):
+	def get_sample(self, batch_size, embedding_dim, n_distributions,mu=0.1,sigma=0.15):
 		current_dist_states_indices = np.random.randint(0, n_distributions - 1, batch_size)
-		mean_vec = np.linspace(-0.1,0.1,n_distributions)
-		cov_mat = np.eye(n_distributions) * 1  # np.random.randint(1, 5, n_distributions)  # this is diagonal beacuse we want iid
+		mean_vec = np.linspace(-mu,mu,n_distributions)
+		cov_mat = np.eye(n_distributions) * sigma  # np.random.randint(1, 5, n_distributions)  # this is diagonal beacuse we want iid
 
 		result_vec = np.zeros((batch_size, embedding_dim))
 		# create multimodal matrix
@@ -35,8 +35,8 @@ class UniformSample(Sampler):
 
 
 class GaussianSample(Sampler):
-	def get_sample(self, batch_size, embedding_dim, n_distributions):
-		return np.random.normal(loc=0, scale=1, size=(batch_size, embedding_dim))
+	def get_sample(self, batch_size, embedding_dim, n_distributions,mu=0.,sigma=0.15):
+		return np.random.normal(loc=mu, scale=sigma, size=(batch_size, embedding_dim))
 
 
 class MultiModalUniformSample(Sampler):
