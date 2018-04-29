@@ -89,6 +89,7 @@ def main():
 		exit()
 
 	os.environ['CUDA_VISIBLE_DEVICES'] = args.gpus
+	print (args.gpus)
 	# open session
 	models = [GAN, CGAN, infoGAN, ACGAN, EBGAN, WGAN, WGAN_GP, DRAGAN, LSGAN, BEGAN, VAE, CVAE, MultiModalInfoGAN, infoGAN,
 	          AEMultiModalInfoGAN]
