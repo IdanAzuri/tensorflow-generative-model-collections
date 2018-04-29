@@ -426,9 +426,28 @@ class MultiModalInfoGAN(object):
 		plt.grid()
 		plt.show()
 		name_figure = "{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
-		plt.close()
 		plt.savefig(name_figure)
+		plt.close()
 		pickle.dump(array,open("{}.pkl".format(name_figure), 'wb'))
 
+def plot_from_pkl():
+	import numpy as np
+	import matplotlib.pyplot as plt
+	import pickle
+	a = pickle.load(open("fashion-mnist_MultiModalUniformSample_confidence.pkl","rb"))
+	b = pickle.load(open("fashion-mnist_MultivariateGaussianSampler_confidence.pkl","rb"))
+	c = pickle.load(open("fashion-mnist_UniformSample_confidence.pkl","rb"))
+	d = pickle.load(open("fashion-mnist_GaussianSample_confidence.pkl","rb"))
+	# evenly sampled time at 200ms intervals
+	t = np.arange(len(a))
 
+
+
+	# red dashes, blue squares and green triangles
+	plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'bs',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"yo")
+	plt.show()
+
+if __name__ == '__main__':
+
+	plot_from_pkl()
 

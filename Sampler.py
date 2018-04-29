@@ -16,7 +16,7 @@ class Sampler(object):
 class MultivariateGaussianSampler(Sampler):
 	def get_sample(self, batch_size, embedding_dim, n_distributions):
 		current_dist_states_indices = np.random.randint(0, n_distributions - 1, batch_size)
-		mean_vec = np.arange(n_distributions)
+		mean_vec = np.linspace(-0.1,0.1,n_distributions)
 		cov_mat = np.eye(n_distributions) * 1  # np.random.randint(1, 5, n_distributions)  # this is diagonal beacuse we want iid
 
 		result_vec = np.zeros((batch_size, embedding_dim))
@@ -76,15 +76,15 @@ if __name__ == '__main__':
 	# test_mul_uni=MultiModalUniformSample()
 	b = test_uni.get_sample(10, 5, 10)
 	# c = test_mul_uni.get_sample(10, 5, 10)
-	# print(a)
+	print(a)
 	# print(d)
-	print(b)
+	# print(b)
 	# print(c)
 	# plt.plot(a)
 	# plt.show()
 	# plt.plot(d)
 	# plt.show()
-	print(gg)
+	# print(gg)
 	plt.plot(gg)
 	plt.show()
 	plt.plot(b)
