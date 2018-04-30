@@ -11,6 +11,7 @@ from matplotlib.legend_handler import HandlerLine2D
 import utils
 from cifar10 import *
 from classifier import CNNClassifier
+from data_load import preprocess_fn
 from ops import *
 from utils import *
 
@@ -84,6 +85,7 @@ class MultiModalInfoGAN(object):
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
 		elif dataset_name == 'cifar10':
+			print("IN CIFAR")
 			# parameters
 			self.input_height = 32
 			self.input_width = 32
@@ -97,20 +99,32 @@ class MultiModalInfoGAN(object):
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
 		elif dataset_name == 'celebA':
-			img_paths = glob.glob('./data/img_align_celeba/*.jpg')
-			data_pool = utils.DiskImageData(img_paths, batch_size, shape=[218, 178, 3], preprocess_fn=preprocess_fn)
+			print("in celeba")
+			img_paths = glob.glob('/Users/idan.a/data/celeba/*.jpg')
+			self.data_pool = utils.DiskImageData(img_paths, batch_size, shape=[218, 178, 3], preprocess_fn=preprocess_fn)
+			self.num_batches = len(self.data_pool) // (batch_size)
+			# real_ipt = data_pool.batch()
 			# parameters
-			self.input_height = 32
-			self.input_width = 32
+			self.input_height = 64
+			self.input_width = 64
 			self.output_height = 32
 			self.output_width = 32
 
-			self.z_dim = z_dim  # dimension of noise-vector
-			self.y_dim = 12  # dimension of code-vector (label+two features)
+			self.z_dim = 128  # dimension of noise-vector
 			self.c_dim = 3
-			self.data_X, self.data_y, self.test_x, self.test_labels = get_train_test_data()
+			self.y_dim= 100
+			self.len_discrete_code = 100  # categorical distribution (i.e. label)
+			self.len_continuous_code = 0  # gaussian distribution (e.g. rotation, thickness)
+			sess = utils.session()
+
+			# iteration counter
+			it_cnt, update_cnt = utils.counter()
+
+			sess.run(tf.global_variables_initializer())
+			sess.run(it_cnt)
+			sess.run(update_cnt)
 			# get number of batches for a single epoch
-			self.num_batches = len(self.data_X) // self.batch_size
+
 
 	def classifier(self, x, is_training=True, reuse=False):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
@@ -249,7 +263,10 @@ class MultiModalInfoGAN(object):
 		# graph inputs for visualize training results
 		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)  # np.random.uniform(-1, 1,
 		# size=(self.batch_size, self.z_dim))
-		self.test_labels = self.data_y[0:self.batch_size]
+		self.test_labels = np.ones([self.batch_size,self.y_dim])
+		if self.dataset_name !="celebA":
+			self.test_labels = self.data_y[0:self.batch_size]
+
 		self.test_codes = np.concatenate((self.test_labels, np.zeros([self.batch_size, self.len_continuous_code])), axis=1)
 
 		# saver to save model
@@ -277,17 +294,21 @@ class MultiModalInfoGAN(object):
 
 			# get batch data
 			for idx in range(start_batch_id, self.num_batches):
-				batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
-
-				# generate code
-				if self.SUPERVISED == True:
-					batch_labels = self.data_y[idx * self.batch_size:(idx + 1) * self.batch_size]
+				if self.dataset_name !="celebA":
+					batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
 				else:
-					# batch_labels = _multivariate_dist(self.batch_size, self.z_dim, 10)
-					batch_labels = np.random.multinomial(1, self.len_discrete_code * [float(1.0 / self.len_discrete_code)],
-					                                     size=[self.batch_size])
+					batch_images = self.data_pool.batch()
 
-				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, 2))), axis=1)
+
+				# # generate code
+				# if self.SUPERVISED == True:
+				# 	batch_labels = self.data_y[idx * self.batch_size:(idx + 1) * self.batch_size]
+				# else:
+					# batch_labels = _multivariate_dist(self.batch_size, self.z_dim, 10)
+				batch_labels = np.random.multinomial(1, self.len_discrete_code * [float(1.0 / self.len_discrete_code)],
+				                                     size=[self.batch_size])
+
+				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
 				# batch_codes = np.concatenate((batch_labels, _multivariate_dist(self.batch_size, 2, 2)), axis=1)
 				batch_z_unif = np.random.uniform(-1, 1, [self.batch_size, self.z_dim]).astype(np.float32)
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
@@ -328,7 +349,8 @@ class MultiModalInfoGAN(object):
 			# show temporal results
 			self.visualize_results(epoch)
 		# plotting
-		self.plot_train_test_loss("confidence", self.confidence_list)
+		if self.dataset_name !="celebA":
+			self.plot_train_test_loss("confidence", self.confidence_list)
 		# self.plot_train_test_loss("cross_entropy", self.loss_list, color="g",marker="^")
 		# self.plot_train_test_loss("accuracy", self.accuracy_list, color='r',marker="o")
 
@@ -351,7 +373,8 @@ class MultiModalInfoGAN(object):
 		accuracy, confidence, loss = self.pretrained_classifier.test(samples.reshape(-1, self.input_width * self.input_height),
 		                                                             np.ones((self.batch_size, self.len_discrete_code)), epoch)
 		# self.accuracy_list.append(accuracy)
-		self.confidence_list.append(confidence)
+		if self.dataset_name !="celebA":
+			self.confidence_list.append(confidence)
 		# self.loss_list.append(loss)
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
 			self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
