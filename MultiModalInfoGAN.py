@@ -431,7 +431,7 @@ class MultiModalInfoGAN(object):
 
 	@property
 	def model_dir(self):
-		return "{}_{}_{}_{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim)
+		return "wgan_{}_{}_{}_{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim)
 
 	def save(self, checkpoint_dir, step):
 		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
@@ -471,7 +471,7 @@ class MultiModalInfoGAN(object):
 		plt.ylabel('Score')
 		plt.grid()
 		plt.show()
-		name_figure = "{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
+		name_figure = "Wgan_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
 		plt.savefig(name_figure)
 		plt.close()
 		pickle.dump(array,open("{}.pkl".format(name_figure), 'wb'))
