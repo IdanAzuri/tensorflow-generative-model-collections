@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 from matplotlib.legend_handler import HandlerLine2D
 import time
 
@@ -10,6 +12,8 @@ from classifier import CNNClassifier
 from ops import *
 from utils import *
 
+import glob
+import utils
 
 # def _multivariate_dist(batch_size, embedding_dim, n_distributions):
 # 	current_dist_states_indices = np.random.randint(0, n_distributions - 1, batch_size)
@@ -24,11 +28,31 @@ from utils import *
 # 		                current_dist_states_indices[i], i]
 # 	return np.asarray(result_vec, dtype=np.float32)
 
+# losses
+def gradient_penalty(real, fake, f):
+	def interpolate(a, b):
+		shape = tf.concat((tf.shape(a)[0:1], tf.tile([1], [a.shape.ndims - 1])), axis=0)
+		alpha = tf.random_uniform(shape=shape, minval=0., maxval=1.)
+		inter = a + alpha * (b - a)
+		inter.set_shape(a.get_shape().as_list())
+		return inter
+
+	x = interpolate(real, fake)
+	pred = f(x)
+	gradients = tf.gradients(pred, x)[0]
+	# slopes = tf.sqrt(tf.reduce_sum(tf.square(gradients), reduction_indices=range(1, x.shape.ndims)))
+	# gp = tf.reduce_mean((slopes - 1.)**2)
+
+	slopes = tf.sqrt(tf.reduce_sum(tf.square(gradients), axis=1))
+	gp = tf.reduce_mean(tf.square(slopes - 1.))
+	return gp
 
 class MultiModalInfoGAN(object):
 	model_name = "MultiModalInfoGAN"  # name for checkpoint
 
-	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, SUPERVISED=True):
+	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, is_wgan_gp=False,
+	             SUPERVISED=True):
+		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
 		self.accuracy_list = []
 		self.confidence_list = []
@@ -84,6 +108,21 @@ class MultiModalInfoGAN(object):
 			self.data_X, self.data_y, self.test_x, self.test_labels = get_train_test_data()
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
+		elif dataset_name == 'celebA':
+			img_paths = glob.glob('./data/img_align_celeba/*.jpg')
+			data_pool = utils.DiskImageData(img_paths, batch_size, shape=[218, 178, 3], preprocess_fn=preprocess_fn)
+			# parameters
+			self.input_height = 32
+			self.input_width = 32
+			self.output_height = 32
+			self.output_width = 32
+
+			self.z_dim = z_dim  # dimension of noise-vector
+			self.y_dim = 12  # dimension of code-vector (label+two features)
+			self.c_dim = 3
+			self.data_X, self.data_y, self.test_x, self.test_labels = get_train_test_data()
+			# get number of batches for a single epoch
+			self.num_batches = len(self.data_X) // self.batch_size
 
 	def classifier(self, x, is_training=True, reuse=False):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
@@ -97,7 +136,7 @@ class MultiModalInfoGAN(object):
 
 			return out, out_logit
 
-	def discriminator(self, x, is_training=True, reuse=False):
+	def discriminator(self, x, is_training=True, reuse=True):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
 		# Architecture : (64)4c2s-(128)4c2s_BL-FC1024_BL-FC1_S
 		with tf.variable_scope("discriminator", reuse=reuse):
@@ -154,14 +193,20 @@ class MultiModalInfoGAN(object):
 		self.x_ = self.generator(self.z, self.y, is_training=True, reuse=False)
 		D_fake, D_fake_logits, input4classifier_fake = self.discriminator(self.x_, is_training=True, reuse=True)
 
+
 		# get loss for discriminator
+
 		d_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_real_logits, labels=tf.ones_like(D_real)))
 		d_loss_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_fake_logits, labels=tf.zeros_like(D_fake)))
-
 		self.d_loss = d_loss_real + d_loss_fake
-
 		# get loss for generator
 		self.g_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_fake_logits, labels=tf.ones_like(D_fake)))
+		if self.wgan_gp:
+			wd = tf.reduce_mean(D_real_logits) - tf.reduce_mean(D_fake_logits)
+			gp = gradient_penalty(self.x, self.x_, self.discriminator)
+			self.d_loss = -wd + gp * 10.0
+			self.g_loss = -tf.reduce_mean(D_fake_logits)
+
 
 		## 2. Information Loss
 		code_fake, code_logit_fake = self.classifier(input4classifier_fake, is_training=True, reuse=False)
@@ -209,6 +254,7 @@ class MultiModalInfoGAN(object):
 		self.g_sum = tf.summary.merge([d_loss_fake_sum, g_loss_sum])
 		self.d_sum = tf.summary.merge([d_loss_real_sum, d_loss_sum])
 		self.q_sum = tf.summary.merge([q_loss_sum, q_disc_sum, q_cont_sum])
+
 
 	def train(self):
 

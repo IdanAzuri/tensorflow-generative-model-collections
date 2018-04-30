@@ -82,6 +82,7 @@ class CNNClassifier():
 		self.dropout_prob = 0.9
 		self.save_to = classifier_name + "_classifier.pkl"
 		self.lamb = 1e-3
+		self.c_dim = 1
 		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
 			self.IMAGE_WIDTH = 28
 			self.IMAGE_HEIGHT = 28
@@ -116,7 +117,7 @@ class CNNClassifier():
 
 	def _deepcnn(self, x, keep_prob):
 		with tf.name_scope('reshape'):
-			x_image = tf.reshape(x, [-1, self.IMAGE_WIDTH, self.IMAGE_HEIGHT, 3])
+			x_image = tf.reshape(x, [-1, self.IMAGE_WIDTH, self.IMAGE_HEIGHT, self.c_dim])
 		h_conv1 = tf.nn.relu(conv2d(x_image, self.W_conv1) + self.b_conv1)
 		h_pool1 = max_pool_2x2(h_conv1)
 

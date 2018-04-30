@@ -48,6 +48,7 @@ def parse_args():
 	parser.add_argument('--sampler', type=str, default='uniform', choices=['uniform', 'multi-uniform', 'multi-gaussian',
 	                                                                       'multi-gaussianTF','gaussian'])
 	parser.add_argument('--gpus', type=str, default='0')
+	parser.add_argument('--wgan', type=str, default=False)
 
 
 
@@ -89,7 +90,6 @@ def main():
 		exit()
 
 	os.environ['CUDA_VISIBLE_DEVICES'] = args.gpus
-	print (args.gpus)
 	# open session
 	models = [GAN, CGAN, infoGAN, ACGAN, EBGAN, WGAN, WGAN_GP, DRAGAN, LSGAN, BEGAN, VAE, CVAE, MultiModalInfoGAN, infoGAN,
 	          AEMultiModalInfoGAN]
@@ -103,15 +103,15 @@ def main():
 		sampler_method = MultimodelGaussianTF()
 	elif sampler == 'gaussian':
 		sampler_method=GaussianSample()
+	is_wgan_gp = args.wgan
 	with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
-		# declare instance for GAN
 
 		gan = None
 		for model in models:
 			if args.gan_type == model.model_name:
 				gan = model(sess, epoch=args.epoch, batch_size=args.batch_size, z_dim=args.z_dim, dataset_name=args.dataset,
 				            checkpoint_dir=args.checkpoint_dir + '/' + sampler, result_dir=args.result_dir + '/' + sampler,
-				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method)
+				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method,is_wgan_gp=is_wgan_gp)
 		if gan is None:
 			raise Exception("[!] There is no option for " + args.gan_type)
 
