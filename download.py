@@ -97,13 +97,7 @@ Downloads the following:
 - LSUN dataset
 - MNIST dataset
 """
-
-<<<<<<< HEAD
-=======
-
->>>>>>> d05f275b65195dd6a63406c3a0f34c7fa3b2e406
 import os
-import sys
 import json
 import zipfile
 import argparse
