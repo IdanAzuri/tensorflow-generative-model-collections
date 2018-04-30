@@ -1,32 +1,19 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-from __future__ import absolute_import
-from matplotlib.legend_handler import HandlerLine2D
+
+import glob
 import time
 
+from matplotlib.legend_handler import HandlerLine2D
 
-from Sampler import *
+import utils
 from cifar10 import *
 from classifier import CNNClassifier
 from ops import *
 from utils import *
 
-import glob
-import utils
-
-# def _multivariate_dist(batch_size, embedding_dim, n_distributions):
-# 	current_dist_states_indices = np.random.randint(0, n_distributions - 1, batch_size)
-# 	mean_vec = np.random.randint(low=-1,high=1,size=n_distributions)
-# 	cov_mat = np.eye(n_distributions) * 1 #np.random.randint(1, 5, n_distributions)  # this is diagonal beacuse we want iid
-#
-# 	result_vec = np.zeros((batch_size, embedding_dim))
-# 	for i in range(batch_size):
-# 		result_vec[i] = np.random.multivariate_normal(mean_vec, cov_mat, size=batch_size * embedding_dim).reshape(embedding_dim,
-# 		                                                                                                          n_distributions,
-# 		                                                                                                          batch_size)[:,
-# 		                current_dist_states_indices[i], i]
-# 	return np.asarray(result_vec, dtype=np.float32)
 
 # losses
 def gradient_penalty(real, fake, f):
@@ -38,7 +25,7 @@ def gradient_penalty(real, fake, f):
 		return inter
 
 	x = interpolate(real, fake)
-	pred = f(x)
+	_, pred, _ = f(x)
 	gradients = tf.gradients(pred, x)[0]
 	# slopes = tf.sqrt(tf.reduce_sum(tf.square(gradients), reduction_indices=range(1, x.shape.ndims)))
 	# gp = tf.reduce_mean((slopes - 1.)**2)
@@ -46,6 +33,7 @@ def gradient_penalty(real, fake, f):
 	slopes = tf.sqrt(tf.reduce_sum(tf.square(gradients), axis=1))
 	gp = tf.reduce_mean(tf.square(slopes - 1.))
 	return gp
+
 
 class MultiModalInfoGAN(object):
 	model_name = "MultiModalInfoGAN"  # name for checkpoint
@@ -193,7 +181,6 @@ class MultiModalInfoGAN(object):
 		self.x_ = self.generator(self.z, self.y, is_training=True, reuse=False)
 		D_fake, D_fake_logits, input4classifier_fake = self.discriminator(self.x_, is_training=True, reuse=True)
 
-
 		# get loss for discriminator
 
 		d_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_real_logits, labels=tf.ones_like(D_real)))
@@ -206,7 +193,6 @@ class MultiModalInfoGAN(object):
 			gp = gradient_penalty(self.x, self.x_, self.discriminator)
 			self.d_loss = -wd + gp * 10.0
 			self.g_loss = -tf.reduce_mean(D_fake_logits)
-
 
 		## 2. Information Loss
 		code_fake, code_logit_fake = self.classifier(input4classifier_fake, is_training=True, reuse=False)
@@ -254,7 +240,6 @@ class MultiModalInfoGAN(object):
 		self.g_sum = tf.summary.merge([d_loss_fake_sum, g_loss_sum])
 		self.d_sum = tf.summary.merge([d_loss_real_sum, d_loss_sum])
 		self.q_sum = tf.summary.merge([q_loss_sum, q_disc_sum, q_cont_sum])
-
 
 	def train(self):
 
@@ -342,7 +327,7 @@ class MultiModalInfoGAN(object):
 
 			# show temporal results
 			self.visualize_results(epoch)
-		#plotting
+		# plotting
 		self.plot_train_test_loss("confidence", self.confidence_list)
 		# self.plot_train_test_loss("cross_entropy", self.loss_list, color="g",marker="^")
 		# self.plot_train_test_loss("accuracy", self.accuracy_list, color='r',marker="o")
@@ -364,7 +349,7 @@ class MultiModalInfoGAN(object):
 
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
 		accuracy, confidence, loss = self.pretrained_classifier.test(samples.reshape(-1, self.input_width * self.input_height),
-		                                np.ones((self.batch_size, self.len_discrete_code)), epoch)
+		                                                             np.ones((self.batch_size, self.len_discrete_code)), epoch)
 		# self.accuracy_list.append(accuracy)
 		self.confidence_list.append(confidence)
 		# self.loss_list.append(loss)
@@ -457,13 +442,12 @@ class MultiModalInfoGAN(object):
 			print(" [*] Failed to find a checkpoint")
 			return False, 0
 
-
-	def plot_train_test_loss(self, name_of_measure, array, color="b",marker="P"):
+	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P"):
 		plt.Figure()
 		plt.title('{} {} score'.format(self.dataset_name, name_of_measure), fontsize=18)
-		x_range = np.linspace(1, len(array)-1, len(array))
+		x_range = np.linspace(1, len(array) - 1, len(array))
 
-		confidence, = plt.plot(x_range, array, color=color,marker=marker, label=name_of_measure, linewidth=2)
+		confidence, = plt.plot(x_range, array, color=color, marker=marker, label=name_of_measure, linewidth=2)
 		plt.legend(handler_map={confidence: HandlerLine2D(numpoints=1)})
 		plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
 		plt.yscale('linear')
@@ -474,39 +458,38 @@ class MultiModalInfoGAN(object):
 		name_figure = "Wgan_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
 		plt.savefig(name_figure)
 		plt.close()
-		pickle.dump(array,open("{}.pkl".format(name_figure), 'wb'))
+		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
+
 
 def plot_from_pkl():
 	import numpy as np
 	import matplotlib.pyplot as plt
 	import pickle
-	plt.Figure(figsize=(15,15))
+	plt.Figure(figsize=(15, 15))
 	plt.title('Comparison InfoGAN Confidence by Sampling Method', fontsize=14)
-	a = pickle.load(open("fashion-mnist_MultiModalUniformSample_confidence.pkl","rb"))
-	b = pickle.load(open("fashion-mnist_MultivariateGaussianSampler_confidence.pkl","rb"))
-	c = pickle.load(open("fashion-mnist_UniformSample_confidence.pkl","rb"))
-	d = pickle.load(open("fashion-mnist_GaussianSample_confidence.pkl","rb"))
+	a = pickle.load(open("fashion-mnist_MultiModalUniformSample_confidence.pkl", "rb"))
+	b = pickle.load(open("fashion-mnist_MultivariateGaussianSampler_confidence.pkl", "rb"))
+	c = pickle.load(open("fashion-mnist_UniformSample_confidence.pkl", "rb"))
+	d = pickle.load(open("fashion-mnist_GaussianSample_confidence.pkl", "rb"))
 	# evenly sampled time at 200ms intervals
 	t = np.arange(len(a))
 
-
-
 	# red dashes, blue squares and green triangles
 	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
-	a_range=np.arange(len(a))
-	b_range=np.arange(len(b))
-	c_range=np.arange(len(c))
-	d_range=np.arange(len(d))
-	aa, = plt.plot(a_range, a, color='b', marker="P",label="Multimodal Uniform Sample", linewidth=1)
-	bb, = plt.plot(b_range, b, color='g',marker='p', label="Multimodal Gaussian Sample", linewidth=1)
-	cc, = plt.plot(c_range, c, color='r',marker='^', label="Uniform Sample", linewidth=1)
-	dd, = plt.plot(d_range, d, color='y', marker="o",label="Gaussian Sample", linewidth=1)
-	mean_line = plt.plot(c_range,np.ones_like(d_range)*0.95, label='Benchmark', linestyle='--')
+	a_range = np.arange(len(a))
+	b_range = np.arange(len(b))
+	c_range = np.arange(len(c))
+	d_range = np.arange(len(d))
+	aa, = plt.plot(a_range, a, color='b', marker="P", label="Multimodal Uniform Sample", linewidth=1)
+	bb, = plt.plot(b_range, b, color='g', marker='p', label="Multimodal Gaussian Sample", linewidth=1)
+	cc, = plt.plot(c_range, c, color='r', marker='^', label="Uniform Sample", linewidth=1)
+	dd, = plt.plot(d_range, d, color='y', marker="o", label="Gaussian Sample", linewidth=1)
+	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.95, label='Benchmark', linestyle='--')
 
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
-	plt.legend([aa,bb,cc,dd],["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
-	           handler_map={aa:HandlerLine2D(numpoints=1), bb:HandlerLine2D(numpoints=1),cc:HandlerLine2D(numpoints=1),dd:HandlerLine2D(
-		           numpoints=1)}, loc='lower right')
+	plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+	           handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
+	                        dd: HandlerLine2D(numpoints=1)}, loc='lower right')
 	# plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
 	plt.xlabel("Epoch")
 	plt.ylabel("Confidence Score")
@@ -516,7 +499,6 @@ def plot_from_pkl():
 	plt.savefig("all_plots.png")
 	plt.close()
 
+
 if __name__ == '__main__':
-
 	plot_from_pkl()
-
