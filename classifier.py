@@ -99,8 +99,13 @@ class CNNClassifier():
 			self.test_images= self.test_images.reshape(-1,1024)
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
+		else:
+			self.IMAGE_WIDTH = 32
+			self.IMAGE_HEIGHT = 32
+			self.c_dim = 3
 
-		# init_variables try to load from pickle:
+
+	# init_variables try to load from pickle:
 		try:
 			self.load_model()
 		except:

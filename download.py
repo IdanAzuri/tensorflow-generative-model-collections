@@ -271,4 +271,4 @@ if __name__ == '__main__':
 	if 'lsun' in args.datasets:
 		download_lsun('./data')
 	if 'mnist' in args.datasets:
-		download_mnist('./data')
+		idownload_mnist('./data')
