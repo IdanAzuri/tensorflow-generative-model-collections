@@ -15,7 +15,7 @@
 # Copyright 2016 by Magnus Erik Hvass Pedersen
 #
 ########################################################################
-
+from __future__ import print_function
 import tarfile
 import urllib.request
 
@@ -98,7 +98,7 @@ Downloads the following:
 - MNIST dataset
 """
 
-from __future__ import print_function
+
 import os
 import sys
 import json
