@@ -145,8 +145,7 @@ class MultiModalInfoGAN(object):
 		with tf.variable_scope("discriminator", reuse=reuse):
 			net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
 			net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
-			# print (net.get_shape())
-			net = tf.reshape(net, [-1, 128 * self.input_height // 4 * self.input_width // 4])
+			net = tf.reshape(net, [self.batch_size, -1])
 			net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
 			out_logit = linear(net, 1, scope='d_fc4')
 			out = tf.nn.sigmoid(out_logit)
@@ -162,15 +161,14 @@ class MultiModalInfoGAN(object):
 
 			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
 			net = lrelu(
-				bn(linear(net, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2'), is_training=is_training,
-				   scope='g_bn2'))
+				bn(linear(net, 128 * self.input_height / 4 * self.input_width / 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
 			net = tf.reshape(net, [self.batch_size, int(self.input_height / 4), int(self.input_width / 4), 128])
 			net = lrelu(
 				bn(deconv2d(net, [self.batch_size, int(self.input_height / 2), int(self.input_width / 2), 64], 4, 4, 2, 2, name='g_dc3'),
 				   is_training=is_training, scope='g_bn3'))
 
 			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
-			# out = tf.reshape(out, tf.stack([self.batch_size, self.output_height*self.output_width]))
+			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
 
 			return out
 
@@ -181,13 +179,13 @@ class MultiModalInfoGAN(object):
 
 		""" Graph Input """
 		# images
-		self.x = tf.placeholder(tf.float32, [None] + image_dims, name='real_images')
+		self.x = tf.placeholder(tf.float32, [bs] + image_dims, name='real_images')
 
 		# labels
-		self.y = tf.placeholder(tf.float32, [None, self.y_dim], name='y')
+		self.y = tf.placeholder(tf.float32, [bs, self.y_dim], name='y')
 
 		# noises
-		self.z = tf.placeholder(tf.float32, [None, self.z_dim], name='z')
+		self.z = tf.placeholder(tf.float32, [bs, self.z_dim], name='z')
 
 		""" Loss Function """
 		## 1. GAN Loss
@@ -293,9 +291,9 @@ class MultiModalInfoGAN(object):
 
 		# loop for epoch
 		start_time = time.time()
-		for epoch in range(3):#range(start_epoch, self.epoch):
+		for epoch in range(start_epoch, self.epoch):
 			# get batch data
-			for idx in range(3):#range(start_batch_id, self.num_batches):
+			for idx in range(start_batch_id, self.num_batches):
 				if self.dataset_name !="celebA":
 					batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
 				else:
@@ -369,16 +367,16 @@ class MultiModalInfoGAN(object):
 		y_one_hot[np.arange(self.batch_size), y] = 1
 
 		# z_sample = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
-		#TESTING
-		y_test = np.random.choice(self.len_discrete_code, self.test_size)
-		y_one_hot_test = np.zeros((self.test_size, self.y_dim))
-		y_one_hot_test[np.arange(self.test_size), y_test] = 1
-		z_sample_test = self.sampler.get_sample(self.test_size, self.z_dim, 10)
+		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 
-		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample_test, self.y: y_one_hot_test})
-
-		accuracy, confidence, loss = self.pretrained_classifier.test(samples.reshape(-1, self.input_width * self.input_height),
-		                                                             np.ones((self.test_size, self.len_discrete_code)), epoch)
+		samples_for_test = []
+		for i in range(self.test_size//self.batch_size):
+			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
+			samples_for_test.append(samples)
+		samples_for_test=np.asarray(samples_for_test)
+		samples_for_test=samples_for_test.reshape(-1, self.input_width * self.input_height)
+		accuracy, confidence, loss = self.pretrained_classifier.test(samples_for_test.reshape(-1, self.input_width * self.input_height),
+		                                                             np.ones((len(samples_for_test), self.len_discrete_code)), epoch)
 		# self.accuracy_list.append(accuracy)
 		if self.dataset_name !="celebA":
 			self.confidence_list.append(confidence)
@@ -396,7 +394,6 @@ class MultiModalInfoGAN(object):
 			y = np.zeros(self.batch_size, dtype=np.int64) + l
 			y_one_hot = np.zeros((self.batch_size, self.y_dim))
 			y_one_hot[np.arange(self.batch_size), y] = 1
-			z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 
 			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
 			# save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
