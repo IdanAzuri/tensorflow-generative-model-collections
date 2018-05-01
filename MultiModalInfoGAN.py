@@ -143,25 +143,12 @@ class MultiModalInfoGAN(object):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
 		# Architecture : (64)4c2s-(128)4c2s_BL-FC1024_BL-FC1_S
 		with tf.variable_scope("discriminator", reuse=reuse):
-			# net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
-			x = tf.layers.conv2d(x, 64, 5, strides=2, padding='same',name='d_conv1')
-			x = tf.nn.leaky_relu(tf.layers.batch_normalization(x, training=is_training))
-			x = tf.layers.conv2d(x, 128, 5, strides=2, padding='same',name='d_bn2')
-			x = tf.nn.leaky_relu(tf.layers.batch_normalization(x, training=is_training))
-
-			# net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
-			# net = tf.reshape(x, [self.batch_size, -1])
-			# net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
-			# out_logit = linear(net, 1, scope='d_fc4')
-			# out = tf.nn.sigmoid(out_logit)
-
-
-			# Flatten
-			x = tf.reshape(x, shape=[-1, self.input_height//4* self.input_height//4 *128])
-			x = tf.layers.batch_normalization(tf.layers.dense(x, 1024,name='d_bn3'), training=is_training)
-			net = tf.nn.leaky_relu(x)
-			# Output 2 classes: Real and Fake images
-			out_logit = tf.layers.dense(x, 1,name='d_fc4')
+			net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
+			net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
+			# print (net.get_shape())
+			net = tf.reshape(net, [-1, 128 * self.input_height // 4 * self.input_width // 4])
+			net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
+			out_logit = linear(net, 1, scope='d_fc4')
 			out = tf.nn.sigmoid(out_logit)
 
 			return out, out_logit, net
