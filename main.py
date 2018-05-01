@@ -2,6 +2,7 @@ import argparse
 import os
 
 import matplotlib
+matplotlib.use('Agg')
 import tensorflow as tf
 
 from ACGAN import ACGAN
@@ -24,7 +25,7 @@ from infoGAN import infoGAN
 from utils import check_folder
 from utils import show_all_variables
 
-matplotlib.use('Agg')
+
 
 """parsing and configuration"""
 
