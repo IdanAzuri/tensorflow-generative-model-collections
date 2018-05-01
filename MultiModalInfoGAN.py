@@ -321,10 +321,9 @@ class MultiModalInfoGAN(object):
 
 		# loop for epoch
 		start_time = time.time()
-		for epoch in range(3):
-
+		for epoch in range(start_epoch, self.epoch):
 			# get batch data
-			for idx in range(3):
+			for idx in range(start_batch_id, self.num_batches):
 				if self.dataset_name !="celebA":
 					batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
 				else:
