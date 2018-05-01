@@ -369,11 +369,12 @@ class MultiModalInfoGAN(object):
 
 		# z_sample = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
 		#TESTING
-		y_one_hot = np.zeros((self.test_size, self.y_dim))
-		y_one_hot[np.arange(self.test_size), y] = 1
+		y_test = np.random.choice(self.len_discrete_code, self.test_size)
+		y_one_hot_test = np.zeros((self.test_size, self.y_dim))
+		y_one_hot_test[np.arange(self.test_size), y_test] = 1
 		z_sample = self.sampler.get_sample(self.test_size, self.z_dim, 10)
 
-		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
+		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot_test})
 		accuracy, confidence, loss = self.pretrained_classifier.test(samples.reshape(-1, self.input_width * self.input_height),
 		                                                             np.ones((self.test_size, self.len_discrete_code)), epoch)
 		# self.accuracy_list.append(accuracy)
