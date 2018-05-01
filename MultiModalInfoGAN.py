@@ -11,7 +11,6 @@ from matplotlib.legend_handler import HandlerLine2D
 import utils
 from cifar10 import *
 from classifier import CNNClassifier
-from data_load import preprocess_fn
 from ops import *
 from utils import *
 
@@ -99,6 +98,7 @@ class MultiModalInfoGAN(object):
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
 		elif dataset_name == 'celebA':
+			from data_load import preprocess_fn
 			print("in celeba")
 			img_paths = glob.glob('/Users/idan.a/data/celeba/*.jpg')
 			self.data_pool = utils.DiskImageData(img_paths, batch_size, shape=[218, 178, 3], preprocess_fn=preprocess_fn)
