@@ -490,10 +490,10 @@ def plot_from_pkl():
 	import pickle
 	plt.Figure(figsize=(15, 15))
 	plt.title('Comparison InfoGAN Confidence by Sampling Method', fontsize=14)
-	a = pickle.load(open("fashion-mnist_MultiModalUniformSample_confidence.pkl", "rb"))
-	b = pickle.load(open("fashion-mnist_MultivariateGaussianSampler_confidence.pkl", "rb"))
-	c = pickle.load(open("fashion-mnist_UniformSample_confidence.pkl", "rb"))
-	d = pickle.load(open("fashion-mnist_GaussianSample_confidence.pkl", "rb"))
+	a = pickle.load(open("Wgan_fashion-mnist_MultiModalUniformSample_confidence.pkl", "rb"))
+	b = pickle.load(open("Wgan_fashion-mnist_MultivariateGaussianSampler_confidence.pkl", "rb"))
+	c = pickle.load(open("Wgan_fashion-mnist_UniformSample_confidence.pkl", "rb"))
+	d = pickle.load(open("Wgan_fashion-mnist_GaussianSample_confidence.pkl", "rb"))
 	# evenly sampled time at 200ms intervals
 	t = np.arange(len(a))
 
@@ -519,7 +519,7 @@ def plot_from_pkl():
 	# plt.axis("auto")
 	plt.grid(True)
 	plt.show()
-	plt.savefig("all_plots.png")
+	plt.savefig("all_plots_fashion_mnist.png")
 	plt.close()
 
 

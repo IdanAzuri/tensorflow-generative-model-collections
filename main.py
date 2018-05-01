@@ -1,30 +1,28 @@
+import argparse
 import os
 
+import matplotlib
+import tensorflow as tf
+
+from ACGAN import ACGAN
 ## GAN Variants
 from AEInfoGAN import AEMultiModalInfoGAN
-from GAN import GAN
-from CGAN import CGAN
-from infoGAN import infoGAN
-from ACGAN import ACGAN
-from EBGAN import EBGAN
-from WGAN import WGAN
-from WGAN_GP import WGAN_GP
-from DRAGAN import DRAGAN
-from LSGAN import LSGAN
 from BEGAN import BEGAN
-
-## VAE Variants
-from VAE import VAE
+from CGAN import CGAN
 from CVAE import CVAE
+from DRAGAN import DRAGAN
+from EBGAN import EBGAN
+from GAN import GAN
+from LSGAN import LSGAN
 from MultiModalInfoGAN import MultiModalInfoGAN
 from Sampler import *
+## VAE Variants
+from VAE import VAE
+from WGAN import WGAN
+from WGAN_GP import WGAN_GP
 from infoGAN import infoGAN
-from utils import show_all_variables
 from utils import check_folder
-
-import tensorflow as tf
-import argparse
-import matplotlib
+from utils import show_all_variables
 
 matplotlib.use('Agg')
 
@@ -39,19 +37,17 @@ def parse_args():
 	                    choices=['GAN', 'CGAN', 'infoGAN', 'ACGAN', 'EBGAN', 'BEGAN', 'WGAN', 'WGAN_GP', 'DRAGAN', 'LSGAN', 'VAE', 'CVAE',
 	                             'MultiModalInfoGAN', 'AEMultiModalInfoGAN'], help='The type of GAN', required=True)
 	parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist', 'fashion-mnist', 'cifar10', 'celebA'], help='The name of '
-	                                                                                                                     'dataset')
+	                                                                                                                          'dataset')
 	parser.add_argument('--epoch', type=int, default=20, help='The number of epochs to run')
 	parser.add_argument('--batch_size', type=int, default=32, help='The size of batch')
 	parser.add_argument('--z_dim', type=int, default=62, help='Dimension of noise vector')
 	parser.add_argument('--checkpoint_dir', type=str, default='checkpoint', help='Directory name to save the checkpoints')
 	parser.add_argument('--result_dir', type=str, default='results', help='Directory name to save the generated images')
 	parser.add_argument('--log_dir', type=str, default='logs', help='Directory name to save training logs')
-	parser.add_argument('--sampler', type=str, default='uniform', choices=['uniform', 'multi-uniform', 'multi-gaussian',
-	                                                                       'multi-gaussianTF','gaussian'])
+	parser.add_argument('--sampler', type=str, default='uniform',
+	                    choices=['uniform', 'multi-uniform', 'multi-gaussian', 'multi-gaussianTF', 'gaussian'])
 	parser.add_argument('--gpus', type=str, default='0')
 	parser.add_argument('--wgan', type=str, default=False)
-
-
 
 	return check_args(parser.parse_args())
 
@@ -103,7 +99,7 @@ def main():
 	elif sampler == 'multi-gaussianTF':
 		sampler_method = MultimodelGaussianTF()
 	elif sampler == 'gaussian':
-		sampler_method=GaussianSample()
+		sampler_method = GaussianSample()
 	is_wgan_gp = args.wgan
 	with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
 
@@ -112,7 +108,7 @@ def main():
 			if args.gan_type == model.model_name:
 				gan = model(sess, epoch=args.epoch, batch_size=args.batch_size, z_dim=args.z_dim, dataset_name=args.dataset,
 				            checkpoint_dir=args.checkpoint_dir + '/' + sampler, result_dir=args.result_dir + '/' + sampler,
-				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method,is_wgan_gp=is_wgan_gp)
+				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method, is_wgan_gp=is_wgan_gp)
 		if gan is None:
 			raise Exception("[!] There is no option for " + args.gan_type)
 
