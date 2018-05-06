@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib
-
+np.random.seed(543)
 
 import matplotlib.pyplot as plt
 
@@ -67,7 +67,6 @@ if __name__ == '__main__':
 	g= GaussianSample()
 	gg = g.get_sample(10,5,10)
 
-	tf.set_random_seed(11)
 	sess = tf.Session()
 	with sess.as_default():
 		d = bimix_gauss.get_sample(10, 5, 10).eval()
