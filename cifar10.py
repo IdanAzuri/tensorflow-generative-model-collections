@@ -20,8 +20,7 @@
 # arrays each with the shape: [image_number, height, width, channel]
 # where the individual pixels are floats between 0.0 and 1.0.
 #
-########################################################################
-#
+#######################################################################
 # This file is part of the TensorFlow Tutorials available at:
 #
 # https://github.com/Hvass-Labs/TensorFlow-Tutorials
