@@ -206,7 +206,7 @@ class MultiModalInfoGAN(object):
 		if self.wgan_gp:
 			wd = tf.reduce_mean(D_real_logits) - tf.reduce_mean(D_fake_logits)
 			gp = gradient_penalty(self.x, self.x_, self.discriminator)
-			self.d_loss = -wd + gp * 10.0
+			self.d_loss = -wd + gp * 30.0
 			self.g_loss = -tf.reduce_mean(D_fake_logits)
 
 		## 2. Information Loss
