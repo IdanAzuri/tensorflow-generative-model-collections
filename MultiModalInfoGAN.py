@@ -143,12 +143,25 @@ class MultiModalInfoGAN(object):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
 		# Architecture : (64)4c2s-(128)4c2s_BL-FC1024_BL-FC1_S
 		with tf.variable_scope("discriminator", reuse=reuse):
-			net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
-			net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
-			# print (net.get_shape())
-			net = tf.reshape(net, [-1, 128 * self.input_height // 4 * self.input_width // 4])
-			net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
-			out_logit = linear(net, 1, scope='d_fc4')
+			# net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
+			x = tf.layers.conv2d(x, 64, 5, strides=2, padding='same',name='d_conv1')
+			x = tf.nn.leaky_relu(tf.layers.batch_normalization(x, training=is_training))
+			x = tf.layers.conv2d(x, 128, 5, strides=2, padding='same',name='d_bn2')
+			x = tf.nn.leaky_relu(tf.layers.batch_normalization(x, training=is_training))
+
+			# net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
+			# net = tf.reshape(x, [self.batch_size, -1])
+			# net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
+			# out_logit = linear(net, 1, scope='d_fc4')
+			# out = tf.nn.sigmoid(out_logit)
+
+
+			# Flatten
+			x = tf.reshape(x, shape=[-1, self.input_height//4* self.input_height//4 *128])
+			x = tf.layers.batch_normalization(tf.layers.dense(x, 1024,name='d_bn3'), training=is_training)
+			net = tf.nn.leaky_relu(x)
+			# Output 2 classes: Real and Fake images
+			out_logit = tf.layers.dense(x, 1,name='d_fc4')
 			out = tf.nn.sigmoid(out_logit)
 
 			return out, out_logit, net
@@ -160,17 +173,32 @@ class MultiModalInfoGAN(object):
 			# merge noise and code
 			z = concat([z, y], 1)
 
-			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
-			net = lrelu(
-				bn(linear(net, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2'), is_training=is_training,
-				   scope='g_bn2'))
-			net = tf.reshape(net, [self.batch_size, int(self.input_height / 4), int(self.input_width / 4), 128])
-			net = lrelu(
-				bn(deconv2d(net, [self.batch_size, int(self.input_height / 2), int(self.input_width / 2), 64], 4, 4, 2, 2, name='g_dc3'),
-				   is_training=is_training, scope='g_bn3'))
+			# net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
 
-			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
-			# out = tf.reshape(out, tf.stack([self.batch_size, self.output_height*self.output_width]))
+			x = tf.layers.dense(z, units=1024,kernel_initializer=tf.truncated_normal_initializer(stddev=0.02))
+			x = tf.nn.relu(tf.layers.batch_normalization(x, training=is_training,name='g_bn1'))
+
+
+
+			x = tf.layers.dense(x, units=128 * self.input_height // 4 * self.input_width // 4,
+			                    kernel_initializer=tf.truncated_normal_initializer(stddev=0.02))
+			x = tf.nn.relu(tf.layers.batch_normalization(x, training=is_training,name='g_bn2'))
+			# net = lrelu(bn(linear(net, 128 * self.input_height / 4 * self.input_width / 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
+
+			x = tf.reshape(x, shape=[-1,  self.input_height // 4,  self.input_height // 4, 128])
+			# net = tf.reshape(net, [self.batch_size, int(self.input_height / 4), int(self.input_width / 4), 128])
+
+			x = tf.layers.conv2d_transpose(x, 64, 5, strides=2, padding='same',kernel_initializer=tf.truncated_normal_initializer(stddev=0.02))
+			x = tf.nn.relu(tf.layers.batch_normalization(x, training=is_training,name='g_bn3'))
+
+			# net = lrelu(
+			# 	bn(deconv2d(net, [self.batch_size, int(self.input_height / 2), int(self.input_width / 2), 64], 4, 4, 2, 2, name='g_dc3'),
+			# 	   is_training=is_training, scope='g_bn3'))
+
+			x = tf.layers.conv2d_transpose(x, 1, 5, strides=2, padding='same',kernel_initializer=tf.truncated_normal_initializer(stddev=0.02))
+			# Apply tanh for better stability - clip values to [-1, 1].
+			out = tf.nn.tanh(x)
+			# out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
 
 			return out
 
@@ -293,9 +321,9 @@ class MultiModalInfoGAN(object):
 
 		# loop for epoch
 		start_time = time.time()
-		for epoch in range(3):#range(start_epoch, self.epoch):
+		for epoch in range(start_epoch, self.epoch):
 			# get batch data
-			for idx in range(3):#range(start_batch_id, self.num_batches):
+			for idx in range(start_batch_id, self.num_batches):
 				if self.dataset_name !="celebA":
 					batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
 				else:
