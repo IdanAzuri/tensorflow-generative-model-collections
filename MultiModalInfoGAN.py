@@ -38,7 +38,8 @@ def gradient_penalty(real, fake, f):
 class MultiModalInfoGAN(object):
 	model_name = "MultiModalInfoGAN"  # name for checkpoint
 
-	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, is_wgan_gp=False,
+	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler,len_continuous_code=2,
+	is_wgan_gp=False,
 	             SUPERVISED=True):
 		self.test_size = 5000
 		self.wgan_gp = is_wgan_gp
@@ -66,7 +67,7 @@ class MultiModalInfoGAN(object):
 
 		# code
 		self.len_discrete_code = 10  # categorical distribution (i.e. label)
-		self.len_continuous_code = 2  # gaussian distribution (e.g. rotation, thickness)
+		self.len_continuous_code = len_continuous_code  # gaussian distribution (e.g. rotation, thickness)
 
 		if dataset_name == 'mnist' or dataset_name == 'fashion-mnist':
 			# parameters
@@ -76,7 +77,7 @@ class MultiModalInfoGAN(object):
 			self.output_width = 28
 
 			self.z_dim = z_dim  # dimension of noise-vector
-			self.y_dim = 12  # dimension of code-vector (label+two features)
+			self.y_dim = self.len_discrete_code + self.len_continuous_code # dimension of code-vector (label+two features)
 			self.c_dim = 1
 
 			# load mnist
@@ -93,7 +94,7 @@ class MultiModalInfoGAN(object):
 			self.output_width = 32
 
 			self.z_dim = z_dim  # dimension of noise-vector
-			self.y_dim = 12  # dimension of code-vector (label+two features)
+			self.y_dim = self.len_discrete_code + self.len_continuous_code # dimension of code-vector (label+two features)
 			self.c_dim = 3
 			self.data_X, self.data_y, self.test_x, self.test_labels = get_train_test_data()
 			# get number of batches for a single epoch
@@ -113,9 +114,9 @@ class MultiModalInfoGAN(object):
 
 			self.z_dim = 128  # dimension of noise-vector
 			self.c_dim = 3
-			self.y_dim= 100
 			self.len_discrete_code = 100  # categorical distribution (i.e. label)
 			self.len_continuous_code = 0  # gaussian distribution (e.g. rotation, thickness)
+			self.y_dim = self.len_discrete_code + self.len_continuous_code # dimension of code-vector (label+two features)
 			sess = utils.session()
 
 			# iteration counter
@@ -444,7 +445,10 @@ class MultiModalInfoGAN(object):
 
 	@property
 	def model_dir(self):
-		return "wgan_{}_{}_{}_{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim)
+		if self.wgan_gp:
+			return "wgan_{}_{}_batch{}_z{}_continous{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim,self.len_continuous_code)
+		else:
+			return "{}_{}_batch{}_z{}_continous{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim,self.len_continuous_code)
 
 	def save(self, checkpoint_dir, step):
 		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
@@ -483,7 +487,10 @@ class MultiModalInfoGAN(object):
 		plt.ylabel('Score')
 		plt.grid()
 		plt.show()
-		name_figure = "Wgan_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
+		if self.wgan_gp:
+			name_figure = "Wgan_{}_{}_{}_continous{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure,self.len_continuous_code)
+		else:
+			name_figure = "{}_{}_{}_continous{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure,self.len_continuous_code)
 		plt.savefig(name_figure)
 		plt.close()
 		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
@@ -524,7 +531,7 @@ def plot_from_pkl():
 	# plt.axis("auto")
 	plt.grid(True)
 	plt.show()
-	plt.savefig("all_plots_fashion_mnist.png")
+	plt.savefig("all_plots_.png")
 	plt.close()
 
 

@@ -48,6 +48,7 @@ def parse_args():
 	parser.add_argument('--sampler', type=str, default='uniform',
 	                    choices=['uniform', 'multi-uniform', 'multi-gaussian', 'multi-gaussianTF', 'gaussian'])
 	parser.add_argument('--gpus', type=str, default='0')
+	parser.add_argument('--len_continuous_code', type=int, default=2)
 	parser.add_argument('--wgan', type=str, default=False)
 
 	return check_args(parser.parse_args())
@@ -91,6 +92,7 @@ def main():
 	# open session
 	models = [GAN, CGAN, infoGAN, ACGAN, EBGAN, WGAN, WGAN_GP, DRAGAN, LSGAN, BEGAN, VAE, CVAE, MultiModalInfoGAN, infoGAN,
 	          AEMultiModalInfoGAN]
+	len_continuous_code = args.len_continuous_code
 	sampler = args.sampler
 	sampler_method = UniformSample()
 	if sampler == 'multi-uniform':
@@ -109,7 +111,7 @@ def main():
 			if args.gan_type == model.model_name:
 				gan = model(sess, epoch=args.epoch, batch_size=args.batch_size, z_dim=args.z_dim, dataset_name=args.dataset,
 				            checkpoint_dir=args.checkpoint_dir + '/' + sampler, result_dir=args.result_dir + '/' + sampler,
-				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method, is_wgan_gp=is_wgan_gp)
+				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method, is_wgan_gp=is_wgan_gp,len_continuous_code=len_continuous_code)
 		if gan is None:
 			raise Exception("[!] There is no option for " + args.gan_type)
 
