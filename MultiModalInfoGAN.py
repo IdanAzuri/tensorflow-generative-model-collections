@@ -331,14 +331,14 @@ class MultiModalInfoGAN(object):
 				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (
 					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss,))
 				# save training results for every 300 steps
-				if np.mod(counter, 1000) == 0:
-					samples = self.sess.run(self.fake_images, feed_dict={self.z: self.sample_z, self.y: self.test_codes})
-
-					tot_num_samples = min(self.sample_num, self.batch_size)
-					manifold_h = int(np.floor(np.sqrt(tot_num_samples)))
-					manifold_w = int(np.floor(np.sqrt(tot_num_samples)))
-					save_images(samples[:manifold_h * manifold_w, :, :, :], [manifold_h, manifold_w], './' + check_folder(
-						self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_train_{:02d}_{:04d}.png'.format(epoch, idx))
+				# if np.mod(counter, 1000) == 0:
+				# 	samples = self.sess.run(self.fake_images, feed_dict={self.z: self.sample_z, self.y: self.test_codes})
+				#
+				# 	tot_num_samples = min(self.sample_num, self.batch_size)
+				# 	manifold_h = int(np.floor(np.sqrt(tot_num_samples)))
+				# 	manifold_w = int(np.floor(np.sqrt(tot_num_samples)))
+				# 	save_images(samples[:manifold_h * manifold_w, :, :, :], [manifold_h, manifold_w], './' + check_folder(
+				# 		self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_train_{:02d}_{:04d}.png'.format(epoch, idx))
 
 			# After an epoch, start_batch_id is set to zero
 			# non-zero value is only for the first epoch after loading pre-trained model
@@ -368,17 +368,16 @@ class MultiModalInfoGAN(object):
 		y_one_hot[np.arange(self.batch_size), y] = 1
 
 		# z_sample = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
-		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 
 		samples_for_test = []
 		for i in range(self.test_size//self.batch_size):
+			z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
 			samples_for_test.append(samples)
 		samples_for_test=np.asarray(samples_for_test)
 		samples_for_test=samples_for_test.reshape(-1, self.input_width * self.input_height)
-		accuracy, confidence, loss = self.pretrained_classifier.test(samples_for_test.reshape(-1, self.input_width * self.input_height),
+		_, confidence, _ = self.pretrained_classifier.test(samples_for_test.reshape(-1, self.input_width * self.input_height),
 		                                                             np.ones((len(samples_for_test), self.len_discrete_code)), epoch)
-		# self.accuracy_list.append(accuracy)
 		if self.dataset_name !="celebA":
 			self.confidence_list.append(confidence)
 		# self.loss_list.append(loss)
@@ -488,9 +487,11 @@ class MultiModalInfoGAN(object):
 		plt.grid()
 		plt.show()
 		if self.wgan_gp:
-			name_figure = "Wgan_{}_{}_{}_continous{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure,self.len_continuous_code)
+			name_figure = "MMWinfoGAN_{}_{}_{}_continous{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure,
+			                                                      self.len_continuous_code)
 		else:
-			name_figure = "{}_{}_{}_continous{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure,self.len_continuous_code)
+			name_figure = "MMinfoGAN_{}_{}_{}_continous{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure,
+			                                             self.len_continuous_code)
 		plt.savefig(name_figure)
 		plt.close()
 		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
@@ -501,16 +502,17 @@ def plot_from_pkl():
 	import matplotlib.pyplot as plt
 	import pickle
 	plt.Figure(figsize=(15, 15))
-	plt.title('Comparison InfoGAN Confidence by Sampling Method', fontsize=14)
-	a = pickle.load(open("Wgan_fashion-mnist_MultiModalUniformSample_confidence.pkl", "rb"))
-	b = pickle.load(open("Wgan_fashion-mnist_MultivariateGaussianSampler_confidence.pkl", "rb"))
-	c = pickle.load(open("Wgan_fashion-mnist_UniformSample_confidence.pkl", "rb"))
-	d = pickle.load(open("Wgan_fashion-mnist_GaussianSample_confidence.pkl", "rb"))
+	plt.title('Wgan+InfoGAN Confidence Score Different Sampling Method', fontsize=14)
+	a = pickle.load(open("MMWinfoGAN_fashion-mnist_MultiModalUniformSample_confidence_continous2.pkl", "rb"))
+	b = pickle.load(open("MMWinfoGAN_fashion-mnist_MultivariateGaussianSampler_confidence_continous2.pkl", "rb"))
+	c = pickle.load(open("MMWinfoGAN_fashion-mnist_UniformSample_confidence_continous2.pkl", "rb"))
+	d = pickle.load(open("MMWinfoGAN_fashion-mnist_GaussianSample_confidence_continous2.pkl", "rb"))
 	# evenly sampled time at 200ms intervals
-	t = np.arange(len(a))
-
+	# a = np.maximum.accumulate(a)
+	# b = np.maximum.accumulate(b)
+	# c = np.maximum.accumulate(c)
 	# red dashes, blue squares and green triangles
-	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
+	plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
 	a_range = np.arange(len(a))
 	b_range = np.arange(len(b))
 	c_range = np.arange(len(c))
@@ -522,16 +524,17 @@ def plot_from_pkl():
 	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.95, label='Benchmark', linestyle='--')
 
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
-	plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+	plt.legend([aa, bb, cc], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	           handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
-	                        dd: HandlerLine2D(numpoints=1)}, loc='lower right')
+	                        dd: HandlerLine2D(numpoints=1),
+	                        }, loc='lower right')
 	# plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
 	plt.xlabel("Epoch")
 	plt.ylabel("Confidence Score")
 	# plt.axis("auto")
 	plt.grid(True)
 	plt.show()
-	plt.savefig("all_plots_.png")
+	plt.savefig("all_plots_fashion_mnist_MMWGAN.png")
 	plt.close()
 
 

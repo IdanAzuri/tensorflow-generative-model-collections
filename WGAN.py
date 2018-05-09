@@ -1,256 +1,343 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division
-import os
-import time
-import tensorflow as tf
-import numpy as np
 
+import pickle
+import time
+
+from matplotlib.legend_handler import HandlerLine2D
+
+from classifier import CNNClassifier
 from ops import *
 from utils import *
 
+
 class WGAN(object):
-    model_name = "WGAN"     # name for checkpoint
+	model_name = "WGAN"  # name for checkpoint
 
-    def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir):
-        self.sess = sess
-        self.dataset_name = dataset_name
-        self.checkpoint_dir = checkpoint_dir
-        self.result_dir = result_dir
-        self.log_dir = log_dir
-        self.epoch = epoch
-        self.batch_size = batch_size
+	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2,
+	             is_wgan_gp=False, SUPERVISED=True):
+		self.test_size = 5000
+		self.wgan_gp = is_wgan_gp # not in use
+		self.loss_list = []
+		self.accuracy_list = []
+		self.confidence_list = []
 
-        if dataset_name == 'mnist' or dataset_name == 'fashion-mnist':
-            # parameters
-            self.input_height = 28
-            self.input_width = 28
-            self.output_height = 28
-            self.output_width = 28
+		self.sess = sess
+		self.dataset_name = dataset_name
+		self.checkpoint_dir = checkpoint_dir
+		self.result_dir = result_dir
+		self.log_dir = log_dir
+		self.epoch = epoch
+		self.batch_size = batch_size
+		self.sampler = sampler
+		self.pretrained_classifier = CNNClassifier(dataset_name)
 
-            self.z_dim = z_dim         # dimension of noise-vector
-            self.c_dim = 1
+		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 
-            # WGAN parameter
-            self.disc_iters = 1     # The number of critic iterations for one-step of generator
+		# train
+		self.learning_rate = 0.0002
+		self.beta1 = 0.5
 
-            # train
-            self.learning_rate = 0.0002
-            self.beta1 = 0.5
+		# test
+		self.sample_num = 64  # number of generated images to be saved
 
-            # test
-            self.sample_num = 64  # number of generated images to be saved
+		# code
+		self.len_discrete_code = 10  # categorical distribution (i.e. label)
+		self.len_continuous_code = len_continuous_code  # gaussian distribution (e.g. rotation, thickness)
+		self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
 
-            # load mnist
-            self.data_X, self.data_y = load_mnist(self.dataset_name)
+		if dataset_name == 'mnist' or dataset_name == 'fashion-mnist':
+			# parameters
+			self.input_height = 28
+			self.input_width = 28
+			self.output_height = 28
+			self.output_width = 28
 
-            # get number of batches for a single epoch
-            self.num_batches = len(self.data_X) // self.batch_size
-        else:
-            raise NotImplementedError
+			self.z_dim = z_dim  # dimension of noise-vector
+			self.c_dim = 1
 
-    def discriminator(self, x, is_training=True, reuse=False):
-        # Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
-        # Architecture : (64)4c2s-(128)4c2s_BL-FC1024_BL-FC1_S
-        with tf.variable_scope("discriminator", reuse=reuse):
+			# WGAN parameter
+			self.disc_iters = 1  # The number of critic iterations for one-step of generator
 
-            net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
-            net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
-            net = tf.reshape(net, [self.batch_size, -1])
-            net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
-            out_logit = linear(net, 1, scope='d_fc4')
-            out = tf.nn.sigmoid(out_logit)
+			# train
+			self.learning_rate = 0.0002
+			self.beta1 = 0.5
 
-            return out, out_logit, net
+			# test
+			self.sample_num = 64  # number of generated images to be saved
 
-    def generator(self, z, is_training=True, reuse=False):
-        # Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
-        # Architecture : FC1024_BR-FC7x7x128_BR-(64)4dc2s_BR-(1)4dc2s_S
-        with tf.variable_scope("generator", reuse=reuse):
-            net = tf.nn.relu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
-            net = tf.nn.relu(bn(linear(net, 128 * 7 * 7, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
-            net = tf.reshape(net, [self.batch_size, 7, 7, 128])
-            net = tf.nn.relu(
-                bn(deconv2d(net, [self.batch_size, 14, 14, 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training,
-                   scope='g_bn3'))
+			# load mnist
+			self.data_X, self.data_y = load_mnist(self.dataset_name)
 
-            out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, 28, 28, 1], 4, 4, 2, 2, name='g_dc4'))
+			# get number of batches for a single epoch
+			self.num_batches = len(self.data_X) // self.batch_size
+		else:
+			raise NotImplementedError
 
-            return out
+	def discriminator(self, x, is_training=True, reuse=False):
+		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
+		# Architecture : (64)4c2s-(128)4c2s_BL-FC1024_BL-FC1_S
+		with tf.variable_scope("discriminator", reuse=reuse):
+			net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
+			net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
+			net = tf.reshape(net, [self.batch_size, -1])
+			net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
+			out_logit = linear(net, 1, scope='d_fc4')
+			out = tf.nn.sigmoid(out_logit)
 
-    def build_model(self):
-        # some parameters
-        image_dims = [self.input_height, self.input_width, self.c_dim]
-        bs = self.batch_size
+			return out, out_logit, net
 
-        """ Graph Input """
-        # images
-        self.inputs = tf.placeholder(tf.float32, [bs] + image_dims, name='real_images')
+	def generator(self, z, is_training=True, reuse=False):
+		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
+		# Architecture : FC1024_BR-FC7x7x128_BR-(64)4dc2s_BR-(1)4dc2s_S
+		with tf.variable_scope("generator", reuse=reuse):
+			net = tf.nn.relu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
+			net = tf.nn.relu(bn(linear(net, 128 * 7 * 7, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
+			net = tf.reshape(net, [self.batch_size, 7, 7, 128])
+			net = tf.nn.relu(
+				bn(deconv2d(net, [self.batch_size, 14, 14, 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training, scope='g_bn3'))
 
-        # noises
-        self.z = tf.placeholder(tf.float32, [bs, self.z_dim], name='z')
+			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, 28, 28, 1], 4, 4, 2, 2, name='g_dc4'))
 
-        """ Loss Function """
+			return out
 
-        # output of D for real images
-        D_real, D_real_logits, _ = self.discriminator(self.inputs, is_training=True, reuse=False)
+	def build_model(self):
+		# some parameters
+		image_dims = [self.input_height, self.input_width, self.c_dim]
+		bs = self.batch_size
 
-        # output of D for fake images
-        G = self.generator(self.z, is_training=True, reuse=False)
-        D_fake, D_fake_logits, _ = self.discriminator(G, is_training=True, reuse=True)
+		""" Graph Input """
+		# images
+		self.inputs = tf.placeholder(tf.float32, [bs] + image_dims, name='real_images')
 
-        # get loss for discriminator
-        d_loss_real = - tf.reduce_mean(D_real_logits)
-        d_loss_fake = tf.reduce_mean(D_fake_logits)
+		# noises
+		self.z = tf.placeholder(tf.float32, [bs, self.z_dim], name='z')
 
-        self.d_loss = d_loss_real + d_loss_fake
+		""" Loss Function """
 
-        # get loss for generator
-        self.g_loss = - d_loss_fake
+		# output of D for real images
+		D_real, D_real_logits, _ = self.discriminator(self.inputs, is_training=True, reuse=False)
 
-        """ Training """
-        # divide trainable variables into a group for D and a group for G
-        t_vars = tf.trainable_variables()
-        d_vars = [var for var in t_vars if 'd_' in var.name]
-        g_vars = [var for var in t_vars if 'g_' in var.name]
+		# output of D for fake images
+		G = self.generator(self.z, is_training=True, reuse=False)
+		D_fake, D_fake_logits, _ = self.discriminator(G, is_training=True, reuse=True)
 
-        # optimizers
-        with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
-            self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1) \
-                      .minimize(self.d_loss, var_list=d_vars)
-            self.g_optim = tf.train.AdamOptimizer(self.learning_rate*5, beta1=self.beta1) \
-                      .minimize(self.g_loss, var_list=g_vars)
+		# get loss for discriminator
+		d_loss_real = - tf.reduce_mean(D_real_logits)
+		d_loss_fake = tf.reduce_mean(D_fake_logits)
 
-        # weight clipping
-        self.clip_D = [p.assign(tf.clip_by_value(p, -0.01, 0.01)) for p in d_vars]
+		self.d_loss = d_loss_real + d_loss_fake
 
-        """" Testing """
-        # for test
-        self.fake_images = self.generator(self.z, is_training=False, reuse=True)
+		# get loss for generator
+		self.g_loss = - d_loss_fake
 
-        """ Summary """
-        d_loss_real_sum = tf.summary.scalar("d_loss_real", d_loss_real)
-        d_loss_fake_sum = tf.summary.scalar("d_loss_fake", d_loss_fake)
-        d_loss_sum = tf.summary.scalar("d_loss", self.d_loss)
-        g_loss_sum = tf.summary.scalar("g_loss", self.g_loss)
+		""" Training """
+		# divide trainable variables into a group for D and a group for G
+		t_vars = tf.trainable_variables()
+		d_vars = [var for var in t_vars if 'd_' in var.name]
+		g_vars = [var for var in t_vars if 'g_' in var.name]
 
-        # final summary operations
-        self.g_sum = tf.summary.merge([d_loss_fake_sum, g_loss_sum])
-        self.d_sum = tf.summary.merge([d_loss_real_sum, d_loss_sum])
+		# optimizers
+		with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
+			self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss, var_list=d_vars)
+			self.g_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.g_loss, var_list=g_vars)
 
-    def train(self):
+		# weight clipping
+		self.clip_D = [p.assign(tf.clip_by_value(p, -0.01, 0.01)) for p in d_vars]
 
-        # initialize all variables
-        tf.global_variables_initializer().run()
+		"""" Testing """
+		# for test
+		self.fake_images = self.generator(self.z, is_training=False, reuse=True)
 
-        # graph inputs for visualize training results
-        self.sample_z = np.random.uniform(-1, 1, size=(self.batch_size , self.z_dim))
+		""" Summary """
+		d_loss_real_sum = tf.summary.scalar("d_loss_real", d_loss_real)
+		d_loss_fake_sum = tf.summary.scalar("d_loss_fake", d_loss_fake)
+		d_loss_sum = tf.summary.scalar("d_loss", self.d_loss)
+		g_loss_sum = tf.summary.scalar("g_loss", self.g_loss)
 
-        # saver to save model
-        self.saver = tf.train.Saver()
+		# final summary operations
+		self.g_sum = tf.summary.merge([d_loss_fake_sum, g_loss_sum])
+		self.d_sum = tf.summary.merge([d_loss_real_sum, d_loss_sum])
 
-        # summary writer
-        self.writer = tf.summary.FileWriter(self.log_dir + '/' + self.model_name, self.sess.graph)
+	def train(self):
 
-        # restore check-point if it exits
-        could_load, checkpoint_counter = self.load(self.checkpoint_dir)
-        if could_load:
-            start_epoch = (int)(checkpoint_counter / self.num_batches)
-            start_batch_id = checkpoint_counter - start_epoch * self.num_batches
-            counter = checkpoint_counter
-            print(" [*] Load SUCCESS")
-        else:
-            start_epoch = 0
-            start_batch_id = 0
-            counter = 1
-            print(" [!] Load failed...")
+		# initialize all variables
+		tf.global_variables_initializer().run()
 
-        # loop for epoch
-        start_time = time.time()
-        for epoch in range(start_epoch, self.epoch):
+		# graph inputs for visualize training results
+		# self.sample_z = np.random.uniform(-1, 1, size=(self.batch_size , self.z_dim))
+		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 
-            # get batch data
-            for idx in range(start_batch_id, self.num_batches):
-                batch_images = self.data_X[idx*self.batch_size:(idx+1)*self.batch_size]
-                batch_z = np.random.uniform(-1, 1, [self.batch_size, self.z_dim]).astype(np.float32)
+		# saver to save model
+		self.saver = tf.train.Saver()
 
-                # update D network
-                _, _, summary_str, d_loss = self.sess.run([self.d_optim, self.clip_D, self.d_sum, self.d_loss],
-                                               feed_dict={self.inputs: batch_images, self.z: batch_z})
-                self.writer.add_summary(summary_str, counter)
+		# summary writer
+		self.writer = tf.summary.FileWriter(self.log_dir + '/' + self.model_name, self.sess.graph)
 
-                # update G network
-                if (counter - 1) % self.disc_iters == 0:
-                    _, summary_str, g_loss = self.sess.run([self.g_optim, self.g_sum, self.g_loss], feed_dict={self.z: batch_z})
-                    self.writer.add_summary(summary_str, counter)
+		# restore check-point if it exits
+		could_load, checkpoint_counter = self.load(self.checkpoint_dir)
+		if could_load:
+			start_epoch = (int)(checkpoint_counter / self.num_batches)
+			start_batch_id = checkpoint_counter - start_epoch * self.num_batches
+			counter = checkpoint_counter
+			print(" [*] Load SUCCESS")
+		else:
+			start_epoch = 0
+			start_batch_id = 0
+			counter = 1
+			print(" [!] Load failed...")
 
-                # display training status
-                counter += 1
-                print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" \
-                      % (epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss))
+		# loop for epoch
+		start_time = time.time()
+		for epoch in range(start_epoch, self.epoch):
 
-                # save training results for every 300 steps
-                if np.mod(counter, 300) == 0:
-                    samples = self.sess.run(self.fake_images,
-                                            feed_dict={self.z: self.sample_z})
-                    tot_num_samples = min(self.sample_num, self.batch_size)
-                    manifold_h = int(np.floor(np.sqrt(tot_num_samples)))
-                    manifold_w = int(np.floor(np.sqrt(tot_num_samples)))
-                    save_images(samples[:manifold_h * manifold_w, :, :, :], [manifold_h, manifold_w],
-                                './' + check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_train_{:02d}_{:04d}.png'.format(
-                                    epoch, idx))
+			# get batch data
+			for idx in range(start_batch_id, self.num_batches):
+				batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
+				batch_z = np.random.uniform(-1, 1, [self.batch_size, self.z_dim]).astype(np.float32)
 
-            # After an epoch, start_batch_id is set to zero
-            # non-zero value is only for the first epoch after loading pre-trained model
-            start_batch_id = 0
+				# update D network
+				_, _, summary_str, d_loss = self.sess.run([self.d_optim, self.clip_D, self.d_sum, self.d_loss],
+				                                          feed_dict={self.inputs: batch_images, self.z: batch_z})
+				self.writer.add_summary(summary_str, counter)
 
-            # save model
-            self.save(self.checkpoint_dir, counter)
+				# update G network
+				if (counter - 1) % self.disc_iters == 0:
+					_, summary_str, g_loss = self.sess.run([self.g_optim, self.g_sum, self.g_loss], feed_dict={self.z: batch_z})
+					self.writer.add_summary(summary_str, counter)
 
-            # show temporal results
-            self.visualize_results(epoch)
+				# display training status
+				counter += 1
+				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (
+				epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss))
 
-        # save model for final step
-        self.save(self.checkpoint_dir, counter)
+				# save training results for every 300 steps
+				# if np.mod(counter, 300) == 0:
+				# 	samples = self.sess.run(self.fake_images, feed_dict={self.z: self.sample_z})
+				# 	tot_num_samples = min(self.sample_num, self.batch_size)
+				# 	manifold_h = int(np.floor(np.sqrt(tot_num_samples)))
+				# 	manifold_w = int(np.floor(np.sqrt(tot_num_samples)))
+				# 	save_images(samples[:manifold_h * manifold_w, :, :, :], [manifold_h, manifold_w], './' + check_folder(
+				# 		self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_train_{:02d}_{:04d}.png'.format(epoch, idx))
 
-    def visualize_results(self, epoch):
-        tot_num_samples = min(self.sample_num, self.batch_size)
-        image_frame_dim = int(np.floor(np.sqrt(tot_num_samples)))
+			# After an epoch, start_batch_id is set to zero
+			# non-zero value is only for the first epoch after loading pre-trained model
+			start_batch_id = 0
 
-        """ random condition, random noise """
+			# save model
+			self.save(self.checkpoint_dir, counter)
 
-        z_sample = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
+			# show temporal results
+			self.visualize_results(epoch)
+			self.plot_train_test_loss("confidence", self.confidence_list)
 
-        samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample})
+		# save model for final step
+		self.save(self.checkpoint_dir, counter)
 
-        save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-                    check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
+	def visualize_results(self, epoch):
+		tot_num_samples = min(self.sample_num, self.batch_size)
+		image_frame_dim = int(np.floor(np.sqrt(tot_num_samples)))
 
-    @property
-    def model_dir(self):
-        return "{}_{}_{}_{}".format(
-            self.model_name, self.dataset_name,
-            self.batch_size, self.z_dim)
+		""" random condition, random noise """
 
-    def save(self, checkpoint_dir, step):
-        checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
+		# z_sample = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
 
-        if not os.path.exists(checkpoint_dir):
-            os.makedirs(checkpoint_dir)
+		# samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample})
+		sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+		samples_for_test = []
+		for i in range(self.test_size//self.batch_size):
+			samples = self.sess.run(self.fake_images, feed_dict={self.z: self.sample_z})
+			samples_for_test.append(samples)
+		samples_for_test=np.asarray(samples_for_test)
+		samples_for_test=samples_for_test.reshape(-1, self.input_width * self.input_height)
+		_, confidence, _ = self.pretrained_classifier.test(samples_for_test.reshape(-1, self.input_width * self.input_height),
+		                                                             np.ones((len(samples_for_test), self.len_discrete_code)), epoch)
+		if self.dataset_name !="celebA":
+			self.confidence_list.append(confidence)
+		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
+			self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
 
-        self.saver.save(self.sess,os.path.join(checkpoint_dir, self.model_name+'.model'), global_step=step)
+	@property
+	def model_dir(self):
+		return "{}_{}_{}_{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim)
 
-    def load(self, checkpoint_dir):
-        import re
-        print(" [*] Reading checkpoints...")
-        checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
+	def save(self, checkpoint_dir, step):
+		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
 
-        ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
-        if ckpt and ckpt.model_checkpoint_path:
-            ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
-            self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
-            counter = int(next(re.finditer("(\d+)(?!.*\d)",ckpt_name)).group(0))
-            print(" [*] Success to read {}".format(ckpt_name))
-            return True, counter
-        else:
-            print(" [*] Failed to find a checkpoint")
-            return False, 0
+		if not os.path.exists(checkpoint_dir):
+			os.makedirs(checkpoint_dir)
+
+		self.saver.save(self.sess, os.path.join(checkpoint_dir, self.model_name + '.model'), global_step=step)
+
+	def load(self, checkpoint_dir):
+		import re
+		print(" [*] Reading checkpoints...")
+		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
+
+		ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
+		if ckpt and ckpt.model_checkpoint_path:
+			ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
+			self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
+			counter = int(next(re.finditer("(\d+)(?!.*\d)", ckpt_name)).group(0))
+			print(" [*] Success to read {}".format(ckpt_name))
+			return True, counter
+		else:
+			print(" [*] Failed to find a checkpoint")
+			return False, 0
+
+	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P"):
+		plt.Figure()
+		plt.title('{} {} score'.format(self.dataset_name, name_of_measure), fontsize=18)
+		x_range = np.linspace(1, len(array) - 1, len(array))
+
+		confidence, = plt.plot(x_range, array, color=color, marker=marker, label=name_of_measure, linewidth=2)
+		plt.legend(handler_map={confidence: HandlerLine2D(numpoints=1)})
+		plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
+		plt.yscale('linear')
+		plt.xlabel('Epoch')
+		plt.ylabel('Score')
+		plt.grid()
+		plt.show()
+		name_figure = "WGAN_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
+		plt.savefig(name_figure)
+		plt.close()
+		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
+
+def plot_from_pkl():
+	import numpy as np
+	import matplotlib.pyplot as plt
+	import pickle
+	plt.Figure(figsize=(15, 15))
+	plt.title('WGAN Confidence Score Different Sampling Method', fontsize=14)
+	a = pickle.load(open("Wgan_fashion-mnist_MultiModalUniformSample_confidence_continous2.pkl", "rb"))
+	b = pickle.load(open("Wgan_fashion-mnist_MultivariateGaussianSampler_confidence_continous2.pkl", "rb"))
+	c = pickle.load(open("Wgan_fashion-mnist_UniformSample_confidence_continous2.pkl", "rb"))
+	d = pickle.load(open("Wgan_fashion-mnist_GaussianSample_confidence_continous2.pkl", "rb"))
+	# evenly sampled time at 200ms intervals
+	a = np.maximum.accumulate(a)
+	b = np.maximum.accumulate(b)
+	c = np.maximum.accumulate(c)
+	# red dashes, blue squares and green triangles
+	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
+	a_range = np.arange(len(a))
+	b_range = np.arange(len(b))
+	c_range = np.arange(len(c))
+	d_range = np.arange(len(d))
+	aa, = plt.plot(a_range, a, color='b', marker="P", label="Multimodal Uniform Sample", linewidth=1)
+	bb, = plt.plot(b_range, b, color='g', marker='p', label="Multimodal Gaussian Sample", linewidth=1)
+	cc, = plt.plot(c_range, c, color='r', marker='^', label="Uniform Sample", linewidth=1)
+	# dd, = plt.plot(d_range, d, color='y', marker="o", label="Gaussian Sample", linewidth=1)
+	# mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.95, label='Benchmark', linestyle='--')
+
+	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
+	plt.legend([aa, bb, cc], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+	           handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
+	                        }, loc='lower right')
+	# plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
+	plt.xlabel("Epoch")
+	plt.ylabel("Accumulate Confidence Score")
+	# plt.axis("auto")
+	plt.grid(True)
+	plt.show()
+	plt.savefig("all_plots_fashion_mnist.png")
+	plt.close()
