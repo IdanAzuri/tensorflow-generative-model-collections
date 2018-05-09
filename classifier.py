@@ -24,7 +24,7 @@ https://www.tensorflow.org/get_started/mnist/pros
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-
+import numpy as np
 import pickle
 
 import tensorflow as tf
@@ -83,6 +83,10 @@ class CNNClassifier():
 		self.save_to = classifier_name + "_classifier.pkl"
 		self.lamb = 1e-3
 		self.c_dim = 1
+		if self.classifier_name =="costum":
+			self.IMAGE_WIDTH = 28
+			self.IMAGE_HEIGHT = 28
+
 		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
 			self.IMAGE_WIDTH = 28
 			self.IMAGE_HEIGHT = 28
@@ -99,10 +103,10 @@ class CNNClassifier():
 			self.test_images= self.test_images.reshape(-1,1024)
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
-		else:
-			self.IMAGE_WIDTH = 32
-			self.IMAGE_HEIGHT = 32
-			self.c_dim = 3
+		# else:
+		# 	self.IMAGE_WIDTH = 32
+		# 	self.IMAGE_HEIGHT = 32
+		# 	self.c_dim = 3
 
 
 	# init_variables try to load from pickle:
@@ -119,6 +123,20 @@ class CNNClassifier():
 			self.W_fc2 = weight_variable([1024, 10])
 			self.b_fc2 = bias_variable([10])
 		self._create_model()
+
+
+	def set_dataset(self,training,labels):
+		seed = 547
+		np.random.seed(seed)
+		np.random.shuffle(training)
+		np.random.seed(seed)
+		np.random.shuffle(labels)
+		self.data_X = np.asarray(training[1000:]).reshape(-1, 784)
+		self.data_y = np.asarray(labels[1000:]).reshape(-1,10)
+		self.test_images = self.data_X[:1000].reshape(-1, 784)
+		self.test_labels = self.data_y[:1000]  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
+
+
 
 	def _deepcnn(self, x, keep_prob):
 		with tf.name_scope('reshape'):

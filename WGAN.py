@@ -243,10 +243,10 @@ class WGAN(object):
 		# z_sample = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
 
 		# samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample})
-		sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 		samples_for_test = []
 		for i in range(self.test_size//self.batch_size):
-			samples = self.sess.run(self.fake_images, feed_dict={self.z: self.sample_z})
+			sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+			samples = self.sess.run(self.fake_images, feed_dict={self.z: sample_z})
 			samples_for_test.append(samples)
 		samples_for_test=np.asarray(samples_for_test)
 		samples_for_test=samples_for_test.reshape(-1, self.input_width * self.input_height)
@@ -256,6 +256,7 @@ class WGAN(object):
 			self.confidence_list.append(confidence)
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
 			self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
+
 
 	@property
 	def model_dir(self):

@@ -54,7 +54,8 @@ class MultiModalInfoGAN(object):
 		self.epoch = epoch
 		self.batch_size = batch_size
 		self.sampler = sampler
-		self.pretrained_classifier = CNNClassifier(dataset_name)
+		self.pretrained_classifier = CNNClassifier(self.dataset_name)
+		self.classifier_for_generated_samples = CNNClassifier("costum")
 
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 
@@ -292,9 +293,9 @@ class MultiModalInfoGAN(object):
 
 		# loop for epoch
 		start_time = time.time()
-		for epoch in range(start_epoch, self.epoch):
+		for epoch in range(3):#range(start_epoch, self.epoch):
 			# get batch data
-			for idx in range(start_batch_id, self.num_batches):
+			for idx in range(3):#range(start_batch_id, self.num_batches):
 				if self.dataset_name !="celebA":
 					batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
 				else:
@@ -352,9 +353,11 @@ class MultiModalInfoGAN(object):
 		# plotting
 		if self.dataset_name !="celebA":
 			self.plot_train_test_loss("confidence", self.confidence_list)
-		# self.plot_train_test_loss("cross_entropy", self.loss_list, color="g",marker="^")
-		# self.plot_train_test_loss("accuracy", self.accuracy_list, color='r',marker="o")
-
+		# Evaluation with classifier
+		traing_set, labels=self.create_dataset_from_GAN()
+		self.train_classifier(traing_set, labels)
+		accuracy, confidence, loss = self.classifier_for_generated_samples.test(self.data_X[:5000], self.data_y[:5000])
+		print("accuracy:{}, confidence:{}, loss:{} ".format(accuracy, confidence, loss ))
 		# save model for final step
 		self.save(self.checkpoint_dir, counter)
 
@@ -377,12 +380,14 @@ class MultiModalInfoGAN(object):
 		samples_for_test=np.asarray(samples_for_test)
 		samples_for_test=samples_for_test.reshape(-1, self.input_width * self.input_height)
 		_, confidence, _ = self.pretrained_classifier.test(samples_for_test.reshape(-1, self.input_width * self.input_height),
-		                                                             np.ones((len(samples_for_test), self.len_discrete_code)), epoch)
+		                                                    np.ones((len(samples_for_test), self.len_discrete_code)), epoch)
 		if self.dataset_name !="celebA":
 			self.confidence_list.append(confidence)
 		# self.loss_list.append(loss)
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
 			self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
+
+
 
 		""" specified condition, random noise """
 		n_styles = 10  # must be less than or equal to self.batch_size
@@ -442,6 +447,34 @@ class MultiModalInfoGAN(object):
 			save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
 				self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2_%d.png' % l)
 
+	def create_dataset_from_GAN(self):
+
+		generated_dataset = []
+		generated_labels = []
+		for c in range(self.len_discrete_code):
+			y = c
+			y_one_hot = np.zeros((self.batch_size, self.y_dim))
+			y_one_hot[:, y] = 1
+			for i in range(self.test_size//self.batch_size):
+				z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
+				generated_dataset.append(samples) # stroting generated images and label
+				generated_labels.append(c+1)
+		fname_trainingset= "generated_trainingset_{}".format(self.dataset_name)
+		fname_labeles = "generated_labels_{}".format(self.dataset_name)
+		pickle.dump(generated_dataset, open("{}.pkl".format(fname_trainingset), 'wb'))
+		pickle.dump(generated_labels, open("{}.pkl".format(fname_labeles), 'wb'))
+
+		return generated_dataset, generated_labels
+
+
+	def train_classifier(self,train_set,labels):
+		self.classifier_for_generated_samples.set_dataset(train_set, labels)
+		self.classifier_for_generated_samples.train()
+
+		# samples_for_test=np.asarray(samples_for_test)
+		# samples_for_test=samples_for_test.reshape(-1, self.input_width * self.input_height)
+
 	@property
 	def model_dir(self):
 		if self.wgan_gp:
@@ -487,11 +520,9 @@ class MultiModalInfoGAN(object):
 		plt.grid()
 		plt.show()
 		if self.wgan_gp:
-			name_figure = "MMWinfoGAN_{}_{}_{}_continous{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure,
-			                                                      self.len_continuous_code)
+			name_figure = "MMWinfoGAN_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
 		else:
-			name_figure = "MMinfoGAN_{}_{}_{}_continous{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure,
-			                                             self.len_continuous_code)
+			name_figure = "MMinfoGAN_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
 		plt.savefig(name_figure)
 		plt.close()
 		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
@@ -503,16 +534,11 @@ def plot_from_pkl():
 	import pickle
 	plt.Figure(figsize=(15, 15))
 	plt.title('Wgan+InfoGAN Confidence Score Different Sampling Method', fontsize=14)
-	a = pickle.load(open("MMWinfoGAN_fashion-mnist_MultiModalUniformSample_confidence_continous2.pkl", "rb"))
-	b = pickle.load(open("MMWinfoGAN_fashion-mnist_MultivariateGaussianSampler_confidence_continous2.pkl", "rb"))
-	c = pickle.load(open("MMWinfoGAN_fashion-mnist_UniformSample_confidence_continous2.pkl", "rb"))
-	d = pickle.load(open("MMWinfoGAN_fashion-mnist_GaussianSample_confidence_continous2.pkl", "rb"))
-	# evenly sampled time at 200ms intervals
-	# a = np.maximum.accumulate(a)
-	# b = np.maximum.accumulate(b)
-	# c = np.maximum.accumulate(c)
-	# red dashes, blue squares and green triangles
-	plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
+	a = pickle.load(open("MMWinfoGAN_fashion-mnist_MultiModalUniformSample_confidence.pkl", "rb"))
+	b = pickle.load(open("MMWinfoGAN_fashion-mnist_MultivariateGaussianSampler_confidence.pkl", "rb"))
+	c = pickle.load(open("MMWinfoGAN_fashion-mnist_UniformSample_confidence.pkl", "rb"))
+	d = pickle.load(open("MMWinfoGAN_fashion-mnist_GaussianSample_confidence.pkl", "rb"))
+	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
 	a_range = np.arange(len(a))
 	b_range = np.arange(len(b))
 	c_range = np.arange(len(c))
@@ -524,7 +550,7 @@ def plot_from_pkl():
 	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.95, label='Benchmark', linestyle='--')
 
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
-	plt.legend([aa, bb, cc], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+	plt.legend([aa, bb, cc,dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	           handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	                        dd: HandlerLine2D(numpoints=1),
 	                        }, loc='lower right')
