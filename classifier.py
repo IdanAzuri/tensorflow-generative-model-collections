@@ -122,7 +122,10 @@ class CNNClassifier():
 			self.b_fc1 = bias_variable([1024])
 			self.W_fc2 = weight_variable([1024, 10])
 			self.b_fc2 = bias_variable([10])
-		self._create_model()
+		try:
+			self._create_model()
+		except:
+			print("model wan't loaded, need to set dataset")
 
 
 	def set_dataset(self,training,labels):
