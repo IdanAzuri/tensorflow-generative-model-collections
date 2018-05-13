@@ -26,6 +26,7 @@ from __future__ import division
 from __future__ import print_function
 
 import pickle
+import traceback
 
 import numpy as np
 import tensorflow as tf
@@ -117,8 +118,8 @@ class CNNClassifier():
 			self.b_fc2 = bias_variable([10])
 		try:
 			self._create_model()
-		except:
-			print("model wan't loaded, need to set dataset")
+		except Exception:
+			print("model wan't loaded, need to set dataset +{}".format(traceback.print_stack()))
 
 	def set_log_dir(self, log_dir_name):
 		self.log_dir = "logs/{}".format(log_dir_name)
