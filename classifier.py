@@ -109,6 +109,9 @@ class CNNClassifier():
 		# 	self.c_dim = 3
 
 
+	def set_log_dir(self, log_dir_name):
+		self.log_dir = "logs/{}".format(log_dir_name)
+
 	# init_variables try to load from pickle:
 		try:
 			self.load_model()

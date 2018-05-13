@@ -44,7 +44,6 @@ class MultiModalInfoGAN(object):
 		self.test_size = 5000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
-		self.accuracy_list = []
 		self.confidence_list = []
 		self.sess = sess
 		self.dataset_name = dataset_name
@@ -56,6 +55,7 @@ class MultiModalInfoGAN(object):
 		self.sampler = sampler
 		self.pretrained_classifier = CNNClassifier(self.dataset_name)
 		self.classifier_for_generated_samples = CNNClassifier("costum")
+		self.classifier_for_generated_samples.set_log_dir("{}_{}".format(dataset_name,type(sampler).__name__))
 
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 
@@ -460,8 +460,8 @@ class MultiModalInfoGAN(object):
 				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
 				generated_dataset.append(samples) # stroting generated images and label
 				generated_labels.append(c+1)
-		fname_trainingset= "generated_trainingset_{}".format(self.dataset_name)
-		fname_labeles = "generated_labels_{}".format(self.dataset_name)
+		fname_trainingset= "generated_trainingset_{}_{}".format(self.dataset_name,type(self.sampler).__name__)
+		fname_labeles = "generated_labels_{}_{}".format(self.dataset_name,type(self.sampler).__name__)
 		pickle.dump(generated_dataset, open("{}.pkl".format(fname_trainingset), 'wb'))
 		pickle.dump(generated_labels, open("{}.pkl".format(fname_labeles), 'wb'))
 
