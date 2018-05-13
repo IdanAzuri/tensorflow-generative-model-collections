@@ -116,10 +116,9 @@ class CNNClassifier():
 			self.b_fc1 = bias_variable([1024])
 			self.W_fc2 = weight_variable([1024, 10])
 			self.b_fc2 = bias_variable([10])
-		try:
-			self._create_model()
-		except Exception:
-			print("model wan't loaded, need to set dataset +{}".format(traceback.print_stack()))
+
+		self._create_model()
+
 
 	def set_log_dir(self, log_dir_name):
 		self.log_dir = "logs/{}".format(log_dir_name)

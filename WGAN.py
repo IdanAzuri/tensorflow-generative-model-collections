@@ -31,7 +31,7 @@ class WGAN(object):
 		self.batch_size = batch_size
 		self.sampler = sampler
 		self.pretrained_classifier = CNNClassifier(dataset_name)
-		self.classifier_for_generated_samples = CNNClassifier("costum")
+		# self.classifier_for_generated_samples = CNNClassifier("costum")
 		self.classifier_for_generated_samples.set_log_dir("{}_{}".format(dataset_name, type(sampler).__name__))
 
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
