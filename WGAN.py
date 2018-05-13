@@ -281,7 +281,7 @@ class WGAN(object):
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
 			self.result_dir + '/' + self.model_dir()) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
 
-	def model_dir(self):
+	def get_model_dir(self):
 		return "{}_{}_{}_{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim)
 
 	def save(self, checkpoint_dir, step):
