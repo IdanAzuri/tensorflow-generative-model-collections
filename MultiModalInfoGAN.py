@@ -57,7 +57,7 @@ class MultiModalInfoGAN(object):
 		self.pretrained_classifier = CNNClassifier(self.dataset_name)
 		self.classifier_for_generated_samples = CNNClassifier("costum")
 		self.classifier_for_generated_samples.set_log_dir("{}_{}".format(dataset_name,type(sampler).__name__))
-		self.model_dir=self.get_model_dir()
+
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 
 		# train
@@ -128,6 +128,7 @@ class MultiModalInfoGAN(object):
 			sess.run(it_cnt)
 			sess.run(update_cnt)
 			# get number of batches for a single epoch
+		self.model_dir=self.get_model_dir()
 
 
 	def classifier(self, x, is_training=True, reuse=False):
