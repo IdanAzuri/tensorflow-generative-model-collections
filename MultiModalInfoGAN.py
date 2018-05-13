@@ -9,7 +9,7 @@ import time
 from matplotlib.legend_handler import HandlerLine2D
 
 import utils
-from cifar10 import *
+# from cifar10 import *
 from classifier import CNNClassifier
 from ops import *
 from utils import *
