@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import print_function
 
 import glob
+import pickle
 import time
 
 from matplotlib.legend_handler import HandlerLine2D
@@ -476,7 +477,6 @@ class MultiModalInfoGAN(object):
 		# samples_for_test=np.asarray(samples_for_test)
 		# samples_for_test=samples_for_test.reshape(-1, self.input_width * self.input_height)
 
-	@property
 	def model_dir(self):
 		if self.wgan_gp:
 			return "wgan_{}_{}_batch{}_z{}_continous{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim,self.len_continuous_code)

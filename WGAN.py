@@ -17,7 +17,7 @@ class WGAN(object):
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2,
 	             is_wgan_gp=False, SUPERVISED=True):
 		self.test_size = 5000
-		self.wgan_gp = is_wgan_gp # not in use
+		self.wgan_gp = is_wgan_gp  # not in use
 		self.loss_list = []
 		self.accuracy_list = []
 		self.confidence_list = []
@@ -31,6 +31,8 @@ class WGAN(object):
 		self.batch_size = batch_size
 		self.sampler = sampler
 		self.pretrained_classifier = CNNClassifier(dataset_name)
+		self.classifier_for_generated_samples = CNNClassifier("costum")
+		self.classifier_for_generated_samples.set_log_dir("{}_{}".format(dataset_name, type(sampler).__name__))
 
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 
@@ -209,16 +211,9 @@ class WGAN(object):
 				# display training status
 				counter += 1
 				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (
-				epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss))
+					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss))
 
-				# save training results for every 300 steps
-				# if np.mod(counter, 300) == 0:
-				# 	samples = self.sess.run(self.fake_images, feed_dict={self.z: self.sample_z})
-				# 	tot_num_samples = min(self.sample_num, self.batch_size)
-				# 	manifold_h = int(np.floor(np.sqrt(tot_num_samples)))
-				# 	manifold_w = int(np.floor(np.sqrt(tot_num_samples)))
-				# 	save_images(samples[:manifold_h * manifold_w, :, :, :], [manifold_h, manifold_w], './' + check_folder(
-				# 		self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_train_{:02d}_{:04d}.png'.format(epoch, idx))
+			# save training results for every 300 steps  # if np.mod(counter, 300) == 0:  # 	samples = self.sess.run(self.fake_images, feed_dict={self.z: self.sample_z})  # 	tot_num_samples = min(self.sample_num, self.batch_size)  # 	manifold_h = int(np.floor(np.sqrt(tot_num_samples)))  # 	manifold_w = int(np.floor(np.sqrt(tot_num_samples)))  # 	save_images(samples[:manifold_h * manifold_w, :, :, :], [manifold_h, manifold_w], './' + check_folder(  # 		self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_train_{:02d}_{:04d}.png'.format(epoch, idx))
 
 			# After an epoch, start_batch_id is set to zero
 			# non-zero value is only for the first epoch after loading pre-trained model
@@ -229,10 +224,39 @@ class WGAN(object):
 
 			# show temporal results
 			self.visualize_results(epoch)
-			self.plot_train_test_loss("confidence", self.confidence_list)
+		self.plot_train_test_loss("confidence", self.confidence_list)
+		# traing_set, labels=self.create_dataset_from_GAN()
+		# self.train_classifier(traing_set, labels)
+		# accuracy, confidence, loss = self.classifier_for_generated_samples.test(self.data_X[:1000], self.data_y[:1000])
+		# print("accuracy:{}, confidence:{}, loss:{} ".format(accuracy, confidence, loss))
 
 		# save model for final step
 		self.save(self.checkpoint_dir, counter)
+
+	def train_classifier(self, train_set, labels):
+		self.classifier_for_generated_samples.set_dataset(train_set, labels)
+		self.classifier_for_generated_samples._create_model()
+		self.classifier_for_generated_samples.train()
+
+	def create_dataset_from_GAN(self):
+
+		generated_dataset = []
+		generated_labels = []
+		for c in range(self.len_discrete_code):
+			y = c
+			y_one_hot = np.zeros((self.batch_size, self.y_dim))
+			y_one_hot[:, y] = 1
+			for i in range(self.test_size // self.batch_size):
+				z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
+				generated_dataset.append(samples)  # stroting generated images and label
+				generated_labels.append(c + 1)
+		fname_trainingset = "generated_trainingset_{}_{}".format(self.dataset_name, type(self.sampler).__name__)
+		fname_labeles = "generated_labels_{}_{}".format(self.dataset_name, type(self.sampler).__name__)
+		pickle.dump(generated_dataset, open("{}.pkl".format(fname_trainingset), 'wb'))
+		pickle.dump(generated_labels, open("{}.pkl".format(fname_labeles), 'wb'))
+
+		return generated_dataset, generated_labels
 
 	def visualize_results(self, epoch):
 		tot_num_samples = min(self.sample_num, self.batch_size)
@@ -244,26 +268,24 @@ class WGAN(object):
 
 		# samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample})
 		samples_for_test = []
-		for i in range(self.test_size//self.batch_size):
+		for i in range(self.test_size // self.batch_size):
 			sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 			samples = self.sess.run(self.fake_images, feed_dict={self.z: sample_z})
 			samples_for_test.append(samples)
-		samples_for_test=np.asarray(samples_for_test)
-		samples_for_test=samples_for_test.reshape(-1, self.input_width * self.input_height)
+		samples_for_test = np.asarray(samples_for_test)
+		samples_for_test = samples_for_test.reshape(-1, self.input_width * self.input_height)
 		_, confidence, _ = self.pretrained_classifier.test(samples_for_test.reshape(-1, self.input_width * self.input_height),
-		                                                             np.ones((len(samples_for_test), self.len_discrete_code)), epoch)
-		if self.dataset_name !="celebA":
+		                                                   np.ones((len(samples_for_test), self.len_discrete_code)), epoch)
+		if self.dataset_name != "celebA":
 			self.confidence_list.append(confidence)
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
 			self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
 
-
-	@property
 	def model_dir(self):
 		return "{}_{}_{}_{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim)
 
 	def save(self, checkpoint_dir, step):
-		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
+		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir(), self.model_name)
 
 		if not os.path.exists(checkpoint_dir):
 			os.makedirs(checkpoint_dir)
@@ -273,7 +295,7 @@ class WGAN(object):
 	def load(self, checkpoint_dir):
 		import re
 		print(" [*] Reading checkpoints...")
-		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
+		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir(), self.model_name)
 
 		ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
 		if ckpt and ckpt.model_checkpoint_path:
@@ -304,6 +326,7 @@ class WGAN(object):
 		plt.close()
 		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
 
+
 def plot_from_pkl():
 	import numpy as np
 	import matplotlib.pyplot as plt
@@ -332,8 +355,8 @@ def plot_from_pkl():
 
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	plt.legend([aa, bb, cc], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
-	           handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
-	                        }, loc='lower right')
+	           handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1), },
+	           loc='lower right')
 	# plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
 	plt.xlabel("Epoch")
 	plt.ylabel("Accumulate Confidence Score")

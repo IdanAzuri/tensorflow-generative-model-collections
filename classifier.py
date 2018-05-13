@@ -24,16 +24,14 @@ https://www.tensorflow.org/get_started/mnist/pros
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-import numpy as np
+
 import pickle
 
+import numpy as np
 import tensorflow as tf
-from tensorflow.examples.tutorials.mnist import input_data
 
 from cifar10 import get_train_test_data
 from utils import load_mnist
-
-
 
 FLAGS = None
 
@@ -83,7 +81,7 @@ class CNNClassifier():
 		self.save_to = classifier_name + "_classifier.pkl"
 		self.lamb = 1e-3
 		self.c_dim = 1
-		if self.classifier_name =="costum":
+		if self.classifier_name == "costum":
 			self.IMAGE_WIDTH = 28
 			self.IMAGE_HEIGHT = 28
 
@@ -95,24 +93,16 @@ class CNNClassifier():
 
 			self.test_images = self.data_X[:1000].reshape(-1, 784)
 			self.test_labels = self.data_y[:1000]  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
-		elif self.classifier_name =="cifar10":
+		elif self.classifier_name == "cifar10":
 			self.IMAGE_WIDTH = 32
 			self.IMAGE_HEIGHT = 32
 			self.c_dim = 3
 			self.data_X, self.data_y, self.test_images, self.test_labels = get_train_test_data()
-			self.test_images= self.test_images.reshape(-1,1024)
+			self.test_images = self.test_images.reshape(-1, 1024)
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
-		# else:
-		# 	self.IMAGE_WIDTH = 32
-		# 	self.IMAGE_HEIGHT = 32
-		# 	self.c_dim = 3
 
-
-	def set_log_dir(self, log_dir_name):
-		self.log_dir = "logs/{}".format(log_dir_name)
-
-	# init_variables try to load from pickle:
+		# init_variables try to load from pickle:
 		try:
 			self.load_model()
 		except:
@@ -121,7 +111,7 @@ class CNNClassifier():
 			self.b_conv1 = bias_variable([32])
 			self.W_conv2 = weight_variable([5, 5, 32, 64])
 			self.b_conv2 = bias_variable([64])
-			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT/4)*int(self.IMAGE_HEIGHT/4) * 64, 1024])
+			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64, 1024])
 			self.b_fc1 = bias_variable([1024])
 			self.W_fc2 = weight_variable([1024, 10])
 			self.b_fc2 = bias_variable([10])
@@ -130,19 +120,19 @@ class CNNClassifier():
 		except:
 			print("model wan't loaded, need to set dataset")
 
+	def set_log_dir(self, log_dir_name):
+		self.log_dir = "logs/{}".format(log_dir_name)
 
-	def set_dataset(self,training,labels):
+	def set_dataset(self, training, labels):
 		seed = 547
 		np.random.seed(seed)
 		np.random.shuffle(training)
 		np.random.seed(seed)
 		np.random.shuffle(labels)
 		self.data_X = np.asarray(training[1000:]).reshape(-1, 784)
-		self.data_y = np.asarray(labels[1000:]).reshape(-1,10)
+		self.data_y = np.asarray(labels[1000:]).reshape(-1, 10)
 		self.test_images = self.data_X[:1000].reshape(-1, 784)
 		self.test_labels = self.data_y[:1000]  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
-
-
 
 	def _deepcnn(self, x, keep_prob):
 		with tf.name_scope('reshape'):
@@ -152,7 +142,7 @@ class CNNClassifier():
 
 		h_conv2 = tf.nn.relu(conv2d(h_pool1, self.W_conv2) + self.b_conv2)
 		h_pool2 = max_pool_2x2(h_conv2)
-		h_pool2_flat = tf.reshape(h_pool2, [-1, int(self.IMAGE_HEIGHT/4)*int(self.IMAGE_HEIGHT/4) * 64])
+		h_pool2_flat = tf.reshape(h_pool2, [-1, int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64])
 
 		h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1)
 
@@ -171,7 +161,7 @@ class CNNClassifier():
 		return y_conv
 
 	def _create_model(self):
-		self.x = tf.placeholder(tf.float32, [None, self.IMAGE_HEIGHT*self.IMAGE_WIDTH])
+		self.x = tf.placeholder(tf.float32, [None, self.IMAGE_HEIGHT * self.IMAGE_WIDTH])
 		self.y_ = tf.placeholder(tf.float32, [None, 10])
 		self.keep_prob = tf.placeholder(tf.float32)
 		# Build the graph for the deep net
@@ -183,7 +173,7 @@ class CNNClassifier():
 			self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)
 		cross_entropy = tf.reduce_mean(cross_entropy)
 		self.cross_entropy = cross_entropy
-		cross_entropy+= self.l2_regularization
+		cross_entropy += self.l2_regularization
 		tf.summary.scalar('cross_entropy', cross_entropy)
 
 		self.train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
@@ -213,7 +203,7 @@ class CNNClassifier():
 		for epoch in range(self.num_epochs):
 			for i in range(start_batch_id, self.num_batches):
 				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size]
-				batch_images = batch_images.reshape(-1, self.IMAGE_WIDTH*self.IMAGE_HEIGHT)
+				batch_images = batch_images.reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
 
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
