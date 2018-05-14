@@ -358,7 +358,9 @@ class MultiModalInfoGAN(object):
 		# Evaluation with classifier
 		traing_set, labels=self.create_dataset_from_GAN()
 		self.train_classifier(traing_set, labels)
-		accuracy, confidence, loss = self.classifier_for_generated_samples.test(self.data_X[:1000], self.data_y[:1000],counter=1)
+		data_x__reshape = np.asarray(self.data_X[:1000]).reshape(-1, self.input_height * self.input_width)
+		data_y__reshape = np.asarray(self.data_y[:1000]).reshape(-1, self.input_height * self.input_width)
+		accuracy, confidence, loss = self.classifier_for_generated_samples.test(data_x__reshape, data_y__reshape,counter=1)
 		print("accuracy:{}, confidence:{}, loss:{} ".format(accuracy, confidence, loss ))
 		# save model for final step
 		self.save(self.checkpoint_dir, counter)
