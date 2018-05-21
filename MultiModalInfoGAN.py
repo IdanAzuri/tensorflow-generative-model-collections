@@ -55,7 +55,7 @@ class MultiModalInfoGAN(object):
 		self.batch_size = batch_size
 		self.sampler = sampler
 		self.pretrained_classifier = CNNClassifier(self.dataset_name)
-		self.classifier_for_generated_samples = CNNClassifier("costum")
+		self.classifier_for_generated_samples = CNNClassifier("costum_{}".format(type(sampler).__name__))
 		self.classifier_for_generated_samples.set_log_dir("{}_{}".format(dataset_name,type(sampler).__name__))
 
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
@@ -537,11 +537,12 @@ def plot_from_pkl():
 	import matplotlib.pyplot as plt
 	import pickle
 	plt.Figure(figsize=(15, 15))
-	plt.title('Wgan+InfoGAN Confidence Score Different Sampling Method', fontsize=14)
-	a = pickle.load(open("MMWinfoGAN_fashion-mnist_MultiModalUniformSample_confidence.pkl", "rb"))
-	b = pickle.load(open("MMWinfoGAN_fashion-mnist_MultivariateGaussianSampler_confidence.pkl", "rb"))
-	c = pickle.load(open("MMWinfoGAN_fashion-mnist_UniformSample_confidence.pkl", "rb"))
-	d = pickle.load(open("MMWinfoGAN_fashion-mnist_GaussianSample_confidence.pkl", "rb"))
+	dir='/Users/idan.a/results_21_5/'
+	plt.title('Wgan Confidence Score Different Sampling Method', fontsize=14)
+	a = pickle.load(open(dir+"WGAN_GP_fashion-mnist_MultiModalUniformSample_confidence.pkl", "rb"))
+	b = pickle.load(open(dir+"WGAN_GP_fashion-mnist_MultivariateGaussianSampler_confidence.pkl", "rb"))
+	c = pickle.load(open(dir+"WGAN_GP_fashion-mnist_UniformSample_confidence.pkl", "rb"))
+	d = pickle.load(open(dir+"WGAN_GP_fashion-mnist_GaussianSample_confidence.pkl", "rb"))
 	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
 	a_range = np.arange(len(a))
 	b_range = np.arange(len(b))
@@ -551,12 +552,13 @@ def plot_from_pkl():
 	bb, = plt.plot(b_range, b, color='g', marker='p', label="Multimodal Gaussian Sample", linewidth=1)
 	cc, = plt.plot(c_range, c, color='r', marker='^', label="Uniform Sample", linewidth=1)
 	dd, = plt.plot(d_range, d, color='y', marker="o", label="Gaussian Sample", linewidth=1)
-	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.95, label='Benchmark', linestyle='--')
+	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.92, label='Benchmark', linestyle='--')
 
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	plt.legend([aa, bb, cc,dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	           handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
-	                        dd: HandlerLine2D(numpoints=1),
+	                        dd: HandlerLine2D(numpoints=1)
+
 	                        }, loc='lower right')
 	# plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
 	plt.xlabel("Epoch")
@@ -564,7 +566,7 @@ def plot_from_pkl():
 	# plt.axis("auto")
 	plt.grid(True)
 	plt.show()
-	plt.savefig("all_plots_fashion_mnist_MMWGAN.png")
+	plt.savefig("all_plots_fashion_mnist_WGAN.png")
 	plt.close()
 
 

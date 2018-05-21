@@ -82,7 +82,7 @@ class CNNClassifier():
 		self.save_to = classifier_name + "_classifier.pkl"
 		self.lamb = 1e-3
 		self.c_dim = 1
-		if self.classifier_name == "costum":
+		if "costum" in self.classifier_name :
 			self.IMAGE_WIDTH = 28
 			self.IMAGE_HEIGHT = 28
 

@@ -31,7 +31,7 @@ class WGAN(object):
 		self.batch_size = batch_size
 		self.sampler = sampler
 		self.pretrained_classifier = CNNClassifier(dataset_name)
-		self.classifier_for_generated_samples = CNNClassifier("costum")
+		self.classifier_for_generated_samples = CNNClassifier("costum_{}".format(type(sampler).__name__))
 		self.classifier_for_generated_samples.set_log_dir("{}_{}".format(dataset_name, type(sampler).__name__))
 
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
@@ -61,9 +61,6 @@ class WGAN(object):
 			# WGAN parameter
 			self.disc_iters = 1  # The number of critic iterations for one-step of generator
 
-			# train
-			self.learning_rate = 0.0002
-			self.beta1 = 0.5
 
 			# test
 			self.sample_num = 64  # number of generated images to be saved
