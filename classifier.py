@@ -25,6 +25,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import argparse
 import pickle
 
 import numpy as np
@@ -39,7 +40,7 @@ FLAGS = None
 def one_hot_encoder(data):
 	# i.e. data=[1,2,3,1,8]
 	onehot = np.zeros((len(data), 10))
-	data-=1
+	data -= 1
 	onehot[np.arange(len(data)), data] = 1
 
 	return onehot
@@ -84,7 +85,7 @@ class CNNClassifier():
 	def __init__(self, classifier_name, load_from_pkl=False, pkl_path=None, pkl_label_path=None):
 		self.num_epochs = 100
 		self.classifier_name = classifier_name
-		self.log_dir = 'logs/mnist'
+		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
 		self.dropout_prob = 0.9
 		self.save_to = classifier_name + "_classifier.pkl"
@@ -271,8 +272,33 @@ class CNNClassifier():
 		print("model has been loaded from {}".format(self.save_to))
 
 
-if __name__ == '__main__':
-	c = CNNClassifier("custom", load_from_pkl=True,
-	                  pkl_path="/Users/idan.a/results_22_5/generated_trainingset_fashion-mnist_MultivariateGaussianSampler.pkl",
-	                  pkl_label_path="/Users/idan.a/results_22_5/generated_labels_fashion-mnist_MultivariateGaussianSampler.pkl")
+def parse_args():
+	desc = "Tensorflow implementation of GAN collections"
+	parser = argparse.ArgumentParser(description=desc)
+	parser.add_argument('--dir_name', type=str, default='/Users/idan.a/results_22_5/')
+	parser.add_argument('--fname', type=str, default='fashion-mnist_MultivariateGaussianSampler',
+	                    choices=['fashion-mnist_MultivariateGaussianSampler', 'fashion-mnist_GaussianSample',
+	                             'fashion-mnist_MultiModalUniformSample', 'fashion-mnist_UniformSample'])
+
+	return parser.parse_args()
+
+
+def main():
+	# parse arguments
+	args = parse_args()
+	if args is None:
+		exit()
+	fname = args.fname
+	dir = args.dir_name
+	full_fname_labels = "{}_generated_labels_{}.pkl".format(dir, fname)
+	full_fname_trainset = "{}_generated_trainingset_{}.pkl".format(dir, fname)
+	c = CNNClassifier("custom", load_from_pkl=True, pkl_path=full_fname_trainset, pkl_label_path=full_fname_labels)
 	c.train()
+
+
+if __name__ == '__main__':
+	# c = CNNClassifier("custom", load_from_pkl=True,
+	#                   pkl_path="/Users/idan.a/results_22_5/generated_trainingset_fashion-mnist_MultivariateGaussianSampler.pkl",
+	#                   pkl_label_path="/Users/idan.a/results_22_5/generated_labels_fashion-mnist_MultivariateGaussianSampler.pkl")
+	# c.train()
+	main()
