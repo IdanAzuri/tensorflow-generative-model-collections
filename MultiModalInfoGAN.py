@@ -55,7 +55,7 @@ class MultiModalInfoGAN(object):
 		self.batch_size = batch_size
 		self.sampler = sampler
 		self.pretrained_classifier = CNNClassifier(self.dataset_name)
-		self.classifier_for_generated_samples = CNNClassifier("costum_{}".format(type(sampler).__name__))
+		self.classifier_for_generated_samples = CNNClassifier("custom_{}".format(type(sampler).__name__))
 		self.classifier_for_generated_samples.set_log_dir("{}_{}".format(dataset_name,type(sampler).__name__))
 
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code

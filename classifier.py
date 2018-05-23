@@ -26,7 +26,6 @@ from __future__ import division
 from __future__ import print_function
 
 import pickle
-import traceback
 
 import numpy as np
 import tensorflow as tf
@@ -35,6 +34,15 @@ from cifar10 import get_train_test_data
 from utils import load_mnist
 
 FLAGS = None
+
+
+def one_hot_encoder(data):
+	# i.e. data=[1,2,3,1,8]
+	onehot = np.zeros((len(data), 10))
+	data-=1
+	onehot[np.arange(len(data)), data] = 1
+
+	return onehot
 
 
 def conv2d(x, W):
@@ -73,7 +81,7 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-	def __init__(self, classifier_name):
+	def __init__(self, classifier_name, load_from_pkl=False, pkl_path=None, pkl_label_path=None):
 		self.num_epochs = 100
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/mnist'
@@ -82,7 +90,23 @@ class CNNClassifier():
 		self.save_to = classifier_name + "_classifier.pkl"
 		self.lamb = 1e-3
 		self.c_dim = 1
-		if "costum" in self.classifier_name :
+		if load_from_pkl:
+			self.data_X = pickle.load(open(pkl_path, 'rb'))
+			self.data_X = np.asarray([y for x in self.data_X for y in x])
+			seed = 547
+			np.random.seed(seed)
+			np.random.shuffle(self.data_X)
+			np.random.seed(seed)
+			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
+			tmp_list = []
+			tmp_list += self.batch_size * self.data_y
+			self.data_y = np.asarray(tmp_list)
+			np.random.shuffle(self.data_y)
+			self.data_y = one_hot_encoder(self.data_y)
+			self.real_mnist_x, self.real_mnist_y = load_mnist('mnist')
+			self.test_labels = self.real_mnist_y[:10000]
+			self.test_images = self.real_mnist_x[:10000].reshape(-1, 784)
+		if "custom" in self.classifier_name:
 			self.IMAGE_WIDTH = 28
 			self.IMAGE_HEIGHT = 28
 
@@ -118,7 +142,6 @@ class CNNClassifier():
 			self.b_fc2 = bias_variable([10])
 
 		self._create_model()
-
 
 	def set_log_dir(self, log_dir_name):
 		self.log_dir = "logs/{}".format(log_dir_name)
@@ -198,8 +221,8 @@ class CNNClassifier():
 		self.test_writer.add_graph(self.sess.graph)
 
 	def train(self):
-		start_batch_id = int(1000 / self.batch_size)
-		self.num_batches = self.num_batches = len(self.data_X) // self.batch_size
+		start_batch_id = 0  # int(1000 / self.batch_size)
+		self.num_batches = len(self.data_X) // self.batch_size
 		for epoch in range(self.num_epochs):
 			for i in range(start_batch_id, self.num_batches):
 				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size]
@@ -249,5 +272,7 @@ class CNNClassifier():
 
 
 if __name__ == '__main__':
-	c = CNNClassifier("cifar10")
+	c = CNNClassifier("custom", load_from_pkl=True,
+	                  pkl_path="/Users/idan.a/results_22_5/generated_trainingset_fashion-mnist_MultivariateGaussianSampler.pkl",
+	                  pkl_label_path="/Users/idan.a/results_22_5/generated_labels_fashion-mnist_MultivariateGaussianSampler.pkl")
 	c.train()
