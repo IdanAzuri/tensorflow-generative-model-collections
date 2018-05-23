@@ -104,7 +104,7 @@ class CNNClassifier():
 			self.data_y = np.asarray(tmp_list)
 			np.random.shuffle(self.data_y)
 			self.data_y = one_hot_encoder(self.data_y)
-			self.real_mnist_x, self.real_mnist_y = load_mnist('mnist')
+			self.real_mnist_x, self.real_mnist_y = load_mnist('fashion-mnist')
 			self.test_labels = self.real_mnist_y[:10000]
 			self.test_images = self.real_mnist_x[:10000].reshape(-1, 784)
 		if "custom" in self.classifier_name:
