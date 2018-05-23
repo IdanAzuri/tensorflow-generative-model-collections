@@ -290,8 +290,8 @@ def main():
 		exit()
 	fname = args.fname
 	dir = args.dir_name
-	full_fname_labels = "{}_generated_labels_{}.pkl".format(dir, fname)
-	full_fname_trainset = "{}_generated_trainingset_{}.pkl".format(dir, fname)
+	full_fname_labels = "{}generated_labels_{}.pkl".format(dir, fname)
+	full_fname_trainset = "{}generated_trainingset_{}.pkl".format(dir, fname)
 	c = CNNClassifier("custom", load_from_pkl=True, pkl_path=full_fname_trainset, pkl_label_path=full_fname_labels)
 	c.train()
 
