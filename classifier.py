@@ -134,8 +134,8 @@ class CNNClassifier():
 					print(np.bincount(arg_max))
 
 				self.data_y = one_hot_encoder(data_y_categorical)
-				pickle.dump(self.data_y, open("{}/edited_{}".format(dir, pkl_fname), 'wb'))
-				pickle.dump(self.data_X, open("{}/edited_{}".format(dir, pkl_fname), 'wb'))
+				pickle.dump(self.data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'))
+				pickle.dump(self.data_X, open("{}/edited_generated_labels_{},pkl".format(dir, pkl_fname), 'wb'))
 				np.random.seed(seed)
 				np.random.shuffle(self.data_X)
 				np.random.seed(seed)
