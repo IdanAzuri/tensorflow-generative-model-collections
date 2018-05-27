@@ -84,7 +84,7 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-	def __init__(self, classifier_name, load_from_pkl=False, pkl_path=None, pkl_label_path=None,do_preprocess=False):
+	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None,do_preprocess=False,dir=None):
 		self.num_epochs = 100
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
@@ -94,8 +94,6 @@ class CNNClassifier():
 		self.lamb = 1e-3
 		self.c_dim = 1
 		if load_from_pkl:
-			self.data_X = pickle.load(open(pkl_path, 'rb'))
-			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
 			self.real_mnist_x, self.real_mnist_y = load_mnist('fashion-mnist')
 			self.test_labels = self.real_mnist_y[:1000]
 			self.test_labels.astype(np.float32, copy=False)
@@ -103,6 +101,11 @@ class CNNClassifier():
 
 			# mapping only once need to edit the condition
 			if do_preprocess:
+				pkl_label_path = "{}generated_labels_{}.pkl".format(dir, pkl_fname)
+				pkl_path = "{}generated_trainingset_{}.pkl".format(dir, pkl_fname)
+				self.data_X = pickle.load(open(pkl_path, 'rb'))
+				self.data_y = pickle.load(open(pkl_label_path, 'rb'))
+
 				seed = 547
 				self.data_X = np.asarray([y for x in self.data_X for y in x]).reshape(-1, 28, 28)
 				tmp_list = []
@@ -131,6 +134,7 @@ class CNNClassifier():
 					data_y_categorical[mask] = np.bincount(arg_max).argmax()
 					print(np.bincount(arg_max))
 
+
 				self.data_y = one_hot_encoder(data_y_categorical)
 				fname_labels=pkl_label_path.split('/')
 				fname_images=pkl_path.split('/')
@@ -140,6 +144,11 @@ class CNNClassifier():
 				np.random.shuffle(self.data_X)
 				np.random.seed(seed)
 				np.random.shuffle(self.data_y)
+			else:
+				pkl_label_path = "{}edited_generated_labels_{}.pkl".format(dir, pkl_fname)
+				pkl_path= "{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname)
+				self.data_X = pickle.load(open(pkl_path, 'rb'))
+				self.data_y = pickle.load(open(pkl_label_path, 'rb'))
 		if "custom" in self.classifier_name:
 			self.IMAGE_WIDTH = 28
 			self.IMAGE_HEIGHT = 28
@@ -337,14 +346,9 @@ def main():
 	fname = args.fname
 	dir = args.dir_name
 	do_preprocess = args.preprocess
-	if do_preprocess:
-		full_fname_labels = "{}generated_labels_{}.pkl".format(dir, fname)
-		full_fname_trainset = "{}generated_trainingset_{}.pkl".format(dir, fname)
-	else:
-		full_fname_labels = "{}edited_generated_labels_{}.pkl".format(dir, fname)
-		full_fname_trainset = "{}edited_generated_trainingset_{}.pkl".format(dir, fname)
 
-	c = CNNClassifier("custom", load_from_pkl=True, pkl_path=full_fname_trainset, pkl_label_path=full_fname_labels,do_preprocess=do_preprocess)
+
+	c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname,dir=dir,do_preprocess=do_preprocess)
 	c.train()
 
 
