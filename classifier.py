@@ -31,7 +31,6 @@ import pickle
 import numpy as np
 import tensorflow as tf
 
-from cifar10 import get_train_test_data
 from utils import load_mnist
 
 FLAGS = None
@@ -40,7 +39,7 @@ FLAGS = None
 # losses
 
 def one_hot_encoder(data):
-	data=data.astype(np.int32)
+	data = data.astype(np.int32)
 	onehot = np.zeros((len(data), 10))
 	data -= 1
 	onehot[np.arange(len(data)), data] = 1
@@ -84,7 +83,7 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None,do_preprocess=False,dir=None):
+	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None, do_preprocess=False, dir=None):
 		self.num_epochs = 100
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
@@ -134,19 +133,16 @@ class CNNClassifier():
 					data_y_categorical[mask] = np.bincount(arg_max).argmax()
 					print(np.bincount(arg_max))
 
-
 				self.data_y = one_hot_encoder(data_y_categorical)
-				fname_labels=pkl_label_path.split('/')
-				fname_images=pkl_path.split('/')
-				pickle.dump(self.data_y, open("{}/edited_{}".format(fname_labels[:-1],fname_labels[-1]), 'wb'))
-				pickle.dump(self.data_X, open("{}/edited_{}".format(fname_images[:-1],fname_images[1]), 'wb'))
+				pickle.dump(self.data_y, open("{}/edited_{}".format(dir, pkl_fname), 'wb'))
+				pickle.dump(self.data_X, open("{}/edited_{}".format(dir, pkl_fname), 'wb'))
 				np.random.seed(seed)
 				np.random.shuffle(self.data_X)
 				np.random.seed(seed)
 				np.random.shuffle(self.data_y)
 			else:
 				pkl_label_path = "{}edited_generated_labels_{}.pkl".format(dir, pkl_fname)
-				pkl_path= "{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname)
+				pkl_path = "{}edited_generated_labels_{}.pkl".format(dir, pkl_fname)
 				self.data_X = pickle.load(open(pkl_path, 'rb'))
 				self.data_y = pickle.load(open(pkl_label_path, 'rb'))
 		if "custom" in self.classifier_name:
@@ -274,10 +270,10 @@ class CNNClassifier():
 
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
-				if i  % 10 == 0:
+				if i % 10 == 0:
 					np.random.shuffle(self.test_images)
 					np.random.shuffle(self.test_labels)
-					self.test(self.test_images[:1000].reshape(-1,784), self.test_labels[:1000].reshape(-1,10), epoch * i)
+					self.test(self.test_images[:1000].reshape(-1, 784), self.test_labels[:1000].reshape(-1, 10), epoch * i)
 					summary, _ = self.sess.run([self.merged, self.train_step],
 					                           feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
 					self.train_writer.add_summary(summary, i)
@@ -297,8 +293,7 @@ class CNNClassifier():
 			print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
 			return accuracy, confidence, loss, arg_max
 		else:
-			summary, accuracy, confidence, loss = self.sess.run(
-				[self.merged, self.accuracy, self.confidence, self.cross_entropy],
+			summary, accuracy, confidence, loss = self.sess.run([self.merged, self.accuracy, self.confidence, self.cross_entropy],
 				feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
 			self.test_writer.add_summary(summary, counter)
 			print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
@@ -347,8 +342,7 @@ def main():
 	dir = args.dir_name
 	do_preprocess = args.preprocess
 
-
-	c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname,dir=dir,do_preprocess=do_preprocess)
+	c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir, do_preprocess=do_preprocess)
 	c.train()
 
 
