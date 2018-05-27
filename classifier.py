@@ -100,49 +100,48 @@ class CNNClassifier():
 			self.test_images = self.real_mnist_x.reshape(-1, 784)
 
 			# mapping only once need to edit the condition
-			if do_preprocess:
-				pkl_label_path = "{}generated_labels_{}.pkl".format(dir, pkl_fname)
-				pkl_path = "{}generated_trainingset_{}.pkl".format(dir, pkl_fname)
-				self.data_X = pickle.load(open(pkl_path, 'rb'))
-				self.data_y = pickle.load(open(pkl_label_path, 'rb'))
-
-				seed = 547
-				self.data_X = np.asarray([y for x in self.data_X for y in x]).reshape(-1, 28, 28)
-				tmp_list = []
-				for label in self.data_y:
-					tmp_list += self.batch_size * [label]  # remove this line after  running the model again
-				self.data_y = np.asarray(tmp_list)
-				data_y_categorical = self.data_y
-				self.data_y = one_hot_encoder(self.data_y)
-				pretraind = CNNClassifier('fashion-mnist')
-				indices = np.argwhere(self.data_y == 1)
-				for i in range(10):
-					mask = (indices[:, 1] == i)
-					tmp = self.data_X[np.where(mask == True)][:2000]
-					dummy_labels = np.repeat(np.arange(10), 200)
-					# to one hot vec
-					z = np.zeros((2000, 10))
-					for j, l in enumerate(dummy_labels):
-						z[j, l] = 1
-					dummy_labels = z
-					# plt.imshow(tmp[0].reshape(28, 28))
-					# plt.show()
-					# plt.imshow(tmp[1].reshape(28, 28))
-					# plt.show()
-					# self.data_y = one_hot_encoder(self.data_y)
-					_, _, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
-					data_y_categorical[mask] = np.bincount(arg_max).argmax()
-					print(np.bincount(arg_max))
-
-				self.data_y = one_hot_encoder(data_y_categorical)
-				self.data_X, self.data_y = shuffle(self.data_X, self.data_y, random_state=0)
-				pickle.dump(self.data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'))
-				pickle.dump(self.data_X, open("{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname), 'wb'))
-			else:
-				pkl_label_path = "{}edited_generated_labels_{}.pkl".format(dir, pkl_fname)
-				pkl_path = "{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname)
-				self.data_X = pickle.load(open(pkl_path, 'rb'))
-				self.data_y = pickle.load(open(pkl_label_path, 'rb'))
+			# if do_preprocess:
+			# 	pkl_label_path = "{}generated_labels_{}.pkl".format(dir, pkl_fname)
+			# 	pkl_path = "{}generated_trainingset_{}.pkl".format(dir, pkl_fname)
+			# 	self.data_X = pickle.load(open(pkl_path, 'rb'))
+			# 	self.data_y = pickle.load(open(pkl_label_path, 'rb'))
+			#
+			# 	self.data_X = np.asarray([y for x in self.data_X for y in x]).reshape(-1, 28, 28)
+			# 	tmp_list = []
+			# 	for label in self.data_y:
+			# 		tmp_list += self.batch_size * [label]  # remove this line after  running the model again
+			# 	self.data_y = np.asarray(tmp_list)
+			# 	data_y_categorical = self.data_y
+			# 	self.data_y = one_hot_encoder(self.data_y)
+			# 	pretraind = CNNClassifier('fashion-mnist')
+			# 	indices = np.argwhere(self.data_y == 1)
+			# 	for i in range(10):
+			# 		mask = (indices[:, 1] == i)
+			# 		tmp = self.data_X[np.where(mask == True)][:2000]
+			# 		dummy_labels = np.repeat(np.arange(10), 200)
+			# 		# to one hot vec
+			# 		z = np.zeros((2000, 10))
+			# 		for j, l in enumerate(dummy_labels):
+			# 			z[j, l] = 1
+			# 		dummy_labels = z
+			# 		# plt.imshow(tmp[0].reshape(28, 28))
+			# 		# plt.show()
+			# 		# plt.imshow(tmp[1].reshape(28, 28))
+			# 		# plt.show()
+			# 		# self.data_y = one_hot_encoder(self.data_y)
+			# 		_, _, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+			# 		data_y_categorical[mask] = np.bincount(arg_max).argmax()
+			# 		print(np.bincount(arg_max))
+			#
+			# 	self.data_y = one_hot_encoder(data_y_categorical)
+			# 	self.data_X, self.data_y = shuffle(self.data_X, self.data_y, random_state=0)
+			# 	pickle.dump(self.data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'))
+			# 	pickle.dump(self.data_X, open("{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname), 'wb'))
+			# else:
+			pkl_label_path = "{}edited_generated_labels_{}.pkl".format(dir, pkl_fname)
+			pkl_path = "{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname)
+			self.data_X = pickle.load(open(pkl_path, 'rb'))
+			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
 		if "custom" in self.classifier_name:
 			self.IMAGE_WIDTH = 28
 			self.IMAGE_HEIGHT = 28
@@ -324,6 +323,47 @@ def parse_args():
 
 	return parser.parse_args()
 
+def preprocess_data(dir,pkl_fname,batch_size=64):
+	# mapping only once need to edit the condition
+	pkl_label_path = "{}generated_labels_{}.pkl".format(dir, pkl_fname)
+	pkl_path = "{}generated_trainingset_{}.pkl".format(dir, pkl_fname)
+	data_X = pickle.load(open(pkl_path, 'rb'))
+	data_y = pickle.load(open(pkl_label_path, 'rb'))
+
+	data_X = np.asarray([y for x in data_X for y in x]).reshape(-1, 28, 28)
+	tmp_list = []
+	for label in data_y:
+		tmp_list += batch_size * [label]  # remove this line after  running the model again
+	data_y = np.asarray(tmp_list)
+	data_y_categorical = data_y
+	data_y = one_hot_encoder(data_y)
+	pretraind = CNNClassifier('fashion-mnist')
+	indices = np.argwhere(data_y == 1)
+	for i in range(10):
+		mask = (indices[:, 1] == i)
+		tmp = data_X[np.where(mask == True)][:2000]
+		dummy_labels = np.repeat(np.arange(10), 200)
+		# to one hot vec
+		z = np.zeros((2000, 10))
+		for j, l in enumerate(dummy_labels):
+			z[j, l] = 1
+		dummy_labels = z
+		# plt.imshow(tmp[0].reshape(28, 28))
+		# plt.show()
+		# plt.imshow(tmp[1].reshape(28, 28))
+		# plt.show()
+		# data_y = one_hot_encoder(data_y)
+		_, _, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+		data_y_categorical[mask] = np.bincount(arg_max).argmax()
+		print(np.bincount(arg_max))
+	
+	data_y = one_hot_encoder(data_y_categorical)
+	data_X, data_y = shuffle(data_X, data_y, random_state=0)
+	pickle.dump(data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'))
+	pickle.dump(data_X, open("{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname), 'wb'))
+	del pretraind
+	del data_y
+	del data_X
 
 def main():
 	# parse arguments
@@ -333,8 +373,11 @@ def main():
 	fname = args.fname
 	dir = args.dir_name
 	do_preprocess = args.preprocess
+	if do_preprocess:
+		preprocess_data(dir,fname)
 
-	c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir, do_preprocess=do_preprocess)
+
+	c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir)
 	c.train()
 
 
