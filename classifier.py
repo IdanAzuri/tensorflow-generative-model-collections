@@ -263,7 +263,7 @@ class CNNClassifier():
 
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
-				if i + 1 % 10 == 0:
+				if i  % 10 == 0:
 					# np.random.shuffle(self.test_images)
 					# np.random.shuffle(self.test_labels)
 					self.test(self.test_images[:1000], self.test_labels[:1000], epoch * i)
