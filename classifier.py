@@ -40,7 +40,7 @@ FLAGS = None
 # losses
 
 def one_hot_encoder(data):
-	# i.e. data=[1,2,3,1,8]
+	data=data.astype(np.int32)
 	onehot = np.zeros((len(data), 10))
 	data -= 1
 	onehot[np.arange(len(data)), data] = 1
@@ -95,49 +95,50 @@ class CNNClassifier():
 		self.c_dim = 1
 		if load_from_pkl:
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
-			self.data_X = np.asarray([y for x in self.data_X for y in x]).reshape(-1, 28, 28)
-			seed = 547
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
-			tmp_list = []
-			for label in self.data_y:
-				tmp_list += self.batch_size * [label]  # remove this line after  running the model again
-			self.data_y = np.asarray(tmp_list)
-			self.data_y_categorical = self.data_y
-			self.data_y = one_hot_encoder(self.data_y)
-			self.pretraind = CNNClassifier('fashion-mnist')
 			self.real_mnist_x, self.real_mnist_y = load_mnist('fashion-mnist')
-			self.test_labels = self.real_mnist_y#[:1000]
+			self.test_labels = self.real_mnist_y[:1000]
 			self.test_labels.astype(np.float32, copy=False)
-			self.test_images = self.real_mnist_x.reshape(-1,784)#[:1000].reshape(-1, 784)
+			self.test_images = self.real_mnist_x[:1000].reshape(-1, 784)
 
-			# mapping only once
+			# mapping only once need to edit the condition
+			if True:
+				seed = 547
+				self.data_X = np.asarray([y for x in self.data_X for y in x]).reshape(-1, 28, 28)
+				tmp_list = []
+				for label in self.data_y:
+					tmp_list += self.batch_size * [label]  # remove this line after  running the model again
+				self.data_y = np.asarray(tmp_list)
+				data_y_categorical = self.data_y
+				self.data_y = one_hot_encoder(self.data_y)
+				pretraind = CNNClassifier('fashion-mnist')
+				indices = np.argwhere(self.data_y == 1)
+				for i in range(10):
+					mask = (indices[:, 1] == i)
+					tmp = self.data_X[np.where(mask == True)][:2000]
+					dummy_labels = np.repeat(np.arange(10), 200)
+					# to one hot vec
+					z = np.zeros((2000, 10))
+					for j, l in enumerate(dummy_labels):
+						z[j, l] = 1
+					dummy_labels = z
+					# plt.imshow(tmp[0].reshape(28, 28))
+					# plt.show()
+					# plt.imshow(tmp[1].reshape(28, 28))
+					# plt.show()
+					# self.data_y = one_hot_encoder(self.data_y)
+					_, _, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+					data_y_categorical[mask] = np.bincount(arg_max).argmax()
+					print(np.bincount(arg_max))
 
-			indices = np.argwhere(self.data_y == 1)
-			for i in range(10):
-				mask = (indices[:, 1] == i)
-				tmp = self.data_X[np.where(mask == True)][:2000]
-				dummy_labels = np.repeat(np.arange(10), 200)
-				# to one hot vec
-				z = np.zeros((2000, 10))
-				for j, l in enumerate(dummy_labels):
-					z[j, l] = 1
-				dummy_labels = z
-				# plt.imshow(tmp[0].reshape(28, 28))
-				# plt.show()
-				# plt.imshow(tmp[1].reshape(28, 28))
-				# plt.show()
-				# self.data_y = one_hot_encoder(self.data_y)
-				_, _, _, arg_max = self.pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
-				self.data_y_categorical[mask] = np.bincount(arg_max).argmax()
-				print(np.bincount(arg_max))
+				self.data_y = one_hot_encoder(data_y_categorical)
 
-			self.data_y = one_hot_encoder(self.data_y_categorical)
-
-			pickle.dump(self.data_y, open("{}.pkl".format(pkl_label_path), 'wb'))
-			np.random.seed(seed)
-			np.random.shuffle(self.data_X)
-			np.random.seed(seed)
-			np.random.shuffle(self.data_y)
+				pickle.dump(self.data_y, open("edited_{}".format(pkl_label_path), 'wb'))
+				pickle.dump(self.data_X, open("edited_{}".format(pkl_path), 'wb'))
+				np.random.seed(seed)
+				np.random.shuffle(self.data_X)
+				np.random.seed(seed)
+				np.random.shuffle(self.data_y)
 		if "custom" in self.classifier_name:
 			self.IMAGE_WIDTH = 28
 			self.IMAGE_HEIGHT = 28
@@ -264,9 +265,9 @@ class CNNClassifier():
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
 				if i  % 10 == 0:
-					# np.random.shuffle(self.test_images)
-					# np.random.shuffle(self.test_labels)
-					self.test(self.test_images[:1000], self.test_labels[:1000], epoch * i)
+					np.random.shuffle(self.test_images)
+					np.random.shuffle(self.test_labels)
+					self.test(self.test_images[:1000].reshape(-1,784), self.test_labels[:1000].reshape(-1,10), epoch * i)
 					summary, _ = self.sess.run([self.merged, self.train_step],
 					                           feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
 					self.train_writer.add_summary(summary, i)
@@ -277,16 +278,21 @@ class CNNClassifier():
 		self.save_model()
 
 	def test(self, test_batch, test_labels, counter=0, is_arg_max=False):
-		summary, accuracy, confidence, loss, arg_max, y_conv = self.sess.run(
-			[self.merged, self.accuracy, self.confidence, self.cross_entropy, self.argmax, self.y_conv],
-			feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
-		print("argmax:{}".format(arg_max))
-		print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
-		self.test_writer.add_summary(summary, counter)
 		if is_arg_max:
+			summary, accuracy, confidence, loss, arg_max = self.sess.run(
+				[self.merged, self.accuracy, self.confidence, self.cross_entropy, self.argmax],
+				feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
+			print("argmax:{}".format(arg_max))
+			self.test_writer.add_summary(summary, counter)
+			print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
 			return accuracy, confidence, loss, arg_max
-
-		return accuracy, confidence, loss
+		else:
+			summary, accuracy, confidence, loss = self.sess.run(
+				[self.merged, self.accuracy, self.confidence, self.cross_entropy],
+				feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
+			self.test_writer.add_summary(summary, counter)
+			print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
+			return accuracy, confidence, loss
 
 	def save_model(self):
 
@@ -328,8 +334,10 @@ def main():
 		exit()
 	fname = args.fname
 	dir = args.dir_name
-	full_fname_labels = "{}generated_labels_{}.pkl".format(dir, fname)
-	full_fname_trainset = "{}generated_trainingset_{}.pkl".format(dir, fname)
+	# full_fname_labels = "{}generated_labels_{}.pkl".format(dir, fname)
+	# full_fname_trainset = "{}generated_trainingset_{}.pkl".format(dir, fname)
+	full_fname_labels = "{}edited_generated_labels_{}.pkl".format(dir, fname)
+	full_fname_trainset = "{}edited_generated_trainingset_{}.pkl".format(dir, fname)
 
 	c = CNNClassifier("custom", load_from_pkl=True, pkl_path=full_fname_trainset, pkl_label_path=full_fname_labels)
 	c.train()
