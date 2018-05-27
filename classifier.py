@@ -84,7 +84,7 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-	def __init__(self, classifier_name, load_from_pkl=False, pkl_path=None, pkl_label_path=None):
+	def __init__(self, classifier_name, load_from_pkl=False, pkl_path=None, pkl_label_path=None,do_preprocess=False):
 		self.num_epochs = 100
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
@@ -102,7 +102,7 @@ class CNNClassifier():
 			self.test_images = self.real_mnist_x[:1000].reshape(-1, 784)
 
 			# mapping only once need to edit the condition
-			if True:
+			if do_preprocess:
 				seed = 547
 				self.data_X = np.asarray([y for x in self.data_X for y in x]).reshape(-1, 28, 28)
 				tmp_list = []
@@ -320,6 +320,7 @@ def parse_args():
 	desc = "Tensorflow implementation of GAN collections"
 	parser = argparse.ArgumentParser(description=desc)
 	parser.add_argument('--dir_name', type=str, default='tmp/')
+	parser.add_argument('--preprocess', type=bool, default=False)
 	parser.add_argument('--fname', type=str, default='fashion-mnist_MultivariateGaussianSampler',
 	                    choices=['fashion-mnist_MultivariateGaussianSampler', 'fashion-mnist_GaussianSample',
 	                             'fashion-mnist_MultiModalUniformSample', 'fashion-mnist_UniformSample'])
@@ -334,6 +335,7 @@ def main():
 		exit()
 	fname = args.fname
 	dir = args.dir_name
+	do_preprocess = args.do_preprocess
 	# full_fname_labels = "{}generated_labels_{}.pkl".format(dir, fname)
 	# full_fname_trainset = "{}generated_trainingset_{}.pkl".format(dir, fname)
 	full_fname_labels = "{}edited_generated_labels_{}.pkl".format(dir, fname)
