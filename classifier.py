@@ -336,7 +336,7 @@ def main():
 		exit()
 	fname = args.fname
 	dir = args.dir_name
-	do_preprocess = args.do_preprocess
+	do_preprocess = args.preprocess
 	if do_preprocess:
 		full_fname_labels = "{}generated_labels_{}.pkl".format(dir, fname)
 		full_fname_trainset = "{}generated_trainingset_{}.pkl".format(dir, fname)
