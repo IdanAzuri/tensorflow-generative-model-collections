@@ -132,9 +132,10 @@ class CNNClassifier():
 					print(np.bincount(arg_max))
 
 				self.data_y = one_hot_encoder(data_y_categorical)
-
-				pickle.dump(self.data_y, open("edited_{}".format(pkl_label_path), 'wb'))
-				pickle.dump(self.data_X, open("edited_{}".format(pkl_path), 'wb'))
+				dir, fname_labels=pkl_label_path.split('/')
+				dir, fname_images=pkl_path.split('/')
+				pickle.dump(self.data_y, open("{}/edited_{}".format(dir,fname_labels), 'wb'))
+				pickle.dump(self.data_X, open("{}/edited_{}".format(dir,fname_images), 'wb'))
 				np.random.seed(seed)
 				np.random.shuffle(self.data_X)
 				np.random.seed(seed)
@@ -336,12 +337,14 @@ def main():
 	fname = args.fname
 	dir = args.dir_name
 	do_preprocess = args.do_preprocess
-	# full_fname_labels = "{}generated_labels_{}.pkl".format(dir, fname)
-	# full_fname_trainset = "{}generated_trainingset_{}.pkl".format(dir, fname)
-	full_fname_labels = "{}edited_generated_labels_{}.pkl".format(dir, fname)
-	full_fname_trainset = "{}edited_generated_trainingset_{}.pkl".format(dir, fname)
+	if do_preprocess:
+		full_fname_labels = "{}generated_labels_{}.pkl".format(dir, fname)
+		full_fname_trainset = "{}generated_trainingset_{}.pkl".format(dir, fname)
+	else:
+		full_fname_labels = "{}edited_generated_labels_{}.pkl".format(dir, fname)
+		full_fname_trainset = "{}edited_generated_trainingset_{}.pkl".format(dir, fname)
 
-	c = CNNClassifier("custom", load_from_pkl=True, pkl_path=full_fname_trainset, pkl_label_path=full_fname_labels)
+	c = CNNClassifier("custom", load_from_pkl=True, pkl_path=full_fname_trainset, pkl_label_path=full_fname_labels,do_preprocess=do_preprocess)
 	c.train()
 
 
