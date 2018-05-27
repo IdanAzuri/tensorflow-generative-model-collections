@@ -16,7 +16,6 @@ from ops import *
 from utils import *
 
 
-# losses
 def gradient_penalty(real, fake, f):
 	def interpolate(a, b):
 		shape = tf.concat((tf.shape(a)[0:1], tf.tile([1], [a.shape.ndims - 1])), axis=0)
@@ -39,9 +38,8 @@ def gradient_penalty(real, fake, f):
 class MultiModalInfoGAN(object):
 	model_name = "MultiModalInfoGAN"  # name for checkpoint
 
-	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler,len_continuous_code=2,
-	is_wgan_gp=False,
-	             SUPERVISED=True):
+	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2,
+	             is_wgan_gp=False, SUPERVISED=True):
 		self.test_size = 5000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
@@ -56,7 +54,7 @@ class MultiModalInfoGAN(object):
 		self.sampler = sampler
 		self.pretrained_classifier = CNNClassifier(self.dataset_name)
 		self.classifier_for_generated_samples = CNNClassifier("custom_{}".format(type(sampler).__name__))
-		self.classifier_for_generated_samples.set_log_dir("{}_{}".format(dataset_name,type(sampler).__name__))
+		self.classifier_for_generated_samples.set_log_dir("{}_{}".format(dataset_name, type(sampler).__name__))
 
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 
@@ -79,7 +77,7 @@ class MultiModalInfoGAN(object):
 			self.output_width = 28
 
 			self.z_dim = z_dim  # dimension of noise-vector
-			self.y_dim = self.len_discrete_code + self.len_continuous_code # dimension of code-vector (label+two features)
+			self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
 			self.c_dim = 1
 
 			# load mnist
@@ -96,7 +94,7 @@ class MultiModalInfoGAN(object):
 			self.output_width = 32
 
 			self.z_dim = z_dim  # dimension of noise-vector
-			self.y_dim = self.len_discrete_code + self.len_continuous_code # dimension of code-vector (label+two features)
+			self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
 			self.c_dim = 3
 			self.data_X, self.data_y, self.test_x, self.test_labels = get_train_test_data()
 			# get number of batches for a single epoch
@@ -118,7 +116,7 @@ class MultiModalInfoGAN(object):
 			self.c_dim = 3
 			self.len_discrete_code = 100  # categorical distribution (i.e. label)
 			self.len_continuous_code = 0  # gaussian distribution (e.g. rotation, thickness)
-			self.y_dim = self.len_discrete_code + self.len_continuous_code # dimension of code-vector (label+two features)
+			self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
 			sess = utils.session()
 
 			# iteration counter
@@ -126,10 +124,8 @@ class MultiModalInfoGAN(object):
 
 			sess.run(tf.global_variables_initializer())
 			sess.run(it_cnt)
-			sess.run(update_cnt)
-			# get number of batches for a single epoch
-		self.model_dir=self.get_model_dir()
-
+			sess.run(update_cnt)  # get number of batches for a single epoch
+		self.model_dir = self.get_model_dir()
 
 	def classifier(self, x, is_training=True, reuse=False):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
@@ -268,8 +264,8 @@ class MultiModalInfoGAN(object):
 		# graph inputs for visualize training results
 		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)  # np.random.uniform(-1, 1,
 		# size=(self.batch_size, self.z_dim))
-		self.test_labels = np.ones([self.batch_size,self.y_dim])
-		if self.dataset_name !="celebA":
+		self.test_labels = np.ones([self.batch_size, self.y_dim])
+		if self.dataset_name != "celebA":
 			self.test_labels = self.data_y[0:self.batch_size]
 
 		self.test_codes = np.concatenate((self.test_labels, np.zeros([self.batch_size, self.len_continuous_code])), axis=1)
@@ -298,21 +294,21 @@ class MultiModalInfoGAN(object):
 		for epoch in range(start_epoch, self.epoch):
 			# get batch data
 			for idx in range(start_batch_id, self.num_batches):
-				if self.dataset_name !="celebA":
+				if self.dataset_name != "celebA":
 					batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
 				else:
 					batch_images = self.data_pool.batch()
-
 
 				# # generate code
 				# if self.SUPERVISED == True:
 				# 	batch_labels = self.data_y[idx * self.batch_size:(idx + 1) * self.batch_size]
 				# else:
-					# batch_labels = _multivariate_dist(self.batch_size, self.z_dim, 10)
+				# batch_labels = _multivariate_dist(self.batch_size, self.z_dim, 10)
 				batch_labels = np.random.multinomial(1, self.len_discrete_code * [float(1.0 / self.len_discrete_code)],
 				                                     size=[self.batch_size])
 
-				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
+				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))),
+				                             axis=1)
 				# batch_codes = np.concatenate((batch_labels, _multivariate_dist(self.batch_size, 2, 2)), axis=1)
 				batch_z_unif = np.random.uniform(-1, 1, [self.batch_size, self.z_dim]).astype(np.float32)
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
@@ -332,16 +328,8 @@ class MultiModalInfoGAN(object):
 				# display training status
 				counter += 1
 				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (
-					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss,))
-				# save training results for every 300 steps
-				# if np.mod(counter, 1000) == 0:
-				# 	samples = self.sess.run(self.fake_images, feed_dict={self.z: self.sample_z, self.y: self.test_codes})
-				#
-				# 	tot_num_samples = min(self.sample_num, self.batch_size)
-				# 	manifold_h = int(np.floor(np.sqrt(tot_num_samples)))
-				# 	manifold_w = int(np.floor(np.sqrt(tot_num_samples)))
-				# 	save_images(samples[:manifold_h * manifold_w, :, :, :], [manifold_h, manifold_w], './' + check_folder(
-				# 		self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_train_{:02d}_{:04d}.png'.format(epoch, idx))
+					epoch, idx, self.num_batches, time.time() - start_time, d_loss,
+					g_loss,))  # save training results for every 300 steps  # if np.mod(counter, 1000) == 0:  # 	samples = self.sess.run(self.fake_images, feed_dict={self.z: self.sample_z, self.y: self.test_codes})  #  # 	tot_num_samples = min(self.sample_num, self.batch_size)  # 	manifold_h = int(np.floor(np.sqrt(tot_num_samples)))  # 	manifold_w = int(np.floor(np.sqrt(tot_num_samples)))  # 	save_images(samples[:manifold_h * manifold_w, :, :, :], [manifold_h, manifold_w], './' + check_folder(  # 		self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_train_{:02d}_{:04d}.png'.format(epoch, idx))
 
 			# After an epoch, start_batch_id is set to zero
 			# non-zero value is only for the first epoch after loading pre-trained model
@@ -353,15 +341,15 @@ class MultiModalInfoGAN(object):
 			# show temporal results
 			self.visualize_results(epoch)
 		# plotting
-		if self.dataset_name !="celebA":
+		if self.dataset_name != "celebA":
 			self.plot_train_test_loss("confidence", self.confidence_list)
 		# Evaluation with classifier
-		traing_set, labels=self.create_dataset_from_GAN()
+		traing_set, labels = self.create_dataset_from_GAN()
 		self.train_classifier(traing_set, labels)
 		data_x__reshape = np.asarray(self.data_X[:1000]).reshape(-1, self.input_height * self.input_width)
 		data_y__reshape = np.asarray(self.data_y[:1000]).reshape(-1, 10)
 		accuracy, confidence, loss = self.classifier_for_generated_samples.test(data_x__reshape, data_y__reshape, counter=1)
-		print("accuracy:{}, confidence:{}, loss:{} ".format(accuracy, confidence, loss ))
+		print("accuracy:{}, confidence:{}, loss:{} ".format(accuracy, confidence, loss))
 		# save model for final step
 		self.save(self.checkpoint_dir, counter)
 
@@ -377,21 +365,19 @@ class MultiModalInfoGAN(object):
 		# z_sample = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
 
 		samples_for_test = []
-		for i in range(self.test_size//self.batch_size):
+		for i in range(self.test_size // self.batch_size):
 			z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
 			samples_for_test.append(samples)
-		samples_for_test=np.asarray(samples_for_test)
-		samples_for_test=samples_for_test.reshape(-1, self.input_width * self.input_height)
+		samples_for_test = np.asarray(samples_for_test)
+		samples_for_test = samples_for_test.reshape(-1, self.input_width * self.input_height)
 		_, confidence, _ = self.pretrained_classifier.test(samples_for_test.reshape(-1, self.input_width * self.input_height),
-		                                                    np.ones((len(samples_for_test), self.len_discrete_code)), epoch)
-		if self.dataset_name !="celebA":
+		                                                   np.ones((len(samples_for_test), self.len_discrete_code)), epoch)
+		if self.dataset_name != "celebA":
 			self.confidence_list.append(confidence)
 		# self.loss_list.append(loss)
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
 			self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
-
-
 
 		""" specified condition, random noise """
 		n_styles = 10  # must be less than or equal to self.batch_size
@@ -455,36 +441,39 @@ class MultiModalInfoGAN(object):
 
 		generated_dataset = []
 		generated_labels = []
-		for c in range(self.len_discrete_code):
-			y = c
+		for label in range(self.len_discrete_code):
 			y_one_hot = np.zeros((self.batch_size, self.y_dim))
-			y_one_hot[:, y] = 1
-			for i in range(self.test_size//self.batch_size):
+			y_one_hot[:, label] = 1
+			for _ in range(self.test_size // self.batch_size):
 				z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
-				generated_dataset.append(samples) # stroting generated images and label
-				generated_labels.append(c+1)
-		fname_trainingset= "generated_trainingset_{}_{}".format(self.dataset_name,type(self.sampler).__name__)
-		fname_labeles = "generated_labels_{}_{}".format(self.dataset_name,type(self.sampler).__name__)
+				generated_dataset.append(samples)  # storing generated images and label
+				generated_labels+= [label] * self.batch_size
+				print("Sample for label: {}\nvector:{}".format(label, y_one_hot))
+				plt.imshow(samples[1].reshape(28, 28))
+				plt.show()
+		fname_trainingset = "generated_trainingset_{}_{}".format(self.dataset_name, type(self.sampler).__name__)
+		fname_labeles = "generated_labels_{}_{}".format(self.dataset_name, type(self.sampler).__name__)
 		pickle.dump(generated_dataset, open("{}.pkl".format(fname_trainingset), 'wb'))
 		pickle.dump(generated_labels, open("{}.pkl".format(fname_labeles), 'wb'))
 
 		return generated_dataset, generated_labels
 
-
-	def train_classifier(self,train_set,labels):
+	def train_classifier(self, train_set, labels):
 		self.classifier_for_generated_samples.set_dataset(train_set, labels)
 		self.classifier_for_generated_samples._create_model()
 		self.classifier_for_generated_samples.train()
 
-		# samples_for_test=np.asarray(samples_for_test)
-		# samples_for_test=samples_for_test.reshape(-1, self.input_width * self.input_height)
+	# samples_for_test=np.asarray(samples_for_test)
+	# samples_for_test=samples_for_test.reshape(-1, self.input_width * self.input_height)
 
 	def get_model_dir(self):
 		if self.wgan_gp:
-			return "wgan_{}_{}_batch{}_z{}_continous{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim,self.len_continuous_code)
+			return "wgan_{}_{}_batch{}_z{}_continous{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim,
+			                                                   self.len_continuous_code)
 		else:
-			return "{}_{}_batch{}_z{}_continous{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim,self.len_continuous_code)
+			return "{}_{}_batch{}_z{}_continous{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim,
+			                                              self.len_continuous_code)
 
 	def save(self, checkpoint_dir, step):
 		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
@@ -537,12 +526,12 @@ def plot_from_pkl():
 	import matplotlib.pyplot as plt
 	import pickle
 	plt.Figure(figsize=(15, 15))
-	dir='/Users/idan.a/results_21_5/'
+	dir = '/Users/idan.a/results_21_5/'
 	plt.title('Wgan Confidence Score Different Sampling Method', fontsize=14)
-	a = pickle.load(open(dir+"WGAN_GP_fashion-mnist_MultiModalUniformSample_confidence.pkl", "rb"))
-	b = pickle.load(open(dir+"WGAN_GP_fashion-mnist_MultivariateGaussianSampler_confidence.pkl", "rb"))
-	c = pickle.load(open(dir+"WGAN_GP_fashion-mnist_UniformSample_confidence.pkl", "rb"))
-	d = pickle.load(open(dir+"WGAN_GP_fashion-mnist_GaussianSample_confidence.pkl", "rb"))
+	a = pickle.load(open(dir + "WGAN_GP_fashion-mnist_MultiModalUniformSample_confidence.pkl", "rb"))
+	b = pickle.load(open(dir + "WGAN_GP_fashion-mnist_MultivariateGaussianSampler_confidence.pkl", "rb"))
+	c = pickle.load(open(dir + "WGAN_GP_fashion-mnist_UniformSample_confidence.pkl", "rb"))
+	d = pickle.load(open(dir + "WGAN_GP_fashion-mnist_GaussianSample_confidence.pkl", "rb"))
 	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
 	a_range = np.arange(len(a))
 	b_range = np.arange(len(b))
@@ -555,7 +544,7 @@ def plot_from_pkl():
 	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.92, label='Benchmark', linestyle='--')
 
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
-	plt.legend([aa, bb, cc,dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+	plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	           handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	                        dd: HandlerLine2D(numpoints=1)
 

@@ -37,6 +37,8 @@ from utils import load_mnist
 FLAGS = None
 
 
+# losses
+
 def one_hot_encoder(data):
 	# i.e. data=[1,2,3,1,8]
 	onehot = np.zeros((len(data), 10))
@@ -93,20 +95,49 @@ class CNNClassifier():
 		self.c_dim = 1
 		if load_from_pkl:
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
-			self.data_X = np.asarray([y for x in self.data_X for y in x])
+			self.data_X = np.asarray([y for x in self.data_X for y in x]).reshape(-1, 28, 28)
 			seed = 547
+			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
+			tmp_list = []
+			for label in self.data_y:
+				tmp_list += self.batch_size * [label]  # remove this line after  running the model again
+			self.data_y = np.asarray(tmp_list)
+			self.data_y_categorical = self.data_y
+			self.data_y = one_hot_encoder(self.data_y)
+			self.pretraind = CNNClassifier('fashion-mnist')
+			self.real_mnist_x, self.real_mnist_y = load_mnist('fashion-mnist')
+			self.test_labels = self.real_mnist_y#[:1000]
+			self.test_labels.astype(np.float32, copy=False)
+			self.test_images = self.real_mnist_x.reshape(-1,784)#[:1000].reshape(-1, 784)
+
+			# mapping only once
+
+			indices = np.argwhere(self.data_y == 1)
+			for i in range(10):
+				mask = (indices[:, 1] == i)
+				tmp = self.data_X[np.where(mask == True)][:2000]
+				dummy_labels = np.repeat(np.arange(10), 200)
+				# to one hot vec
+				z = np.zeros((2000, 10))
+				for j, l in enumerate(dummy_labels):
+					z[j, l] = 1
+				dummy_labels = z
+				# plt.imshow(tmp[0].reshape(28, 28))
+				# plt.show()
+				# plt.imshow(tmp[1].reshape(28, 28))
+				# plt.show()
+				# self.data_y = one_hot_encoder(self.data_y)
+				_, _, _, arg_max = self.pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+				self.data_y_categorical[mask] = np.bincount(arg_max).argmax()
+				print(np.bincount(arg_max))
+
+			self.data_y = one_hot_encoder(self.data_y_categorical)
+
+			pickle.dump(self.data_y, open("{}.pkl".format(pkl_label_path), 'wb'))
 			np.random.seed(seed)
 			np.random.shuffle(self.data_X)
 			np.random.seed(seed)
-			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
-			tmp_list = []
-			tmp_list += self.batch_size * self.data_y
-			self.data_y = np.asarray(tmp_list)
 			np.random.shuffle(self.data_y)
-			self.data_y = one_hot_encoder(self.data_y)
-			self.real_mnist_x, self.real_mnist_y = load_mnist('fashion-mnist')
-			self.test_labels = self.real_mnist_y[:10000]
-			self.test_images = self.real_mnist_x[:10000].reshape(-1, 784)
 		if "custom" in self.classifier_name:
 			self.IMAGE_WIDTH = 28
 			self.IMAGE_HEIGHT = 28
@@ -119,14 +150,14 @@ class CNNClassifier():
 
 			self.test_images = self.data_X[:1000].reshape(-1, 784)
 			self.test_labels = self.data_y[:1000]  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
-		elif self.classifier_name == "cifar10":
-			self.IMAGE_WIDTH = 32
-			self.IMAGE_HEIGHT = 32
-			self.c_dim = 3
-			self.data_X, self.data_y, self.test_images, self.test_labels = get_train_test_data()
-			self.test_images = self.test_images.reshape(-1, 1024)
-			# get number of batches for a single epoch
-			self.num_batches = len(self.data_X) // self.batch_size
+		# elif self.classifier_name == "cifar10":
+		# 	self.IMAGE_WIDTH = 32
+		# 	self.IMAGE_HEIGHT = 32
+		# 	self.c_dim = 3
+		# 	self.data_X, self.data_y, self.test_images, self.test_labels = get_train_test_data()
+		# 	self.test_images = self.test_images.reshape(-1, 1024)
+		# 	# get number of batches for a single epoch
+		# 	self.num_batches = len(self.data_X) // self.batch_size
 
 		# init_variables try to load from pickle:
 		try:
@@ -185,9 +216,9 @@ class CNNClassifier():
 		return y_conv
 
 	def _create_model(self):
-		self.x = tf.placeholder(tf.float32, [None, self.IMAGE_HEIGHT * self.IMAGE_WIDTH])
-		self.y_ = tf.placeholder(tf.float32, [None, 10])
-		self.keep_prob = tf.placeholder(tf.float32)
+		self.x = tf.placeholder(tf.float32, [None, self.IMAGE_HEIGHT * self.IMAGE_WIDTH], name="data")
+		self.y_ = tf.placeholder(tf.float32, [None, 10], name="labels")
+		self.keep_prob = tf.placeholder(tf.float32, name="dropout")
 		# Build the graph for the deep net
 		self.y_conv = self._deepcnn(self.x, self.keep_prob)
 
@@ -210,8 +241,10 @@ class CNNClassifier():
 		self.confidence = tf.cast(tf.reduce_mean(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), axis=0), tf.float32)
 		tf.summary.scalar('confidence', self.confidence)
 
-		graph_location = self.log_dir + '/train'
-		graph_location_test = self.log_dir + '/test'
+		self.argmax = tf.argmax(self.y_conv, 1)
+
+		graph_location = self.log_dir + 'train'
+		graph_location_test = self.log_dir + 'test'
 		self.merged = tf.summary.merge_all()
 		print('Saving graph to: %s' % graph_location)
 		self.train_writer = tf.summary.FileWriter(graph_location)
@@ -226,15 +259,16 @@ class CNNClassifier():
 		self.num_batches = len(self.data_X) // self.batch_size
 		for epoch in range(self.num_epochs):
 			for i in range(start_batch_id, self.num_batches):
-				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size]
-				batch_images = batch_images.reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
+				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
 
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
-				if i % 300 == 0:
-					self.test(self.test_images, self.test_labels, epoch * i)
+				if i + 1 % 10 == 0:
+					np.random.shuffle(self.test_images)
+					np.random.shuffle(self.test_labels)
+					self.test(self.test_images[:1000], self.test_labels[:1000], epoch * i)
 					summary, _ = self.sess.run([self.merged, self.train_step],
-					                           feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1})
+					                           feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
 					self.train_writer.add_summary(summary, i)
 					print('train accuracy epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
 				else:
@@ -242,12 +276,16 @@ class CNNClassifier():
 					                    feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
 		self.save_model()
 
-	def test(self, test_batch, test_labels, counter):
-		summary, accuracy, confidence, loss = self.sess.run([self.merged, self.accuracy, self.confidence, self.cross_entropy],
-		                                                    feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1})
-
+	def test(self, test_batch, test_labels, counter=0, is_arg_max=False):
+		summary, accuracy, confidence, loss, arg_max, y_conv = self.sess.run(
+			[self.merged, self.accuracy, self.confidence, self.cross_entropy, self.argmax, self.y_conv],
+			feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
+		print("argmax:{}".format(arg_max))
 		print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
 		self.test_writer.add_summary(summary, counter)
+		if is_arg_max:
+			return accuracy, confidence, loss, arg_max
+
 		return accuracy, confidence, loss
 
 	def save_model(self):
@@ -275,7 +313,7 @@ class CNNClassifier():
 def parse_args():
 	desc = "Tensorflow implementation of GAN collections"
 	parser = argparse.ArgumentParser(description=desc)
-	parser.add_argument('--dir_name', type=str, default='/Users/idan.a/results_22_5/')
+	parser.add_argument('--dir_name', type=str, default='tmp/')
 	parser.add_argument('--fname', type=str, default='fashion-mnist_MultivariateGaussianSampler',
 	                    choices=['fashion-mnist_MultivariateGaussianSampler', 'fashion-mnist_GaussianSample',
 	                             'fashion-mnist_MultiModalUniformSample', 'fashion-mnist_UniformSample'])
@@ -292,6 +330,7 @@ def main():
 	dir = args.dir_name
 	full_fname_labels = "{}generated_labels_{}.pkl".format(dir, fname)
 	full_fname_trainset = "{}generated_trainingset_{}.pkl".format(dir, fname)
+
 	c = CNNClassifier("custom", load_from_pkl=True, pkl_path=full_fname_trainset, pkl_label_path=full_fname_labels)
 	c.train()
 
