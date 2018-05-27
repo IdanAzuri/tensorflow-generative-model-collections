@@ -223,7 +223,7 @@ class CNNClassifier():
 		self.y_conv = self._deepcnn(self.x, self.keep_prob)
 
 		# loss
-		cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=self.y_, logits=self.y_conv)
+		cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y_, logits=self.y_conv)
 		self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
 			self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)
 		cross_entropy = tf.reduce_mean(cross_entropy)
@@ -264,8 +264,8 @@ class CNNClassifier():
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
 				if i + 1 % 10 == 0:
-					np.random.shuffle(self.test_images)
-					np.random.shuffle(self.test_labels)
+					# np.random.shuffle(self.test_images)
+					# np.random.shuffle(self.test_labels)
 					self.test(self.test_images[:1000], self.test_labels[:1000], epoch * i)
 					summary, _ = self.sess.run([self.merged, self.train_step],
 					                           feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
