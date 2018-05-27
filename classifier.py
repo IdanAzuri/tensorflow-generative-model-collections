@@ -135,14 +135,14 @@ class CNNClassifier():
 
 				self.data_y = one_hot_encoder(data_y_categorical)
 				pickle.dump(self.data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'))
-				pickle.dump(self.data_X, open("{}/edited_generated_labels_{},pkl".format(dir, pkl_fname), 'wb'))
+				pickle.dump(self.data_X, open("{}edited_generated_trainingset_{},pkl".format(dir, pkl_fname), 'wb'))
 				np.random.seed(seed)
 				np.random.shuffle(self.data_X)
 				np.random.seed(seed)
 				np.random.shuffle(self.data_y)
 			else:
 				pkl_label_path = "{}edited_generated_labels_{}.pkl".format(dir, pkl_fname)
-				pkl_path = "{}edited_generated_labels_{}.pkl".format(dir, pkl_fname)
+				pkl_path = "{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname)
 				self.data_X = pickle.load(open(pkl_path, 'rb'))
 				self.data_y = pickle.load(open(pkl_label_path, 'rb'))
 		if "custom" in self.classifier_name:
@@ -267,7 +267,6 @@ class CNNClassifier():
 		for epoch in range(self.num_epochs):
 			for i in range(start_batch_id, self.num_batches):
 				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
-
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
 				if i % 10 == 0:
