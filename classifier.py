@@ -30,6 +30,7 @@ import pickle
 
 import numpy as np
 import tensorflow as tf
+from sklearn.utils import shuffle
 
 from utils import load_mnist
 
@@ -134,10 +135,7 @@ class CNNClassifier():
 					print(np.bincount(arg_max))
 
 				self.data_y = one_hot_encoder(data_y_categorical)
-				np.random.seed(seed)
-				np.random.shuffle(self.data_X)
-				np.random.seed(seed)
-				np.random.shuffle(self.data_y)
+				self.data_X, self.data_y = shuffle(self.data_X, self.data_y, random_state=0)
 				pickle.dump(self.data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'))
 				pickle.dump(self.data_X, open("{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname), 'wb'))
 			else:
@@ -186,11 +184,7 @@ class CNNClassifier():
 		self.log_dir = "logs/{}".format(log_dir_name)
 
 	def set_dataset(self, training, labels):
-		seed = 547
-		np.random.seed(seed)
-		np.random.shuffle(training)
-		np.random.seed(seed)
-		np.random.shuffle(labels)
+		training, labels = shuffle(training, labels, random_state=0)
 		self.data_X = np.asarray(training[1000:]).reshape(-1, 784)
 		self.data_y = np.asarray(labels[1000:]).reshape(-1, 10)
 		self.test_images = self.data_X[:1000].reshape(-1, 784)
@@ -270,8 +264,7 @@ class CNNClassifier():
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
 				if i % 500 == 0:
-					np.random.shuffle(self.test_images)
-					np.random.shuffle(self.test_labels)
+					self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=0)
 					self.test(self.test_images[:1000].reshape(-1, 784), self.test_labels[:1000].reshape(-1, 10), epoch * i)
 					summary, _ = self.sess.run([self.merged, self.train_step],
 					                           feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
@@ -293,7 +286,7 @@ class CNNClassifier():
 			return accuracy, confidence, loss, arg_max
 		else:
 			summary, accuracy, confidence, loss = self.sess.run([self.merged, self.accuracy, self.confidence, self.cross_entropy],
-				feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
+			                                                    feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
 			self.test_writer.add_summary(summary, counter)
 			print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
 			return accuracy, confidence, loss
