@@ -71,16 +71,17 @@ def bias_variable(shape):
 
 
 def variable_summaries(var, name):
-	"""Attach a lot of summaries to a Tensor (for TensorBoard visualization)."""
-	with tf.name_scope(name):
-		mean = tf.reduce_mean(var)
-		tf.summary.scalar('mean', mean)
-		with tf.name_scope('stddev'):
-			stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
-		tf.summary.scalar('stddev', stddev)
-		tf.summary.scalar('max', tf.reduce_max(var))
-		tf.summary.scalar('min', tf.reduce_min(var))
-		tf.summary.histogram('histogram', var)
+	# """Attach a lot of summaries to a Tensor (for TensorBoard visualization)."""
+	# with tf.name_scope(name):
+	# 	mean = tf.reduce_mean(var)
+	# 	tf.summary.scalar('mean', mean)
+	# 	with tf.name_scope('stddev'):
+	# 		stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
+	# 	tf.summary.scalar('stddev', stddev)
+	# 	tf.summary.scalar('max', tf.reduce_max(var))
+	# 	tf.summary.scalar('min', tf.reduce_min(var))
+	# 	tf.summary.histogram('histogram', var)
+	pass
 
 
 class CNNClassifier():
@@ -99,45 +100,6 @@ class CNNClassifier():
 			# self.test_labels.astype(np.float32, copy=False)
 			self.test_images = self.real_mnist_x.reshape(-1, 784)
 
-			# mapping only once need to edit the condition
-			# if do_preprocess:
-			# 	pkl_label_path = "{}generated_labels_{}.pkl".format(dir, pkl_fname)
-			# 	pkl_path = "{}generated_trainingset_{}.pkl".format(dir, pkl_fname)
-			# 	self.data_X = pickle.load(open(pkl_path, 'rb'))
-			# 	self.data_y = pickle.load(open(pkl_label_path, 'rb'))
-			#
-			# 	self.data_X = np.asarray([y for x in self.data_X for y in x]).reshape(-1, 28, 28)
-			# 	tmp_list = []
-			# 	for label in self.data_y:
-			# 		tmp_list += self.batch_size * [label]  # remove this line after  running the model again
-			# 	self.data_y = np.asarray(tmp_list)
-			# 	data_y_categorical = self.data_y
-			# 	self.data_y = one_hot_encoder(self.data_y)
-			# 	pretraind = CNNClassifier('fashion-mnist')
-			# 	indices = np.argwhere(self.data_y == 1)
-			# 	for i in range(10):
-			# 		mask = (indices[:, 1] == i)
-			# 		tmp = self.data_X[np.where(mask == True)][:2000]
-			# 		dummy_labels = np.repeat(np.arange(10), 200)
-			# 		# to one hot vec
-			# 		z = np.zeros((2000, 10))
-			# 		for j, l in enumerate(dummy_labels):
-			# 			z[j, l] = 1
-			# 		dummy_labels = z
-			# 		# plt.imshow(tmp[0].reshape(28, 28))
-			# 		# plt.show()
-			# 		# plt.imshow(tmp[1].reshape(28, 28))
-			# 		# plt.show()
-			# 		# self.data_y = one_hot_encoder(self.data_y)
-			# 		_, _, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
-			# 		data_y_categorical[mask] = np.bincount(arg_max).argmax()
-			# 		print(np.bincount(arg_max))
-			#
-			# 	self.data_y = one_hot_encoder(data_y_categorical)
-			# 	self.data_X, self.data_y = shuffle(self.data_X, self.data_y, random_state=0)
-			# 	pickle.dump(self.data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'))
-			# 	pickle.dump(self.data_X, open("{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname), 'wb'))
-			# else:
 			pkl_label_path = "{}edited_generated_labels_{}.pkl".format(dir, pkl_fname)
 			pkl_path = "{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname)
 			self.set_log_dir("{}".format(pkl_fname))
