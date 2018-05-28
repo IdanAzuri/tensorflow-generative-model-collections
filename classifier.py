@@ -281,9 +281,7 @@ def parse_args():
 	parser = argparse.ArgumentParser(description=desc)
 	parser.add_argument('--dir_name', type=str, default='tmp/')
 	parser.add_argument('--preprocess', type=bool, default=False)
-	parser.add_argument('--fname', type=str, default='fashion-mnist_MultivariateGaussianSampler',
-	                    choices=['fashion-mnist_MultivariateGaussianSampler', 'fashion-mnist_GaussianSample',
-	                             'fashion-mnist_MultiModalUniformSample', 'fashion-mnist_UniformSample'])
+	parser.add_argument('--fname', type=str, default='fashion-mnist_MultivariateGaussianSampler')
 
 	return parser.parse_args()
 
