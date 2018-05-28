@@ -294,8 +294,8 @@ def preprocess_data(dir,pkl_fname,batch_size=64):
 
 	data_X = np.asarray([y for x in data_X for y in x]).reshape(-1, 28, 28)
 	tmp_list = []
-	for label in data_y:
-		tmp_list += batch_size * [label]  # remove this line after  running the model again
+	# for label in data_y:
+	# 	tmp_list += batch_size * [label]  # remove this line after  running the model again
 	data_y = np.asarray(tmp_list)
 	data_y_categorical = data_y
 	data_y = one_hot_encoder(data_y)
