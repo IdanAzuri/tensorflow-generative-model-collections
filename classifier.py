@@ -96,7 +96,7 @@ class CNNClassifier():
 		if load_from_pkl:
 			self.real_mnist_x, self.real_mnist_y = load_mnist('fashion-mnist')
 			self.test_labels = self.real_mnist_y
-			self.test_labels.astype(np.float32, copy=False)
+			# self.test_labels.astype(np.float32, copy=False)
 			self.test_images = self.real_mnist_x.reshape(-1, 784)
 
 			# mapping only once need to edit the condition
@@ -223,7 +223,7 @@ class CNNClassifier():
 		self.y_conv = self._deepcnn(self.x, self.keep_prob)
 
 		# loss
-		cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y_, logits=self.y_conv)
+		cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=self.y_, logits=self.y_conv)
 		self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
 			self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)
 		cross_entropy = tf.reduce_mean(cross_entropy)
