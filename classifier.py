@@ -84,7 +84,7 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None, do_preprocess=False, dir=None):
+	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None, dir=None):
 		self.num_epochs = 100
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
@@ -140,11 +140,13 @@ class CNNClassifier():
 			# else:
 			pkl_label_path = "{}edited_generated_labels_{}.pkl".format(dir, pkl_fname)
 			pkl_path = "{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname)
+			self.set_log_dir("{}".format(pkl_fname))
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
 		if "custom" in self.classifier_name:
 			self.IMAGE_WIDTH = 28
 			self.IMAGE_HEIGHT = 28
+
 
 		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
 			self.IMAGE_WIDTH = 28
