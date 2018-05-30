@@ -11,7 +11,7 @@ from matplotlib.legend_handler import HandlerLine2D
 
 import utils
 # from cifar10 import *
-from classifier import CNNClassifier
+from classifier import CNNClassifier, preprocess_data
 from ops import *
 from utils import *
 
@@ -53,8 +53,6 @@ class MultiModalInfoGAN(object):
 		self.batch_size = batch_size
 		self.sampler = sampler
 		self.pretrained_classifier = CNNClassifier(self.dataset_name)
-		self.classifier_for_generated_samples = CNNClassifier("custom_{}".format(type(sampler).__name__))
-		self.classifier_for_generated_samples.set_log_dir("{}_{}".format(dataset_name, type(sampler).__name__))
 
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 
@@ -85,20 +83,20 @@ class MultiModalInfoGAN(object):
 
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
-		elif dataset_name == 'cifar10':
-			print("IN CIFAR")
-			# parameters
-			self.input_height = 32
-			self.input_width = 32
-			self.output_height = 32
-			self.output_width = 32
-
-			self.z_dim = z_dim  # dimension of noise-vector
-			self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
-			self.c_dim = 3
-			self.data_X, self.data_y, self.test_x, self.test_labels = get_train_test_data()
-			# get number of batches for a single epoch
-			self.num_batches = len(self.data_X) // self.batch_size
+		# elif dataset_name == 'cifar10':
+		# 	print("IN CIFAR")
+		# 	# parameters
+		# 	self.input_height = 32
+		# 	self.input_width = 32
+		# 	self.output_height = 32
+		# 	self.output_width = 32
+		#
+		# 	self.z_dim = z_dim  # dimension of noise-vector
+		# 	self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
+		# 	self.c_dim = 3
+		# 	# self.data_X, self.data_y, self.test_x, self.test_labels = get_train_test_data()
+		# 	# get number of batches for a single epoch
+		# 	self.num_batches = len(self.data_X) // self.batch_size
 		elif dataset_name == 'celebA':
 			from data_load import preprocess_fn
 			print("in celeba")
@@ -344,12 +342,10 @@ class MultiModalInfoGAN(object):
 		if self.dataset_name != "celebA":
 			self.plot_train_test_loss("confidence", self.confidence_list)
 		# Evaluation with classifier
-		traing_set, labels = self.create_dataset_from_GAN()
-		self.train_classifier(traing_set, labels)
-		data_x__reshape = np.asarray(self.data_X[:1000]).reshape(-1, self.input_height * self.input_width)
-		data_y__reshape = np.asarray(self.data_y[:1000]).reshape(-1, 10)
-		accuracy, confidence, loss = self.classifier_for_generated_samples.test(data_x__reshape, data_y__reshape, counter=1)
-		print("accuracy:{}, confidence:{}, loss:{} ".format(accuracy, confidence, loss))
+		tf.reset_default_graph()
+		self.sess.close()
+		self.create_dataset_from_GAN()
+
 		# save model for final step
 		self.save(self.checkpoint_dir, counter)
 
@@ -448,24 +444,22 @@ class MultiModalInfoGAN(object):
 				z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
 				generated_dataset.append(samples)  # storing generated images and label
-				generated_labels+= [label] * self.batch_size
-				print("Sample for label: {}\nvector:{}".format(label, y_one_hot))
+				generated_labels += [label] * self.batch_size
+				# print("Sample for label: {}\nvector:{}".format(label, y_one_hot))
 				plt.imshow(samples[1].reshape(28, 28))
 				plt.show()
 		fname_trainingset = "generated_trainingset_{}_{}".format(self.dataset_name, type(self.sampler).__name__)
 		fname_labeles = "generated_labels_{}_{}".format(self.dataset_name, type(self.sampler).__name__)
 		pickle.dump(generated_dataset, open("{}.pkl".format(fname_trainingset), 'wb'))
 		pickle.dump(generated_labels, open("{}.pkl".format(fname_labeles), 'wb'))
+		# fname = "{}_{}".format(self.dataset_name, type(self.sampler).__name__)
+		# Issue because session inside session
+		# preprocess_data("",fname)
+		# classifier_for_generated_samples = CNNClassifier("custom_{}".format(type(self.sampler).__name__), load_from_pkl=True,
+		#                                                  pkl_fname=fname, dir="")
+		# classifier_for_generated_samples.train()
 
-		return generated_dataset, generated_labels
-
-	def train_classifier(self, train_set, labels):
-		self.classifier_for_generated_samples.set_dataset(train_set, labels)
-		self.classifier_for_generated_samples._create_model()
-		self.classifier_for_generated_samples.train()
-
-	# samples_for_test=np.asarray(samples_for_test)
-	# samples_for_test=samples_for_test.reshape(-1, self.input_width * self.input_height)
+		return
 
 	def get_model_dir(self):
 		if self.wgan_gp:

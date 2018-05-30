@@ -95,7 +95,7 @@ class CNNClassifier():
 		self.lamb = 1e-3
 		self.c_dim = 1
 		if load_from_pkl:
-			self.real_mnist_x, self.real_mnist_y = load_mnist('fashion-mnist')
+			self.real_mnist_x, self.real_mnist_y = load_mnist('mnist')
 			self.test_labels = self.real_mnist_y
 			# self.test_labels.astype(np.float32, copy=False)
 			self.test_images = self.real_mnist_x.reshape(-1, 784)
@@ -108,7 +108,6 @@ class CNNClassifier():
 		if "custom" in self.classifier_name:
 			self.IMAGE_WIDTH = 28
 			self.IMAGE_HEIGHT = 28
-
 
 		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
 			self.IMAGE_WIDTH = 28
@@ -279,13 +278,14 @@ class CNNClassifier():
 def parse_args():
 	desc = "Tensorflow implementation of GAN collections"
 	parser = argparse.ArgumentParser(description=desc)
-	parser.add_argument('--dir_name', type=str, default='tmp/')
+	parser.add_argument('--dir_name', type=str, default='')
 	parser.add_argument('--preprocess', type=bool, default=False)
 	parser.add_argument('--fname', type=str, default='fashion-mnist_MultivariateGaussianSampler')
 
 	return parser.parse_args()
 
-def preprocess_data(dir,pkl_fname,batch_size=64):
+
+def preprocess_data(dir, pkl_fname, batch_size=64):
 	# mapping only once need to edit the condition
 	pkl_label_path = "{}generated_labels_{}.pkl".format(dir, pkl_fname)
 	pkl_path = "{}generated_trainingset_{}.pkl".format(dir, pkl_fname)
@@ -293,13 +293,11 @@ def preprocess_data(dir,pkl_fname,batch_size=64):
 	data_y = pickle.load(open(pkl_label_path, 'rb'))
 
 	data_X = np.asarray([y for x in data_X for y in x]).reshape(-1, 28, 28)
-	tmp_list = []
-	# for label in data_y:
-	# 	tmp_list += batch_size * [label]  # remove this line after  running the model again
-	data_y = np.asarray(tmp_list)
+
+	data_y = np.asarray(data_y, dtype=np.float32)
 	data_y_categorical = data_y
 	data_y = one_hot_encoder(data_y)
-	pretraind = CNNClassifier('fashion-mnist')
+	pretraind = CNNClassifier('mnist')
 	indices = np.argwhere(data_y == 1)
 	for i in range(10):
 		mask = (indices[:, 1] == i)
@@ -310,6 +308,8 @@ def preprocess_data(dir,pkl_fname,batch_size=64):
 		for j, l in enumerate(dummy_labels):
 			z[j, l] = 1
 		dummy_labels = z
+		# import matplotlib.pyplot as plt
+
 		# plt.imshow(tmp[0].reshape(28, 28))
 		# plt.show()
 		# plt.imshow(tmp[1].reshape(28, 28))
@@ -318,7 +318,7 @@ def preprocess_data(dir,pkl_fname,batch_size=64):
 		_, _, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 		data_y_categorical[mask] = np.bincount(arg_max).argmax()
 		print(np.bincount(arg_max))
-	
+
 	data_y = one_hot_encoder(data_y_categorical)
 	data_X, data_y = shuffle(data_X, data_y, random_state=0)
 	pickle.dump(data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'))
@@ -326,6 +326,7 @@ def preprocess_data(dir,pkl_fname,batch_size=64):
 	del pretraind
 	del data_y
 	del data_X
+
 
 def main():
 	# parse arguments
@@ -336,11 +337,11 @@ def main():
 	dir = args.dir_name
 	do_preprocess = args.preprocess
 	if do_preprocess:
-		preprocess_data(dir,fname)
+		preprocess_data(dir, fname)
 
-
-	c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir)
-	c.train()
+	else:
+		c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir)
+		c.train()
 
 
 if __name__ == '__main__':
