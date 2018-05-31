@@ -342,8 +342,6 @@ class MultiModalInfoGAN(object):
 		if self.dataset_name != "celebA":
 			self.plot_train_test_loss("confidence", self.confidence_list)
 		# Evaluation with classifier
-		tf.reset_default_graph()
-		self.sess.close()
 		self.create_dataset_from_GAN()
 
 		# save model for final step
@@ -456,7 +454,7 @@ class MultiModalInfoGAN(object):
 		# Issue because session inside session
 		# preprocess_data("",fname)
 		# classifier_for_generated_samples = CNNClassifier("custom_{}".format(type(self.sampler).__name__), load_from_pkl=True,
-		#                                                  pkl_fname=fname, dir="")
+		#                                                  pkl_fname=fname, dir="") 
 		# classifier_for_generated_samples.train()
 
 		return
