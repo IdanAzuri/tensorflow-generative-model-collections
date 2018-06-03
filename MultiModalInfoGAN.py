@@ -339,13 +339,13 @@ class MultiModalInfoGAN(object):
 			# show temporal results
 			self.visualize_results(epoch)
 		# plotting
+		self.create_dataset_from_GAN()
+		self.save(self.checkpoint_dir, counter)
 		if self.dataset_name != "celebA":
 			self.plot_train_test_loss("confidence", self.confidence_list)
 		# Evaluation with classifier
-		self.create_dataset_from_GAN()
 
 		# save model for final step
-		self.save(self.checkpoint_dir, counter)
 
 	def visualize_results(self, epoch):
 		tot_num_samples = min(self.sample_num, self.batch_size)
