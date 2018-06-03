@@ -149,8 +149,8 @@ class CNNClassifier():
 		training, labels = shuffle(training, labels, random_state=0)
 		self.data_X = np.asarray(training[1000:]).reshape(-1, 784)
 		self.data_y = np.asarray(labels[1000:]).reshape(-1, 10)
-		self.test_images = self.data_X[:1000].reshape(-1, 784)
-		self.test_labels = self.data_y[:1000]  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
+		self.test_images = self.data_X.reshape(-1, 784)
+		self.test_labels = self.data_y  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
 
 	def _deepcnn(self, x, keep_prob):
 		with tf.name_scope('reshape'):
@@ -226,6 +226,13 @@ class CNNClassifier():
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
 				if i % 500 == 0:
+					# import matplotlib.pyplot as plt
+					# plt.title("label{}".format(self.data_y[0]))
+					# plt.imshow(self.data_X[0].reshape(28, 28))
+					# plt.show()
+					# plt.title("label{}".format(self.data_y[1]))
+					# plt.imshow(self.data_X[1].reshape(28, 28))
+					# plt.show()
 					self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=0)
 					self.test(self.test_images[:1000].reshape(-1, 784), self.test_labels[:1000].reshape(-1, 10), epoch * i)
 					summary, _ = self.sess.run([self.merged, self.train_step],
@@ -316,7 +323,7 @@ def preprocess_data(dir, pkl_fname, batch_size=64):
 		# plt.show()
 		# data_y = one_hot_encoder(data_y)
 		_, _, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
-		data_y_categorical[mask] = np.bincount(arg_max).argmax()
+		data_y_categorical[mask] = np.bincount(arg_max).argmax() + 1
 		print(np.bincount(arg_max))
 
 	data_y = one_hot_encoder(data_y_categorical)
