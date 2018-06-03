@@ -40,7 +40,7 @@ class MultiModalInfoGAN(object):
 
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2,
 	             is_wgan_gp=False, SUPERVISED=True):
-		self.test_size = 5000
+		self.test_size = 1000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
 		self.confidence_list = []
@@ -435,17 +435,39 @@ class MultiModalInfoGAN(object):
 
 		generated_dataset = []
 		generated_labels = []
+		tot_num_samples = min(self.sample_num, self.batch_size)
+		image_frame_dim = int(np.floor(np.sqrt(tot_num_samples)))
+		c1 = np.linspace(-1, 1, image_frame_dim)
+		c2 = np.linspace(-1, 1, image_frame_dim)
+		xv, yv = np.meshgrid(c1, c2)
+		xv = xv[:image_frame_dim, :image_frame_dim]
+		yv = yv[:image_frame_dim, :image_frame_dim]
+
+		c1 = xv.flatten()
+		c2 = yv.flatten()
 		for label in range(self.len_discrete_code):
+			z_fixed = np.zeros([self.batch_size, self.z_dim])
+			y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
 			y_one_hot = np.zeros((self.batch_size, self.y_dim))
-			y_one_hot[:, label] = 1
+			y_one_hot[np.arange(self.batch_size), y] = 1
+			# clean samples
+			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
+			y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
+			y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
+			generated_dataset.append(samples)  # storing generated images and label
+			generated_labels += [label] * self.batch_size
+			plt.title("Label:{}".format(label))
+			plt.imshow(samples[1].reshape(28, 28))
+			plt.show()
+			plt.imshow(samples[20].reshape(28, 28))
+			plt.show()
 			for _ in range(self.test_size // self.batch_size):
-				z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
-				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
+				y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
+				y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
+				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
+
 				generated_dataset.append(samples)  # storing generated images and label
 				generated_labels += [label] * self.batch_size
-				# print("Sample for label: {}\nvector:{}".format(label, y_one_hot))
-				plt.imshow(samples[1].reshape(28, 28))
-				plt.show()
 		fname_trainingset = "generated_trainingset_{}_{}".format(self.dataset_name, type(self.sampler).__name__)
 		fname_labeles = "generated_labels_{}_{}".format(self.dataset_name, type(self.sampler).__name__)
 		pickle.dump(generated_dataset, open("{}.pkl".format(fname_trainingset), 'wb'))

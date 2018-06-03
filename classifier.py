@@ -301,10 +301,10 @@ def preprocess_data(dir, pkl_fname, batch_size=64):
 	indices = np.argwhere(data_y == 1)
 	for i in range(10):
 		mask = (indices[:, 1] == i)
-		tmp = data_X[np.where(mask == True)][:2000]
-		dummy_labels = np.repeat(np.arange(10), 200)
+		tmp = data_X[np.where(mask == True)][:60]
+		dummy_labels = np.repeat(np.arange(10), 6)
 		# to one hot vec
-		z = np.zeros((2000, 10))
+		z = np.zeros((60, 10))
 		for j, l in enumerate(dummy_labels):
 			z[j, l] = 1
 		dummy_labels = z
