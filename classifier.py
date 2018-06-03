@@ -94,6 +94,9 @@ class CNNClassifier():
 		self.save_to = classifier_name + "_classifier.pkl"
 		self.lamb = 1e-3
 		self.c_dim = 1
+		self.accuracy_list = []
+		self.loss_list = []
+		self.confidence_list = []
 		if load_from_pkl:
 			self.real_mnist_x, self.real_mnist_y = load_mnist('mnist')
 			self.test_labels = self.real_mnist_y
@@ -101,8 +104,9 @@ class CNNClassifier():
 			self.test_images = self.real_mnist_x.reshape(-1, 784)
 
 			pkl_label_path = "{}edited_generated_labels_{}.pkl".format(dir, pkl_fname)
+			self.fname=pkl_fname
 			pkl_path = "{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname)
-			self.set_log_dir("{}".format(pkl_fname))
+			self.set_log_dir("{}_".format(pkl_fname))
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
 		if "custom" in self.classifier_name:
@@ -225,24 +229,30 @@ class CNNClassifier():
 				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
-				if i % 500 == 0:
-					# import matplotlib.pyplot as plt
-					# plt.title("label{}".format(self.data_y[0]))
-					# plt.imshow(self.data_X[0].reshape(28, 28))
-					# plt.show()
-					# plt.title("label{}".format(self.data_y[1]))
-					# plt.imshow(self.data_X[1].reshape(28, 28))
-					# plt.show()
+				if i % 100 == 0:
+					import matplotlib.pyplot as plt
+					plt.title("label{}".format(self.data_y[0]))
+					plt.imshow(self.data_X[0].reshape(28, 28))
+					plt.show()
+					plt.title("label{}".format(self.data_y[1]))
+					plt.imshow(self.data_X[1].reshape(28, 28))
+					plt.show()
 					self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=0)
-					self.test(self.test_images[:1000].reshape(-1, 784), self.test_labels[:1000].reshape(-1, 10), epoch * i)
+					accuracy, confidence, loss = self.test(self.test_images[:1000].reshape(-1, 784), self.test_labels[:1000].reshape(-1,
+					                                                                                                               10), epoch * i)
 					summary, _ = self.sess.run([self.merged, self.train_step],
 					                           feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
 					self.train_writer.add_summary(summary, i)
-					print('train accuracy epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
+					print('epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
+					self.accuracy_list.append(accuracy)
+					self.confidence_list.append(confidence)
+					self.loss_list.append(loss)
 				else:
 					self.train_step.run(session=self.sess,
 					                    feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
 		self.save_model()
+		self.plot_train_test_loss("accuracy", self.accuracy_list)
+		self.plot_train_test_loss("confidence", self.confidence_list)
 
 	def test(self, test_batch, test_labels, counter=0, is_arg_max=False):
 		if is_arg_max:
@@ -280,6 +290,28 @@ class CNNClassifier():
 		self.W_fc2 = tf.Variable(tf.constant(model[6]))
 		self.b_fc2 = tf.Variable(tf.constant(model[7]))
 		print("model has been loaded from {}".format(self.save_to))
+
+	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P"):
+		import matplotlib.pyplot as plt
+		from matplotlib.legend_handler import HandlerLine2D
+		plt.Figure()
+		plt.title('{} {} score'.format(self.dataset_name, name_of_measure), fontsize=18)
+		x_range = np.linspace(1, len(array) - 1, len(array))
+
+		confidence, = plt.plot(x_range, array, color=color, marker=marker, label=name_of_measure, linewidth=2)
+		plt.legend(handler_map={confidence: HandlerLine2D(numpoints=1)})
+		plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
+		plt.yscale('linear')
+		plt.xlabel('Epoch')
+		plt.ylabel('Score')
+		plt.grid()
+		plt.show()
+
+		name_figure = "classifier_MMinfoGAN_{}_{}".format(self.fname, name_of_measure)
+		plt.savefig(name_figure)
+		plt.close()
+		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
+
 
 
 def parse_args():
@@ -333,6 +365,8 @@ def preprocess_data(dir, pkl_fname, batch_size=64):
 	del pretraind
 	del data_y
 	del data_X
+
+
 
 
 def main():
