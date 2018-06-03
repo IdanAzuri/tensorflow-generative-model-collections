@@ -103,9 +103,9 @@ class CNNClassifier():
 			# self.test_labels.astype(np.float32, copy=False)
 			self.test_images = self.real_mnist_x.reshape(-1, 784)
 
-			pkl_label_path = "{}edited_generated_labels_{}.pkl".format(dir, pkl_fname)
+			pkl_label_path = "{}edited_generated_labels{}.pkl".format(dir, pkl_fname)
 			self.fname=pkl_fname
-			pkl_path = "{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname)
+			pkl_path = "{}edited_generated_trainingset{}.pkl".format(dir, pkl_fname)
 			self.set_log_dir("{}_".format(pkl_fname))
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
