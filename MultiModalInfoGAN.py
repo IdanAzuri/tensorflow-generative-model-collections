@@ -343,9 +343,10 @@ class MultiModalInfoGAN(object):
 		self.save(self.checkpoint_dir, counter)
 		if self.dataset_name != "celebA":
 			self.plot_train_test_loss("confidence", self.confidence_list)
-		# Evaluation with classifier
 
-		# save model for final step
+	# Evaluation with classifier
+
+	# save model for final step
 
 	def visualize_results(self, epoch):
 		tot_num_samples = min(self.sample_num, self.batch_size)
@@ -468,11 +469,9 @@ class MultiModalInfoGAN(object):
 
 				generated_dataset.append(samples)  # storing generated images and label
 				generated_labels += [label] * self.batch_size
-		fname_trainingset = "generated_trainingset_{}_{}_mu_{}_sigma_{}".format(self.dataset_name, type(self.sampler).__name__,
-		                                                                      self.sampler.mu,
-		                                                         self.sampler.sigma)
-		fname_labeles = "generated_trainingset_{}_{}_mu_{}_sigma_{}".format(self.dataset_name, type(self.sampler).__name__,
-		                                                                    self.sampler.mu,
+		fname_trainingset = "generated_training_set_{}_{}_mu_{}_sigma_{}".format(self.dataset_name, type(self.sampler).__name__,
+		                                                                        self.sampler.mu, self.sampler.sigma)
+		fname_labeles = "generated_labels_{}_{}_mu_{}_sigma_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
 		                                                                    self.sampler.sigma)
 		pickle.dump(generated_dataset, open("{}.pkl".format(fname_trainingset), 'wb'))
 		pickle.dump(generated_labels, open("{}.pkl".format(fname_labeles), 'wb'))

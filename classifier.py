@@ -109,7 +109,7 @@ class CNNClassifier():
 
 			pkl_label_path = "{}edited_generated_labels_{}.pkl".format(dir, pkl_fname)
 			self.fname=pkl_fname
-			pkl_path = "{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname)
+			pkl_path = "{}edited_generated_training_set_{}.pkl".format(dir, pkl_fname)
 			self.set_log_dir("{}_".format(pkl_fname))
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
