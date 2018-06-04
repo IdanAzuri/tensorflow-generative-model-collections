@@ -25,7 +25,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 import matplotlib
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
+
+import matplotlib.pyplot as plt
+from matplotlib.legend_handler import HandlerLine2D
 import argparse
 import pickle
 
@@ -295,8 +298,6 @@ class CNNClassifier():
 		print("model has been loaded from {}".format(self.save_to))
 
 	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P"):
-		import matplotlib.pyplot as plt
-		from matplotlib.legend_handler import HandlerLine2D
 		plt.Figure()
 		plt.title('{} {} score'.format(self.fname, name_of_measure), fontsize=18)
 		x_range = np.linspace(1, len(array) - 1, len(array))
@@ -367,7 +368,42 @@ def preprocess_data(dir, pkl_fname, batch_size=64):
 	pickle.dump(data_X, open("{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname), 'wb'))
 
 
+def plot_from_pkl():
+	import numpy as np
+	import matplotlib.pyplot as plt
+	import pickle
+	plt.Figure(figsize=(15, 15))
+	dir = '/Users/idan.a/results_21_5/'
+	plt.title('MMInfoGAN Accuracy by Sampling Method', fontsize=12)
+	a = pickle.load(open("classifier_MMinfoGAN_mnist_MultiModalUniformSample_accuracy.pkl", "rb"))[2:]
+	b = pickle.load(open("classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_accuracy.pkl", "rb"))[2:]
+	c = pickle.load(open("classifier_MMinfoGAN_mnist_UniformSample_accuracy.pkl", "rb"))[2:]
+	d = pickle.load(open("classifier_MMinfoGAN_mnist_GaussianSample_accuracy.pkl", "rb"))[2:]
+	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
+	a_range = np.arange(len(a))
+	b_range = np.arange(len(b))
+	c_range = np.arange(len(c))
+	d_range = np.arange(len(d))
+	aa, = plt.plot(a_range, a, color='b', marker="P", label="Multimodal Uniform Sample", linewidth=1)
+	bb, = plt.plot(b_range, b, color='g', marker='p', label="Multimodal Gaussian Sample", linewidth=1)
+	cc, = plt.plot(c_range, c, color='r', marker='^', label="Uniform Sample", linewidth=1)
+	dd, = plt.plot(d_range, d, color='y', marker="o", label="Gaussian Sample", linewidth=1)
+	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.92, label='Benchmark', linestyle='--')
 
+	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
+	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
+	#                         dd: HandlerLine2D(numpoints=1)
+
+	                        # }, loc='middle right')
+	plt.legend(loc='best')
+	plt.xlabel("Epoch")
+	plt.ylabel("Confidence Score")
+	# plt.axis("auto")
+	plt.grid(True)
+	plt.show()
+	plt.savefig("MMInfoGAN Accuracy by Sampling Method.png")
+	plt.close()
 
 
 def main():
@@ -387,8 +423,5 @@ def main():
 
 
 if __name__ == '__main__':
-	# c = CNNClassifier("custom", load_from_pkl=True,
-	#                   pkl_path="/Users/idan.a/results_22_5/generated_trainingset_fashion-mnist_MultivariateGaussianSampler.pkl",
-	#                   pkl_label_path="/Users/idan.a/results_22_5/generated_labels_fashion-mnist_MultivariateGaussianSampler.pkl")
-	# c.train()
-	main()
+	# main()
+	plot_from_pkl()

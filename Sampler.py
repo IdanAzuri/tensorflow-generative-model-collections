@@ -6,18 +6,19 @@ import matplotlib.pyplot as plt
 
 
 class Sampler(object):
-	def __init__(self):
-		pass
+	def __init__(self,sigma=0.15,mu=0.1):
+		self.sigma = sigma
+		self.mu = mu
 
 	def get_sample(self, dimension, batch_size, n_distributions):
 		pass
 
 
 class MultivariateGaussianSampler(Sampler):
-	def get_sample(self, batch_size, embedding_dim, n_distributions,mu=0.1,sigma=0.15):
+	def get_sample(self, batch_size, embedding_dim, n_distributions):
 		current_dist_states_indices = np.random.randint(0, n_distributions - 1, batch_size)
-		mean_vec = np.linspace(-mu,mu,n_distributions)
-		cov_mat = np.eye(n_distributions) * sigma  # np.random.randint(1, 5, n_distributions)  # this is diagonal beacuse we want iid
+		mean_vec = np.linspace(-self.mu,self.mu,n_distributions)
+		cov_mat = np.eye(n_distributions) * self.sigma  # np.random.randint(1, 5, n_distributions)  # this is diagonal beacuse we want iid
 
 		result_vec = np.zeros((batch_size, embedding_dim))
 		# create multimodal matrix
@@ -35,8 +36,8 @@ class UniformSample(Sampler):
 
 
 class GaussianSample(Sampler):
-	def get_sample(self, batch_size, embedding_dim, n_distributions,mu=0.,sigma=0.15):
-		return np.random.normal(loc=mu, scale=sigma, size=(batch_size, embedding_dim))
+	def get_sample(self, batch_size, embedding_dim, n_distributions):
+		return np.random.normal(loc=self.mu, scale=self.sigma, size=(batch_size, embedding_dim))
 
 
 class MultiModalUniformSample(Sampler):
