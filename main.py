@@ -51,7 +51,7 @@ def parse_args():
 	parser.add_argument('--len_continuous_code', type=int, default=2)
 	parser.add_argument('--wgan', type=str, default=False)
 	parser.add_argument('--mu', type=int, default=0.1)
-	parser.add_argument('--sigma', type=int, default=0.15)
+	parser.add_argument('--sigma', type=float, default=0.15)
 
 	return check_args(parser.parse_args())
 
