@@ -110,13 +110,6 @@ class CNNClassifier():
 			self.set_log_dir("{}_".format(pkl_fname))
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
-			# import matplotlib.pyplot as plt
-			# plt.title("label{}".format(self.data_y[0]))
-			# plt.imshow(self.data_X[0].reshape(28, 28))
-			# plt.show()
-			# plt.title("label{}".format(self.data_y[1]))
-			# plt.imshow(self.data_X[1].reshape(28, 28))
-			# plt.show()
 		if "custom" in self.classifier_name:
 			self.IMAGE_WIDTH = 28
 			self.IMAGE_HEIGHT = 28
@@ -140,7 +133,8 @@ class CNNClassifier():
 
 		# init_variables try to load from pickle:
 		try:
-			self.load_model()
+			if not load_from_pkl:
+				self.load_model()
 		except:
 			# Model params
 			self.W_conv1 = weight_variable([5, 5, self.c_dim, 32])
