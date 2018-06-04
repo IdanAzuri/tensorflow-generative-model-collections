@@ -25,7 +25,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 import matplotlib
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
 import argparse
 import pickle
 
@@ -110,6 +110,13 @@ class CNNClassifier():
 			self.set_log_dir("{}_".format(pkl_fname))
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
+			# import matplotlib.pyplot as plt
+			# plt.title("label{}".format(self.data_y[0]))
+			# plt.imshow(self.data_X[0].reshape(28, 28))
+			# plt.show()
+			# plt.title("label{}".format(self.data_y[1]))
+			# plt.imshow(self.data_X[1].reshape(28, 28))
+			# plt.show()
 		if "custom" in self.classifier_name:
 			self.IMAGE_WIDTH = 28
 			self.IMAGE_HEIGHT = 28
@@ -191,7 +198,7 @@ class CNNClassifier():
 		self.y_conv = self._deepcnn(self.x, self.keep_prob)
 
 		# loss
-		cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=self.y_, logits=self.y_conv)
+		cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y_, logits=self.y_conv)
 		self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
 			self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)
 		cross_entropy = tf.reduce_mean(cross_entropy)
@@ -254,6 +261,7 @@ class CNNClassifier():
 		self.save_model()
 		self.plot_train_test_loss("accuracy", self.accuracy_list)
 		self.plot_train_test_loss("confidence", self.confidence_list)
+		self.plot_train_test_loss("loss", self.loss_list)
 
 	def test(self, test_batch, test_labels, counter=0, is_arg_max=False):
 		if is_arg_max:
@@ -348,12 +356,12 @@ def preprocess_data(dir, pkl_fname, batch_size=64):
 		for j, l in enumerate(dummy_labels):
 			z[j, l] = 1
 		dummy_labels = z
-		# import matplotlib.pyplot as plt
+		import matplotlib.pyplot as plt
 
-		# plt.imshow(tmp[0].reshape(28, 28))
-		# plt.show()
-		# plt.imshow(tmp[1].reshape(28, 28))
-		# plt.show()
+		plt.imshow(tmp[0].reshape(28, 28))
+		plt.show()
+		plt.imshow(tmp[1].reshape(28, 28))
+		plt.show()
 		# data_y = one_hot_encoder(data_y)
 		_, _, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 		data_y_categorical[mask] = np.bincount(arg_max).argmax() + 1
