@@ -324,7 +324,7 @@ def parse_args():
 def preprocess_data(dir, pkl_fname, batch_size=64):
 	# mapping only once need to edit the condition
 	pkl_label_path = "{}generated_labels_{}.pkl".format(dir, pkl_fname)
-	pkl_path = "{}generated_trainingset_{}.pkl".format(dir, pkl_fname)
+	pkl_path = "{}generated_training_set_{}.pkl".format(dir, pkl_fname)
 	data_X = pickle.load(open(pkl_path, 'rb'))
 	data_y = pickle.load(open(pkl_label_path, 'rb'))
 
