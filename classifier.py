@@ -133,7 +133,6 @@ class CNNClassifier():
 
 		# init_variables try to load from pickle:
 		try:
-			if not load_from_pkl:
 				self.load_model()
 		except:
 			# Model params
@@ -252,7 +251,8 @@ class CNNClassifier():
 				else:
 					self.train_step.run(session=self.sess,
 					                    feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
-		self.save_model()
+		if not self.classifier_name =="custom":
+			self.save_model()
 		self.plot_train_test_loss("accuracy", self.accuracy_list)
 		self.plot_train_test_loss("confidence", self.confidence_list)
 		self.plot_train_test_loss("loss", self.loss_list)
