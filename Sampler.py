@@ -39,6 +39,16 @@ class GaussianSample(Sampler):
 	def get_sample(self, batch_size, embedding_dim, n_distributions):
 		return np.random.normal(loc=self.mu, scale=self.sigma, size=(batch_size, embedding_dim))
 
+class TruncatedGaussianSample(Sampler):
+	def get_sample(self, batch_size, embedding_dim, n_distributions):
+		import scipy.stats
+		lower = -1
+		upper = 1
+		mu = self.mu
+		sigma = self.sigma
+
+		samples = scipy.stats.truncnorm.rvs(lower,upper,loc=mu,scale=sigma,size=(batch_size, embedding_dim))
+		return  samples
 
 class MultiModalUniformSample(Sampler):
 	def get_sample(self, batch_size, embedding_dim, n_distributions):
@@ -65,7 +75,7 @@ class MultimodelGaussianTF(Sampler):
 if __name__ == '__main__':
 	bimix_gauss = MultimodelGaussianTF()
 	import tensorflow as tf
-	g= GaussianSample()
+	g= TruncatedGaussianSample()
 	gg = g.get_sample(100,1,1)
 	plt.plot(gg)
 

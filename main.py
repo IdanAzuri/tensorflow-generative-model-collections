@@ -46,7 +46,7 @@ def parse_args():
 	parser.add_argument('--result_dir', type=str, default='results', help='Directory name to save the generated images')
 	parser.add_argument('--log_dir', type=str, default='logs', help='Directory name to save training logs')
 	parser.add_argument('--sampler', type=str, default='uniform',
-	                    choices=['uniform', 'multi-uniform', 'multi-gaussian', 'multi-gaussianTF', 'gaussian'])
+	                    choices=['uniform', 'multi-uniform', 'multi-gaussian', 'multi-gaussianTF', 'gaussian','truncated'])
 	parser.add_argument('--gpus', type=str, default='0')
 	parser.add_argument('--len_continuous_code', type=int, default=2)
 	parser.add_argument('--wgan', type=str, default=False)
@@ -109,6 +109,9 @@ def main():
 	elif sampler == 'gaussian':
 		sampler= "{}/mu_{}_sigma{}".format(sampler,mu,sigma)
 		sampler_method = GaussianSample(mu,sigma)
+	elif sampler == 'truncated':
+		sampler= "{}/mu_{}_sigma{}".format(sampler,mu,sigma)
+		sampler_method = TruncatedGaussianSample(mu,sigma)
 	is_wgan_gp = args.wgan
 	with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
 
