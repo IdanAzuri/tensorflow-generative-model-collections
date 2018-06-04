@@ -527,7 +527,7 @@ class MultiModalInfoGAN(object):
 		plt.grid()
 		plt.show()
 		if self.wgan_gp:
-			name_figure = "MMWinfoGAN_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
+			name_figure = "WGAN_MMWinfoGAN_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
 		else:
 			name_figure = "MMinfoGAN_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
 		plt.savefig(name_figure)
