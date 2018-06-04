@@ -2,7 +2,7 @@ import argparse
 import os
 
 import matplotlib
-# matplotlib.use('Agg')
+matplotlib.use('Agg')
 import tensorflow as tf
 
 from ACGAN import ACGAN
@@ -96,15 +96,19 @@ def main():
 	          AEMultiModalInfoGAN]
 	len_continuous_code = args.len_continuous_code
 	sampler = args.sampler
+	mu=args.mu
+	sigma=args.sigma
 	sampler_method = UniformSample()
 	if sampler == 'multi-uniform':
 		sampler_method = MultiModalUniformSample()
 	elif sampler == 'multi-gaussian':
 		sampler_method = MultivariateGaussianSampler()
 	elif sampler == 'multi-gaussianTF':
-		sampler_method = MultimodelGaussianTF()
+		sampler= "{}/mu_{}_sigma{}".format(sampler,mu,sigma)
+		sampler_method = MultimodelGaussianTF(mu,sigma)
 	elif sampler == 'gaussian':
-		sampler_method = GaussianSample()
+		sampler= "{}/mu_{}_sigma{}".format(sampler,mu,sigma)
+		sampler_method = GaussianSample(mu,sigma)
 	is_wgan_gp = args.wgan
 	with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
 
