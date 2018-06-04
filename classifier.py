@@ -423,5 +423,5 @@ def main():
 
 
 if __name__ == '__main__':
-	# main()
-	plot_from_pkl()
+	main()
+	# plot_from_pkl()
