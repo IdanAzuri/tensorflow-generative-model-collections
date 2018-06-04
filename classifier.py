@@ -351,7 +351,7 @@ def preprocess_data(dir, pkl_fname, batch_size=64):
 	data_y = one_hot_encoder(data_y_categorical)
 	data_X, data_y = shuffle(data_X, data_y, random_state=0)
 	pickle.dump(data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'))
-	pickle.dump(data_X, open("{}edited_generated_trainingset_{}.pkl".format(dir, pkl_fname), 'wb'))
+	pickle.dump(data_X, open("{}edited_generated_training_set_{}.pkl".format(dir, pkl_fname), 'wb'))
 
 
 def plot_from_pkl():
