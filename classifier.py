@@ -231,13 +231,13 @@ class CNNClassifier():
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
 				if i % 100 == 0:
-					import matplotlib.pyplot as plt
-					plt.title("label{}".format(self.data_y[0]))
-					plt.imshow(self.data_X[0].reshape(28, 28))
-					plt.show()
-					plt.title("label{}".format(self.data_y[1]))
-					plt.imshow(self.data_X[1].reshape(28, 28))
-					plt.show()
+					# import matplotlib.pyplot as plt
+					# plt.title("label{}".format(self.data_y[0]))
+					# plt.imshow(self.data_X[0].reshape(28, 28))
+					# plt.show()
+					# plt.title("label{}".format(self.data_y[1]))
+					# plt.imshow(self.data_X[1].reshape(28, 28))
+					# plt.show()
 					self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=0)
 					accuracy, confidence, loss = self.test(self.test_images[:1000].reshape(-1, 784), self.test_labels[:1000].reshape(-1,
 					                                                                                                               10), epoch * i)
@@ -301,8 +301,8 @@ class CNNClassifier():
 		plt.title('{} {} score'.format(self.fname, name_of_measure), fontsize=18)
 		x_range = np.linspace(1, len(array) - 1, len(array))
 
-		confidence, = plt.plot(x_range, array, color=color, marker=marker, label=name_of_measure, linewidth=2)
-		plt.legend(handler_map={confidence: HandlerLine2D(numpoints=1)})
+		measure, = plt.plot(x_range, array, color=color, marker=marker, label=name_of_measure, linewidth=2)
+		plt.legend(handler_map={measure: HandlerLine2D(numpoints=1)})
 		plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
 		plt.yscale('linear')
 		plt.xlabel('Epoch')
@@ -350,12 +350,12 @@ def preprocess_data(dir, pkl_fname, batch_size=64):
 		for j, l in enumerate(dummy_labels):
 			z[j, l] = 1
 		dummy_labels = z
-		import matplotlib.pyplot as plt
-
-		plt.imshow(tmp[0].reshape(28, 28))
-		plt.show()
-		plt.imshow(tmp[1].reshape(28, 28))
-		plt.show()
+		# import matplotlib.pyplot as plt
+		#
+		# plt.imshow(tmp[0].reshape(28, 28))
+		# plt.show()
+		# plt.imshow(tmp[1].reshape(28, 28))
+		# plt.show()
 		# data_y = one_hot_encoder(data_y)
 		_, _, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 		data_y_categorical[mask] = np.bincount(arg_max).argmax() + 1
