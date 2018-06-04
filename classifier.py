@@ -311,9 +311,9 @@ class CNNClassifier():
 		plt.show()
 
 		name_figure = "classifier_MMinfoGAN_{}_{}".format(self.fname, name_of_measure)
+		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
 		plt.savefig(name_figure)
 		plt.close()
-		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
 
 
 
