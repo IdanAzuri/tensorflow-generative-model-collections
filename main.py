@@ -105,13 +105,13 @@ def main():
 		sampler_method = MultivariateGaussianSampler()
 	elif sampler == 'multi-gaussianTF':
 		sampler= "{}/mu_{}_sigma{}".format(sampler,mu,sigma)
-		sampler_method = MultimodelGaussianTF(mu,sigma)
+		sampler_method = MultimodelGaussianTF(mu=mu,sigma=sigma)
 	elif sampler == 'gaussian':
 		sampler= "{}/mu_{}_sigma{}".format(sampler,mu,sigma)
-		sampler_method = GaussianSample(mu,sigma)
+		sampler_method = GaussianSample(mu=mu,sigma=sigma)
 	elif sampler == 'truncated':
 		sampler= "{}/mu_{}_sigma{}".format(sampler,mu,sigma)
-		sampler_method = TruncatedGaussianSample(mu,sigma)
+		sampler_method = TruncatedGaussianSample(mu=mu,sigma=sigma)
 	is_wgan_gp = args.wgan
 	with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
 

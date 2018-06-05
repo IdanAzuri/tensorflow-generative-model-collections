@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 
 class Sampler(object):
-	def __init__(self,sigma=0.15,mu=0.1):
+	def __init__(self,mu=0.1,sigma=0.15):
 		self.sigma = sigma
 		self.mu = mu
 
