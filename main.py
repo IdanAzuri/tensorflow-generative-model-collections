@@ -102,9 +102,10 @@ def main():
 	if sampler == 'multi-uniform':
 		sampler_method = MultiModalUniformSample()
 	elif sampler == 'multi-gaussian':
-		sampler_method = MultivariateGaussianSampler()
-	elif sampler == 'multi-gaussianTF':
 		sampler= "{}/mu_{}_sigma{}".format(sampler,mu,sigma)
+		sampler_method = MultivariateGaussianSampler()
+	# elif sampler == 'multi-gaussianTF':
+	# 	sampler= "{}/mu_{}_sigma{}".format(sampler,mu,sigma)
 		sampler_method = MultimodelGaussianTF(mu=mu,sigma=sigma)
 	elif sampler == 'gaussian':
 		sampler= "{}/mu_{}_sigma{}".format(sampler,mu,sigma)
