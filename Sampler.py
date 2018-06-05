@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 
 class Sampler(object):
-	def __init__(self,mu=0.1,sigma=0.15):
+	def __init__(self,mu=0,sigma=0.15):
 		self.sigma = sigma
 		self.mu = mu
 
@@ -75,9 +75,13 @@ class MultimodelGaussianTF(Sampler):
 if __name__ == '__main__':
 	bimix_gauss = MultimodelGaussianTF()
 	import tensorflow as tf
-	g= TruncatedGaussianSample()
-	gg = g.get_sample(100,1,1)
-	plt.plot(gg)
+	g= TruncatedGaussianSample(sigma=1)
+
+	gg = g.get_sample(1000,1,1)
+	print(np.max(gg))
+	print(np.min(gg))
+	print(np.mean(gg))
+	# plt.plot(gg)
 
 	# sess = tf.Session()
 	# with sess.as_default():
@@ -88,7 +92,6 @@ if __name__ == '__main__':
 	# test_mul_uni=MultiModalUniformSample()
 	# b = test_uni.get_sample(10, 5, 10)
 	# c = test_mul_uni.get_sample(10, 5, 10)
-	print(g)
 	# print(d)
 	# print(b)
 	# print(c
@@ -100,7 +103,7 @@ if __name__ == '__main__':
 	# plt.plot(gg)
 	# plt.show()
 	# plt.plot(b)
-	plt.show()
+	# plt.show()
 	# plt.plot(c)
 	# plt.show()
 	# plt.close()
