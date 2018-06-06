@@ -475,6 +475,7 @@ class MultiModalInfoGAN(object):
 				generated_labels += [label] * self.batch_size
 		fname_trainingset = "generated_training_set_{}_{}_mu_{}_sigma_{}".format(self.dataset_name, type(self.sampler).__name__,
 		                                                                         self.sampler.mu, self.sampler.sigma)
+		print("SAVED TRAINING SET {}".format(fname_trainingset))
 		fname_labeles = "generated_labels_{}_{}_mu_{}_sigma_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
 		                                                               self.sampler.sigma)
 		pickle.dump(generated_dataset, open("{}.pkl".format(fname_trainingset), 'wb'))

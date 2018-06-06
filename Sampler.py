@@ -29,6 +29,20 @@ class MultivariateGaussianSampler(Sampler):
 			result_vec[i] = tmp[:, current_dist_states_indices[i], i]
 		return np.asarray(result_vec, dtype=np.float32)
 
+class MultivariateGaussianTruncatedSampler(Sampler):
+	def get_sample(self, batch_size, embedding_dim, n_distributions):
+		current_dist_states_indices = np.random.randint(0, n_distributions - 1, batch_size)
+		mean_vec = np.linspace(-self.mu,self.mu,n_distributions)
+		cov_mat = np.eye(n_distributions) * self.sigma  # np.random.randint(1, 5, n_distributions)  # this is diagonal beacuse we want iid
+
+		result_vec = np.zeros((batch_size, embedding_dim))
+		# create multimodal matrix
+		matrix_sample = np.random.multivariate_normal(mean_vec, cov_mat, size=batch_size * embedding_dim)
+		# matrix_sample from the multimodal matrix
+		for i in range(batch_size):
+			tmp = matrix_sample.reshape(embedding_dim, n_distributions, batch_size)
+			result_vec[i] = tmp[:, current_dist_states_indices[i], i]
+		return np.asarray(result_vec, dtype=np.float32)
 
 class UniformSample(Sampler):
 	def get_sample(self, batch_size, embedding_dim, n_distributions):
