@@ -229,13 +229,13 @@ class CNNClassifier():
 
 	def train(self):
 		start_batch_id = 0  # int(1000 / self.batch_size)
-		self.num_batches = min(len(self.data_X) // self.batch_size, 100)
+		self.num_batches = len(self.data_X) // self.batch_size
 		for epoch in range(self.num_epochs):
 			for i in range(start_batch_id, self.num_batches):
 				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
-				if i % 500 == 0:
+				if i % 200 == 0:
 					self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=0)
 					accuracy, confidence, loss = self.test(self.test_images[:1000].reshape(-1, 784),
 					                                       self.test_labels[:1000].reshape(-1, 10), epoch * i)
@@ -253,8 +253,9 @@ class CNNClassifier():
 		if not self.classifier_name == "custom":
 			self.save_model()
 		self.plot_train_test_loss("accuracy", self.accuracy_list)
-		self.plot_train_test_loss("confidence", self.confidence_list)
-		self.plot_train_test_loss("loss", self.loss_list)
+
+	# self.plot_train_test_loss("confidence", self.confidence_list)
+	# self.plot_train_test_loss("loss", self.loss_list)
 
 	def test(self, test_batch, test_labels, counter=0, is_arg_max=False):
 		if is_arg_max:

@@ -341,8 +341,9 @@ class MultiModalInfoGAN(object):
 		# plotting
 		self.create_dataset_from_GAN()
 		self.save(self.checkpoint_dir, counter)
-		# if self.dataset_name != "celebA":
-		# 	self.plot_train_test_loss("confidence", self.confidence_list)
+
+	# if self.dataset_name != "celebA":
+	# 	self.plot_train_test_loss("confidence", self.confidence_list)
 
 	# Evaluation with classifier
 
@@ -478,8 +479,8 @@ class MultiModalInfoGAN(object):
 		print("SAVED TRAINING SET {}".format(fname_trainingset))
 		fname_labeles = "generated_labels_{}_{}_mu_{}_sigma_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
 		                                                               self.sampler.sigma)
-		pickle.dump(generated_dataset, open("{}.pkl".format(fname_trainingset), 'wb'),protocol=4)
-		pickle.dump(generated_labels, open("{}.pkl".format(fname_labeles), 'wb'),protocol=4)
+		pickle.dump(generated_dataset, open("{}.pkl".format(fname_trainingset), 'wb'), protocol=4)
+		pickle.dump(generated_labels, open("{}.pkl".format(fname_labeles), 'wb'), protocol=4)
 		# fname = "{}_{}".format(self.dataset_name, type(self.sampler).__name__)
 		# Issue because session inside session
 		# preprocess_data("",fname)
@@ -540,7 +541,7 @@ class MultiModalInfoGAN(object):
 			name_figure = "MMinfoGAN_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
 		plt.savefig(name_figure)
 		plt.close()
-		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'),protocol=4)
+		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'), protocol=4)
 
 
 def plot_from_pkl():
