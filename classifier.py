@@ -275,7 +275,7 @@ class CNNClassifier():
 		# Save the model for a pickle
 		pickle.dump([self.sess.run(self.W_conv1), self.sess.run(self.b_conv1), self.sess.run(self.W_conv2), self.sess.run(self.b_conv2),
 		             self.sess.run(self.W_fc1), self.sess.run(self.b_fc1), self.sess.run(self.W_fc2), self.sess.run(self.b_fc2)],
-		            open(self.save_to, 'wb'))
+		            open(self.save_to, 'wb'),protocol=4)
 
 		print("Model has been saved!")
 
@@ -323,6 +323,7 @@ def parse_args():
 
 def preprocess_data(dir, pkl_fname, batch_size=64):
 	# mapping only once need to edit the condition
+
 	pkl_label_path = "{}generated_labels_{}.pkl".format(dir, pkl_fname)
 	pkl_path = "{}generated_training_set_{}.pkl".format(dir, pkl_fname)
 	data_X = pickle.load(open(pkl_path, 'rb'))
@@ -350,8 +351,8 @@ def preprocess_data(dir, pkl_fname, batch_size=64):
 
 	data_y = one_hot_encoder(data_y_categorical)
 	data_X, data_y = shuffle(data_X, data_y, random_state=0)
-	pickle.dump(data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'))
-	pickle.dump(data_X, open("{}edited_generated_training_set_{}.pkl".format(dir, pkl_fname), 'wb'))
+	pickle.dump(data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'),protocol=4)
+	pickle.dump(data_X, open("{}edited_generated_training_set_{}.pkl".format(dir, pkl_fname), 'wb'),protocol=4)
 
 
 def plot_from_pkl():
