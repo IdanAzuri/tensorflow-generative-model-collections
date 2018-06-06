@@ -403,9 +403,9 @@ def MM_mu_1_zoom_plot_from_pkl():
 	# d= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.1_sigma_2.0_accuracy.pkl", "rb"))[2:]
 	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.5_accuracy.pkl", "rb"))[2:]
 	# f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.4_accuracy.pkl", "rb"))[2:]
-	g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.3_accuracy.pkl", "rb"))[2:]
+	# g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.3_accuracy.pkl", "rb"))[2:]
 	h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_accuracy.pkl", "rb"))[2:]
-	i = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_accuracy.pkl", "rb"))[2:]
+	# i = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_accuracy.pkl", "rb"))[2:]
 	j = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_accuracy.pkl", "rb"))[2:]
 	k = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_1.0_accuracy.pkl", "rb"))[2:]
 	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
@@ -415,9 +415,9 @@ def MM_mu_1_zoom_plot_from_pkl():
 	# d_range = np.arange(2,len(d)+2)
 	e_range = np.arange(2, len(e) + 2)
 	# f_range = np.arange(2, len(f) + 2)
-	g_range = np.arange(2, len(g) + 2)
+	# g_range = np.arange(2, len(g) + 2)
 	h_range = np.arange(2, len(h) + 2)
-	i_range = np.arange(len(i))
+	# i_range = np.arange(len(i))
 	j_range = np.arange(len(j))
 	k_range = np.arange(len(k))
 	# aa, = plt.plot(a_range, a, color='b', marker="P", label="$\sigma=10,\mu=0$", linewidth=0.5)
@@ -426,10 +426,10 @@ def MM_mu_1_zoom_plot_from_pkl():
 	# dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=2,\mu=0$", linewidth=0.5)
 	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
 	# ff, = plt.plot(f_range, f, color='b', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
-	gg, = plt.plot(g_range, g, color='r', marker='d', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
+	# gg, = plt.plot(g_range, g, color='r', marker='d', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
 	hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
 	# ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
-	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
+	jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
