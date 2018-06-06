@@ -177,14 +177,14 @@ class CNNClassifier():
 		y_conv = tf.matmul(h_fc1_drop, self.W_fc2) + self.b_fc2
 
 		# summary
-		variable_summaries(self.W_conv1, 'W_conv1')
-		variable_summaries(self.W_conv2, 'W_conv2')
-		variable_summaries(self.b_conv1, 'b_conv1')
-		variable_summaries(self.b_conv2, 'b_conv2')
-		variable_summaries(self.W_fc1, 'W_fc1')
-		variable_summaries(self.W_fc2, 'W_fc2')
-		variable_summaries(self.b_fc1, 'b_fc1')
-		variable_summaries(self.b_fc2, 'b_fc2')
+		# variable_summaries(self.W_conv1, 'W_conv1')
+		# variable_summaries(self.W_conv2, 'W_conv2')
+		# variable_summaries(self.b_conv1, 'b_conv1')
+		# variable_summaries(self.b_conv2, 'b_conv2')
+		# variable_summaries(self.W_fc1, 'W_fc1')
+		# variable_summaries(self.W_fc2, 'W_fc2')
+		# variable_summaries(self.b_fc1, 'b_fc1')
+		# variable_summaries(self.b_fc2, 'b_fc2')
 		return y_conv
 
 	def _create_model(self):
@@ -201,17 +201,17 @@ class CNNClassifier():
 		cross_entropy = tf.reduce_mean(cross_entropy)
 		self.cross_entropy = cross_entropy
 		cross_entropy += self.l2_regularization
-		tf.summary.scalar('cross_entropy', cross_entropy)
+		# tf.summary.scalar('cross_entropy', cross_entropy)
 
 		self.train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 
 		correct_prediction = tf.equal(tf.argmax(self.y_conv, 1), tf.argmax(self.y_, 1))
 		correct_prediction = tf.cast(correct_prediction, tf.float32)
 		self.accuracy = tf.reduce_mean(correct_prediction)
-		tf.summary.scalar('accuracy', self.accuracy)
+		# tf.summary.scalar('accuracy', self.accuracy)
 
 		self.confidence = tf.cast(tf.reduce_mean(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), axis=0), tf.float32)
-		tf.summary.scalar('confidence', self.confidence)
+		# tf.summary.scalar('confidence', self.confidence)
 
 		self.argmax = tf.argmax(self.y_conv, 1)
 
@@ -219,28 +219,30 @@ class CNNClassifier():
 		graph_location_test = self.log_dir + 'test'
 		self.merged = tf.summary.merge_all()
 		print('Saving graph to: %s' % graph_location)
-		self.train_writer = tf.summary.FileWriter(graph_location)
-		self.test_writer = tf.summary.FileWriter(graph_location_test)
+		# self.train_writer = tf.summary.FileWriter(graph_location)
+		# self.test_writer = tf.summary.FileWriter(graph_location_test)
 		self.sess = tf.Session()
 		self.sess.run(tf.global_variables_initializer())
-		self.train_writer.add_graph(self.sess.graph)
-		self.test_writer.add_graph(self.sess.graph)
+
+	# self.train_writer.add_graph(self.sess.graph)
+	# self.test_writer.add_graph(self.sess.graph)
 
 	def train(self):
 		start_batch_id = 0  # int(1000 / self.batch_size)
-		self.num_batches = len(self.data_X) // self.batch_size
+		self.num_batches = min(len(self.data_X) // self.batch_size, 100)
 		for epoch in range(self.num_epochs):
 			for i in range(start_batch_id, self.num_batches):
 				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
-				if i % 100 == 0:
+				if i % 500 == 0:
 					self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=0)
-					accuracy, confidence, loss = self.test(self.test_images[:1000].reshape(-1, 784), self.test_labels[:1000].reshape(-1,
-					                                                                                                               10), epoch * i)
-					summary, _ = self.sess.run([self.merged, self.train_step],
-					                           feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
-					self.train_writer.add_summary(summary, i)
+					accuracy, confidence, loss = self.test(self.test_images[:1000].reshape(-1, 784),
+					                                       self.test_labels[:1000].reshape(-1, 10), epoch * i)
+					# summary, _ = self.sess.run([self.merged, self.train_step],
+					#                            feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
+					# self.train_writer.add_summary(summary, i)
+					_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
 					print('epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
 					self.accuracy_list.append(accuracy)
 					self.confidence_list.append(confidence)
@@ -256,17 +258,17 @@ class CNNClassifier():
 
 	def test(self, test_batch, test_labels, counter=0, is_arg_max=False):
 		if is_arg_max:
-			summary, accuracy, confidence, loss, arg_max = self.sess.run(
+			accuracy, confidence, loss, arg_max = self.sess.run(
 				[self.merged, self.accuracy, self.confidence, self.cross_entropy, self.argmax],
 				feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
 			print("argmax:{}".format(arg_max))
-			self.test_writer.add_summary(summary, counter)
+			# self.test_writer.add_summary(summary, counter)
 			print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
 			return accuracy, confidence, loss, arg_max
 		else:
-			summary, accuracy, confidence, loss = self.sess.run([self.merged, self.accuracy, self.confidence, self.cross_entropy],
-			                                                    feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
-			self.test_writer.add_summary(summary, counter)
+			accuracy, confidence, loss = self.sess.run([self.accuracy, self.confidence, self.cross_entropy],
+			                                           feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
+			# self.test_writer.add_summary(summary, counter)
 			print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
 			return accuracy, confidence, loss
 
@@ -275,7 +277,7 @@ class CNNClassifier():
 		# Save the model for a pickle
 		pickle.dump([self.sess.run(self.W_conv1), self.sess.run(self.b_conv1), self.sess.run(self.W_conv2), self.sess.run(self.b_conv2),
 		             self.sess.run(self.W_fc1), self.sess.run(self.b_fc1), self.sess.run(self.W_fc2), self.sess.run(self.b_fc2)],
-		            open(self.save_to, 'wb'),protocol=4)
+		            open(self.save_to, 'wb'), protocol=4)
 
 		print("Model has been saved!")
 
@@ -351,8 +353,8 @@ def preprocess_data(dir, pkl_fname, batch_size=64):
 
 	data_y = one_hot_encoder(data_y_categorical)
 	data_X, data_y = shuffle(data_X, data_y, random_state=0)
-	pickle.dump(data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'),protocol=4)
-	pickle.dump(data_X, open("{}edited_generated_training_set_{}.pkl".format(dir, pkl_fname), 'wb'),protocol=4)
+	pickle.dump(data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'), protocol=4)
+	pickle.dump(data_X, open("{}edited_generated_training_set_{}.pkl".format(dir, pkl_fname), 'wb'), protocol=4)
 
 
 def plot_from_pkl():
@@ -761,11 +763,4 @@ def main():
 
 
 if __name__ == '__main__':
-	main()
-	# gaussian_plot_from_pkl()
-	# gaussian_zoom_plot_from_pkl()
-	# truncated__zoom_plot_from_pkl()
-	# truncated_plot_from_pkl()
-	# MM_zoom_plot_from_pkl()
-	# MM_plot_from_pkl()
-	# plot_from_pkl()
+	main()  # gaussian_plot_from_pkl()  # gaussian_zoom_plot_from_pkl()  # truncated__zoom_plot_from_pkl()  # truncated_plot_from_pkl()  # MM_zoom_plot_from_pkl()  # MM_plot_from_pkl()  # plot_from_pkl()
