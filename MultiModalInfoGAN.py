@@ -40,7 +40,7 @@ class MultiModalInfoGAN(object):
 
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2,
 	             is_wgan_gp=False, SUPERVISED=True):
-		self.test_size = 1000
+		self.test_size = 200000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
 		self.confidence_list = []
@@ -204,7 +204,7 @@ class MultiModalInfoGAN(object):
 		if self.wgan_gp:
 			wd = tf.reduce_mean(D_real_logits) - tf.reduce_mean(D_fake_logits)
 			gp = gradient_penalty(self.x, self.x_, self.discriminator)
-			self.d_loss = -wd + gp * 30.0
+			self.d_loss = -wd + gp * 10.0
 			self.g_loss = -tf.reduce_mean(D_fake_logits)
 
 		## 2. Information Loss
@@ -474,9 +474,9 @@ class MultiModalInfoGAN(object):
 				generated_dataset.append(samples)  # storing generated images and label
 				generated_labels += [label] * self.batch_size
 		fname_trainingset = "generated_training_set_{}_{}_mu_{}_sigma_{}".format(self.dataset_name, type(self.sampler).__name__,
-		                                                                        self.sampler.mu, self.sampler.sigma)
+		                                                                         self.sampler.mu, self.sampler.sigma)
 		fname_labeles = "generated_labels_{}_{}_mu_{}_sigma_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
-		                                                                    self.sampler.sigma)
+		                                                               self.sampler.sigma)
 		pickle.dump(generated_dataset, open("{}.pkl".format(fname_trainingset), 'wb'))
 		pickle.dump(generated_labels, open("{}.pkl".format(fname_labeles), 'wb'))
 		# fname = "{}_{}".format(self.dataset_name, type(self.sampler).__name__)
