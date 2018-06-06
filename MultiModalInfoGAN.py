@@ -341,8 +341,8 @@ class MultiModalInfoGAN(object):
 		# plotting
 		self.create_dataset_from_GAN()
 		self.save(self.checkpoint_dir, counter)
-		if self.dataset_name != "celebA":
-			self.plot_train_test_loss("confidence", self.confidence_list)
+		# if self.dataset_name != "celebA":
+		# 	self.plot_train_test_loss("confidence", self.confidence_list)
 
 	# Evaluation with classifier
 
@@ -366,10 +366,10 @@ class MultiModalInfoGAN(object):
 			samples_for_test.append(samples)
 		samples_for_test = np.asarray(samples_for_test)
 		samples_for_test = samples_for_test.reshape(-1, self.input_width * self.input_height)
-		_, confidence, _ = self.pretrained_classifier.test(samples_for_test.reshape(-1, self.input_width * self.input_height),
-		                                                   np.ones((len(samples_for_test), self.len_discrete_code)), epoch)
-		if self.dataset_name != "celebA":
-			self.confidence_list.append(confidence)
+		# _, confidence, _ = self.pretrained_classifier.test(samples_for_test.reshape(-1, self.input_width * self.input_height),
+		#                                                    np.ones((len(samples_for_test), self.len_discrete_code)), epoch)
+		# if self.dataset_name != "celebA":
+		# 	self.confidence_list.append(confidence)
 		# self.loss_list.append(loss)
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
 			self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
