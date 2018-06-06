@@ -402,7 +402,7 @@ def MM_mu_1_zoom_plot_from_pkl():
 	# c= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.1_sigma_3.0_accuracy.pkl", "rb"))[2:]
 	# d= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.1_sigma_2.0_accuracy.pkl", "rb"))[2:]
 	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.5_accuracy.pkl", "rb"))[2:]
-	f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.4_accuracy.pkl", "rb"))[2:]
+	# f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.4_accuracy.pkl", "rb"))[2:]
 	g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.3_accuracy.pkl", "rb"))[2:]
 	h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_accuracy.pkl", "rb"))[2:]
 	i = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_accuracy.pkl", "rb"))[2:]
@@ -414,7 +414,7 @@ def MM_mu_1_zoom_plot_from_pkl():
 	# c_range = np.arange(2,len(c)+2)
 	# d_range = np.arange(2,len(d)+2)
 	e_range = np.arange(2, len(e) + 2)
-	f_range = np.arange(2, len(f) + 2)
+	# f_range = np.arange(2, len(f) + 2)
 	g_range = np.arange(2, len(g) + 2)
 	h_range = np.arange(2, len(h) + 2)
 	i_range = np.arange(len(i))
@@ -425,7 +425,7 @@ def MM_mu_1_zoom_plot_from_pkl():
 	# # cc, = plt.plot(c_range, c, color='r', marker='^', label="$\sigma=3,\mu=0$", linewidth=0.5)
 	# dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=2,\mu=0$", linewidth=0.5)
 	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
-	ff, = plt.plot(f_range, f, color='b', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
+	# ff, = plt.plot(f_range, f, color='b', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
 	gg, = plt.plot(g_range, g, color='r', marker='d', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
 	hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
 	# ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
