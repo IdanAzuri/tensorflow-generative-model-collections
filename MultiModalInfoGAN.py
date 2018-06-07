@@ -177,13 +177,13 @@ class MultiModalInfoGAN(object):
 
 		""" Graph Input """
 		# images
-		self.x = tf.placeholder(tf.float32, [bs] + image_dims, name='real_images')
+		self.x = tf.placeholder(tf.float64, [bs] + image_dims, name='real_images')
 
 		# labels
-		self.y = tf.placeholder(tf.float32, [bs, self.y_dim], name='y')
+		self.y = tf.placeholder(tf.float64, [bs, self.y_dim], name='y')
 
 		# noises
-		self.z = tf.placeholder(tf.float32, [bs, self.z_dim], name='z')
+		self.z = tf.placeholder(tf.float64, [bs, self.z_dim], name='z')
 
 		""" Loss Function """
 		## 1. GAN Loss
@@ -297,18 +297,12 @@ class MultiModalInfoGAN(object):
 				else:
 					batch_images = self.data_pool.batch()
 
-				# # generate code
-				# if self.SUPERVISED == True:
-				# 	batch_labels = self.data_y[idx * self.batch_size:(idx + 1) * self.batch_size]
-				# else:
-				# batch_labels = _multivariate_dist(self.batch_size, self.z_dim, 10)
+
 				batch_labels = np.random.multinomial(1, self.len_discrete_code * [float(1.0 / self.len_discrete_code)],
 				                                     size=[self.batch_size])
 
 				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))),
 				                             axis=1)
-				# batch_codes = np.concatenate((batch_labels, _multivariate_dist(self.batch_size, 2, 2)), axis=1)
-				batch_z_unif = np.random.uniform(-1, 1, [self.batch_size, self.z_dim]).astype(np.float32)
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 
 				# update D network
