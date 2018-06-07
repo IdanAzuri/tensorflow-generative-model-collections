@@ -177,13 +177,13 @@ class MultiModalInfoGAN(object):
 
 		""" Graph Input """
 		# images
-		self.x = tf.placeholder(tf.float64, [bs] + image_dims, name='real_images')
+		self.x = tf.placeholder(tf.float32, [bs] + image_dims, name='real_images')
 
 		# labels
-		self.y = tf.placeholder(tf.float64, [bs, self.y_dim], name='y')
+		self.y = tf.placeholder(tf.float32, [bs, self.y_dim], name='y')
 
 		# noises
-		self.z = tf.placeholder(tf.float64, [bs, self.z_dim], name='z')
+		self.z = tf.placeholder(tf.float32, [bs, self.z_dim], name='z')
 
 		""" Loss Function """
 		## 1. GAN Loss
