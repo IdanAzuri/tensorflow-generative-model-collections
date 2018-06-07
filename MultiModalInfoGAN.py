@@ -40,7 +40,7 @@ class MultiModalInfoGAN(object):
 
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2,
 	             is_wgan_gp=False, SUPERVISED=True):
-		self.test_size = 200000
+		self.test_size = 20000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
 		self.confidence_list = []
