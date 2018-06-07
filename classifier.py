@@ -215,10 +215,10 @@ class CNNClassifier():
 
 		self.argmax = tf.argmax(self.y_conv, 1)
 
-		graph_location = self.log_dir + 'train'
-		graph_location_test = self.log_dir + 'test'
-		self.merged = tf.summary.merge_all()
-		print('Saving graph to: %s' % graph_location)
+		# graph_location = self.log_dir + 'train'
+		# graph_location_test = self.log_dir + 'test'
+		# self.merged = tf.summary.merge_all()
+		# print('Saving graph to: %s' % graph_location)
 		# self.train_writer = tf.summary.FileWriter(graph_location)
 		# self.test_writer = tf.summary.FileWriter(graph_location_test)
 		self.sess = tf.Session()
@@ -260,7 +260,7 @@ class CNNClassifier():
 	def test(self, test_batch, test_labels, counter=0, is_arg_max=False):
 		if is_arg_max:
 			accuracy, confidence, loss, arg_max = self.sess.run(
-				[self.merged, self.accuracy, self.confidence, self.cross_entropy, self.argmax],
+				[self.accuracy, self.confidence, self.cross_entropy, self.argmax],
 				feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
 			print("argmax:{}".format(arg_max))
 			# self.test_writer.add_summary(summary, counter)
