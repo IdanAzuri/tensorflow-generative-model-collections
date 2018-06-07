@@ -357,7 +357,7 @@ class MultiModalInfoGAN(object):
 		samples_for_test = []
 		for i in range(self.test_size // self.batch_size):
 			z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
-			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
+			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
 			samples_for_test.append(samples)
 		samples_for_test = np.asarray(samples_for_test)
 		samples_for_test = samples_for_test.reshape(-1, self.input_width * self.input_height)
@@ -444,23 +444,23 @@ class MultiModalInfoGAN(object):
 		c2 = yv.flatten()
 		datasetsize = self.test_size // self.batch_size
 		for label in range(self.len_discrete_code):
-			for _ in range(datasetsize//2):
+			for _ in range(datasetsize):
 				z_fixed = np.zeros([self.batch_size, self.z_dim])
 				y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
 				y_one_hot = np.zeros((self.batch_size, self.y_dim))
 				y_one_hot[np.arange(self.batch_size), y] = 1
 
-				# clean samples z fixed
-				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
-				generated_dataset.append(samples)  # storing generated images and label
-				generated_labels += [label] * self.batch_size
+				# # clean samples z fixed
+				# samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
+				# generated_dataset.append(samples)  # storing generated images and label
+				# generated_labels += [label] * self.batch_size
 				# z fixed
 				y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
 				y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
 				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
 				generated_dataset.append(samples)  # storing generated images and label
 				generated_labels += [label] * self.batch_size
-			for _ in range(datasetsize//2):
+			for _ in range(datasetsize):
 				z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 				y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
 				y_one_hot = np.zeros((self.batch_size, self.y_dim))
