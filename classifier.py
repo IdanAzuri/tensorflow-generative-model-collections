@@ -235,7 +235,7 @@ class CNNClassifier():
 				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 
-				if i % 200 == 0:
+				if i % 1000 == 0:
 					self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=0)
 					accuracy, confidence, loss = self.test(self.test_images[:1000].reshape(-1, 784),
 					                                       self.test_labels[:1000].reshape(-1, 10), epoch * i)
@@ -245,8 +245,8 @@ class CNNClassifier():
 					_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
 					print('epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
 					self.accuracy_list.append(accuracy)
-					self.confidence_list.append(confidence)
-					self.loss_list.append(loss)
+					# self.confidence_list.append(confidence)
+					# self.loss_list.append(loss)
 				else:
 					self.train_step.run(session=self.sess,
 					                    feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
