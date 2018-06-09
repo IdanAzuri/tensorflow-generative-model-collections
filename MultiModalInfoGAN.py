@@ -443,7 +443,7 @@ class MultiModalInfoGAN(object):
 		c1 = xv.flatten()
 		c2 = yv.flatten()
 		datasetsize = self.test_size // self.batch_size
-		for label in range(self.len_discrete_code):
+		for label in range(self.len_discrete_code//2):
 			for _ in range(datasetsize):
 				z_fixed = np.zeros([self.batch_size, self.z_dim])
 				y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
@@ -459,20 +459,20 @@ class MultiModalInfoGAN(object):
 				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
 				generated_dataset.append(samples)  # storing generated images and label
 				generated_labels += [label] * self.batch_size
-			# for _ in range(datasetsize//2):
-			# 	z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
-			# 	y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
-			# 	y_one_hot = np.zeros((self.batch_size, self.y_dim))
-			# 	y_one_hot[np.arange(self.batch_size), y] = 1
-			#
-			# 	y_one_hot = np.zeros((self.batch_size, self.y_dim))
-			# 	y_one_hot[np.arange(self.batch_size), y] = 1
-			# 	y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
-			# 	y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
-			# 	samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
-			#
-			# 	generated_dataset.append(samples)  # storing generated images and label
-			# 	generated_labels += [label] * self.batch_size
+			for _ in range(datasetsize//2):
+				z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+				y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
+				y_one_hot = np.zeros((self.batch_size, self.y_dim))
+				y_one_hot[np.arange(self.batch_size), y] = 1
+
+				y_one_hot = np.zeros((self.batch_size, self.y_dim))
+				y_one_hot[np.arange(self.batch_size), y] = 1
+				y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
+				y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
+				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
+
+				generated_dataset.append(samples)  # storing generated images and label
+				generated_labels += [label] * self.batch_size
 		fname_trainingset = "generated_training_set_{}_{}_mu_{}_sigma_{}".format(self.dataset_name, type(self.sampler).__name__,
 		                                                                         self.sampler.mu, self.sampler.sigma)
 		print("SAVED TRAINING SET {}".format(fname_trainingset))
