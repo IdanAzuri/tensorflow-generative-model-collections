@@ -443,8 +443,8 @@ class MultiModalInfoGAN(object):
 		c1 = xv.flatten()
 		c2 = yv.flatten()
 		datasetsize = self.test_size // self.batch_size
-		for label in range(self.len_discrete_code//2):
-			for _ in range(datasetsize):
+		for label in range(self.len_discrete_code):
+			for _ in range(datasetsize//2):
 				z_fixed = np.zeros([self.batch_size, self.z_dim])
 				y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
 				y_one_hot = np.zeros((self.batch_size, self.y_dim))
@@ -473,6 +473,7 @@ class MultiModalInfoGAN(object):
 
 				generated_dataset.append(samples)  # storing generated images and label
 				generated_labels += [label] * self.batch_size
+		print("\n\nSAMPLES SIZE={},LABELS={}\n\n".format(len(generated_dataset),len(generated_labels)))
 		fname_trainingset = "generated_training_set_{}_{}_mu_{}_sigma_{}".format(self.dataset_name, type(self.sampler).__name__,
 		                                                                         self.sampler.mu, self.sampler.sigma)
 		print("SAVED TRAINING SET {}".format(fname_trainingset))
