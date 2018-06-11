@@ -26,7 +26,7 @@ from __future__ import division
 from __future__ import print_function
 import matplotlib
 
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 from matplotlib.legend_handler import HandlerLine2D
@@ -40,6 +40,8 @@ from sklearn.utils import shuffle
 from utils import load_mnist
 
 FLAGS = None
+
+np.random.seed(517)
 
 
 # losses
@@ -90,7 +92,7 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None, dir=None):
+	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None, dir=None, original_dataset_name='mnist'):
 		self.num_epochs = 100
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
@@ -102,8 +104,10 @@ class CNNClassifier():
 		self.accuracy_list = []
 		self.loss_list = []
 		self.confidence_list = []
+		self.IMAGE_WIDTH = 28
+		self.IMAGE_HEIGHT = 28
 		if load_from_pkl:
-			self.real_mnist_x, self.real_mnist_y = load_mnist('mnist')
+			self.real_mnist_x, self.real_mnist_y = load_mnist(original_dataset_name)
 			self.test_labels = self.real_mnist_y
 			# self.test_labels.astype(np.float32, copy=False)
 			self.test_images = self.real_mnist_x.reshape(-1, 784)
@@ -114,13 +118,8 @@ class CNNClassifier():
 			self.set_log_dir("{}_".format(pkl_fname))
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
-		if "custom" in self.classifier_name:
-			self.IMAGE_WIDTH = 28
-			self.IMAGE_HEIGHT = 28
 
 		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
-			self.IMAGE_WIDTH = 28
-			self.IMAGE_HEIGHT = 28
 			# mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
 			self.data_X, self.data_y = load_mnist(self.classifier_name)
 
@@ -245,8 +244,6 @@ class CNNClassifier():
 					_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
 					print('epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
 					self.accuracy_list.append(accuracy)
-					# self.confidence_list.append(confidence)
-					# self.loss_list.append(loss)
 				else:
 					self.train_step.run(session=self.sess,
 					                    feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
@@ -259,8 +256,7 @@ class CNNClassifier():
 
 	def test(self, test_batch, test_labels, counter=0, is_arg_max=False):
 		if is_arg_max:
-			accuracy, confidence, loss, arg_max = self.sess.run(
-				[self.accuracy, self.confidence, self.cross_entropy, self.argmax],
+			accuracy, confidence, loss, arg_max = self.sess.run([self.accuracy, self.confidence, self.cross_entropy, self.argmax],
 				feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
 			print("argmax:{}".format(arg_max))
 			# self.test_writer.add_summary(summary, counter)
@@ -320,13 +316,14 @@ def parse_args():
 	parser.add_argument('--dir_name', type=str, default='')
 	parser.add_argument('--preprocess', type=bool, default=False)
 	parser.add_argument('--fname', type=str, default='fashion-mnist_MultivariateGaussianSampler')
+	parser.add_argument('--original', type=str, default="mnist")
 
 	return parser.parse_args()
 
 
-def preprocess_data(dir, pkl_fname, batch_size=64):
+def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64):
 	# mapping only once need to edit the condition
-
+	assigned_labels = []
 	pkl_label_path = "{}generated_labels_{}.pkl".format(dir, pkl_fname)
 	pkl_path = "{}generated_training_set_{}.pkl".format(dir, pkl_fname)
 	data_X = pickle.load(open(pkl_path, 'rb'))
@@ -337,19 +334,34 @@ def preprocess_data(dir, pkl_fname, batch_size=64):
 	data_y = np.asarray(data_y, dtype=np.float32)
 	data_y_categorical = data_y
 	data_y = one_hot_encoder(data_y)
-	pretraind = CNNClassifier('mnist')
+	pretraind = CNNClassifier(original_dataset_name)
 	indices = np.argwhere(data_y == 1)
 	for i in range(10):
+		trials = 1
 		mask = (indices[:, 1] == i)
 		tmp = data_X[np.where(mask == True)][:10000]
-		dummy_labels = np.repeat(np.arange(10), 1000)
+		# dummy_labels = shuffle(np.repeat(np.arange(10), 1000))
 		# to one hot vec
-		z = np.zeros((10000, 10))
-		for j, l in enumerate(dummy_labels):
-			z[j, l] = 1
-		dummy_labels = z
-		_, _, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
-		data_y_categorical[mask] = np.bincount(arg_max).argmax() + 1
+		# z = np.zeros((10000, 10))
+		# for j, l in enumerate(dummy_labels):
+		# 	z[j, l] = 1
+		# dummy_labels = z
+		dummy_labels = data_y[:10000]  # no meaning for the labels
+		_, confidence, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+		bincount = np.argsort(np.bincount(arg_max))
+		new_label = bincount.argmax()
+		while new_label in assigned_labels:
+			print("OCCUPIED LABEL {}".format(new_label))
+			trials += 1
+			if trials < 4:
+				new_label = bincount[-trials]
+			else:
+				new_label = [i for i in np.arange(10) if i not in assigned_labels][0]
+			print("{}ed option LABEL {}".format(trials, new_label))
+		assigned_labels.append(new_label)
+		print("Assinging:{}".format(new_label))
+		data_y_categorical[mask] = new_label
+		print(assigned_labels)
 		print(np.bincount(arg_max))
 
 	data_y = one_hot_encoder(data_y_categorical)
@@ -358,393 +370,393 @@ def preprocess_data(dir, pkl_fname, batch_size=64):
 	pickle.dump(data_X, open("{}edited_generated_training_set_{}.pkl".format(dir, pkl_fname), 'wb'))
 
 
-def plot_from_pkl():
-	import numpy as np
-	import matplotlib.pyplot as plt
-	import pickle
-	plt.Figure(figsize=(15, 15))
-	dir = 'classifier_results/'
-	plt.title('MMInfoGAN Accuracy by Sampling Method', fontsize=12)
-	a = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.2_accuracy.pkl", "rb"))
-	b = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))
-	c = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_UniformSample_accuracy.pkl", "rb"))
-	d = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultiModalUniformSample_accuracy.pkl", "rb"))
-	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))
-	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
-	a_range = np.arange(len(a))
-	e_range = np.arange(len(e))
-	b_range = np.arange(len(b))
-	c_range = np.arange(len(c))
-	d_range = np.arange(len(d))
-	aa, = plt.plot(a_range, a, color='b', marker="P", label="MM Gaussian Sample", linewidth=0.5)
-	bb, = plt.plot(b_range, b, color='g', marker='.', label="Gaussian Sample", linewidth=0.5)
-	cc, = plt.plot(c_range, c, color='r', marker='^', label="Uniform Sample", linewidth=0.5)
-	dd, = plt.plot(d_range, d, color='y', marker="o", label="MM Uniform Sample", linewidth=0.5)
-	ee, = plt.plot(e_range, e, color='c', marker="*", label="Truncated Normal Sample", linewidth=0.5)
-	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.92, label='Benchmark', linestyle='--')
-
-	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
-	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
-	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
-	#                         dd: HandlerLine2D(numpoints=1)
-
-	# }, loc='middle right')
-	plt.legend(loc='best')
-	plt.xlabel("Epoch")
-	plt.ylabel("Confidence Score")
-	# plt.axis("auto")
-	plt.grid(True)
-	plt.show()
-	plt.savefig("MMInfoGAN Accuracy by Sampling Method.png")
-	plt.close()
-
-
-def truncated__zoom_plot_from_pkl():
-	import numpy as np
-	import matplotlib.pyplot as plt
-	import pickle
-	plt.Figure(figsize=(15, 15))
-	dir = 'classifier_results/'
-	plt.title('Zoom_MMinfoGAN_mnist_TruncatedGaussianSample', fontsize=12)
-	a = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_10.0_accuracy.pkl", "rb"))[2:]
-	b = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_5.0_accuracy.pkl", "rb"))[2:]
-	c = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_3.0_accuracy.pkl", "rb"))[2:]
-	d = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))[2:]
-	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.5_accuracy.pkl", "rb"))[2:]
-	f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.4_accuracy.pkl", "rb"))[2:]
-	g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))[2:]
-	h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.2_accuracy.pkl", "rb"))[2:]
-	# i= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.1_accuracy.pkl", "rb"))
-	j = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.15_accuracy.pkl", "rb"))[2:]
-	k = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_1.0_accuracy.pkl", "rb"))[2:]
-	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
-	a_range = np.arange(2, len(a) + 2)
-	b_range = np.arange(2, len(b) + 2)
-	c_range = np.arange(2, len(c) + 2)
-	d_range = np.arange(2, len(d) + 2)
-	e_range = np.arange(2, len(e) + 2)
-	f_range = np.arange(2, len(f) + 2)
-	g_range = np.arange(2, len(g) + 2)
-	h_range = np.arange(2, len(h) + 2)
-	# i_range = np.arange(len(i))
-	j_range = np.arange(len(j))
-	k_range = np.arange(len(k))
-	aa, = plt.plot(a_range, a, color='b', marker="P", label="$\sigma=10,\mu=0$", linewidth=0.5)
-	bb, = plt.plot(b_range, b, color='g', marker='d', label="$\sigma=5,\mu=0$", linewidth=0.5)
-	# cc, = plt.plot(c_range, c, color='r', marker='^', label="$\sigma=3,\mu=0$", linewidth=0.5)
-	dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=2,\mu=0$", linewidth=0.5)
-	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
-	# ff, = plt.plot(f_range, f, color='g', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
-	# gg, = plt.plot(g_range, g, color='r', marker='>', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
-	# hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
-	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
-	# kk, = plt.plot(k_range, k, color='k', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
-	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.92, label='Benchmark', linestyle='--')
-
-	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
-	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
-	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
-	#                         dd: HandlerLine2D(numpoints=1)
-
-	# }, loc='middle right')
-	plt.legend(loc='best')
-	plt.xlabel("Epoch")
-	plt.ylabel("Accuracy Score")
-	# plt.axis("auto")
-	plt.grid(True)
-	plt.show()
-	plt.savefig("Zoom_MMinfoGAN_mnist_TruncatedGaussianSample.png")
-	plt.close()
-
-
-def truncated_plot_from_pkl():
-	import numpy as np
-	import matplotlib.pyplot as plt
-	import pickle
-	plt.Figure(figsize=(15, 15))
-	dir = 'classifier_results/'
-	plt.title('MMinfoGAN_mnist_TruncatedGaussianSample', fontsize=12)
-	a = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_10.0_accuracy.pkl", "rb"))
-	b = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_5.0_accuracy.pkl", "rb"))
-	c = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_3.0_accuracy.pkl", "rb"))
-	d = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))
-	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.5_accuracy.pkl", "rb"))
-	f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.4_accuracy.pkl", "rb"))
-	g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))
-	h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.2_accuracy.pkl", "rb"))
-	# i= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.1_accuracy.pkl", "rb"))
-	j = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.15_accuracy.pkl", "rb"))
-	k = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_1.0_accuracy.pkl", "rb"))
-	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
-	a_range = np.arange(len(a))
-	b_range = np.arange(len(b))
-	c_range = np.arange(len(c))
-	d_range = np.arange(len(d))
-	e_range = np.arange(len(e))
-	f_range = np.arange(len(f))
-	g_range = np.arange(len(g))
-	h_range = np.arange(len(h))
-	# i_range = np.arange(len(i))
-	j_range = np.arange(len(j))
-	k_range = np.arange(len(k))
-	aa, = plt.plot(a_range, a, color='b', marker="P", label="$\sigma=10,\mu=0$", linewidth=0.5)
-	# bb, = plt.plot(b_range, b, color='g', marker='d', label="$\sigma=5,\mu=0$", linewidth=0.5)
-	# cc, = plt.plot(c_range, c, color='r', marker='^', label="$\sigma=3,\mu=0$", linewidth=0.5)
-	dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=2,\mu=0$", linewidth=0.5)
-	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
-	ff, = plt.plot(f_range, f, color='g', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
-	gg, = plt.plot(g_range, g, color='c', marker='>', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
-	# hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
-	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
-	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
-	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.92, label='Benchmark', linestyle='--')
-
-	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
-	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
-	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
-	#                         dd: HandlerLine2D(numpoints=1)
-
-	# }, loc='middle right')
-	plt.legend(loc='best')
-	plt.xlabel("Epoch")
-	plt.ylabel("Accuracy Score")
-	# plt.axis("auto")
-	plt.grid(True)
-	plt.show()
-	plt.savefig("MMinfoGAN_mnist_TruncatedGaussianSample.png")
-	plt.close()
-
-
-def gaussian_zoom_plot_from_pkl():
-	import numpy as np
-	import matplotlib.pyplot as plt
-	import pickle
-	plt.Figure(figsize=(15, 15))
-	dir = 'classifier_results/'
-	plt.title('Zoom_MMinfoGAN_mnist_GaussianSample', fontsize=12)
-	# a= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_10.0_accuracy.pkl", "rb"))[2:]
-	# b= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_5.0_accuracy.pkl", "rb"))[2:]
-	# c= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_3.0_accuracy.pkl", "rb"))[2:]
-	# d= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))[2:]
-	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.5_accuracy.pkl", "rb"))[2:]
-	f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.4_accuracy.pkl", "rb"))[2:]
-	g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))[2:]
-	h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.2_accuracy.pkl", "rb"))[2:]
-	i = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.1_accuracy.pkl", "rb"))[2:]
-	j = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.15_accuracy.pkl", "rb"))[2:]
-	k = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_1.0_accuracy.pkl", "rb"))[2:]
-	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
-	# a_range = np.arange(2,len(a)+2)
-	# b_range = np.arange(2,len(b)+2)
-	# c_range = np.arange(2,len(c)+2)
-	# d_range = np.arange(2,len(d)+2)
-	e_range = np.arange(2, len(e) + 2)
-	f_range = np.arange(2, len(f) + 2)
-	g_range = np.arange(2, len(g) + 2)
-	h_range = np.arange(2, len(h) + 2)
-	i_range = np.arange(len(i))
-	j_range = np.arange(len(j))
-	k_range = np.arange(len(k))
-	# aa, = plt.plot(a_range, a, color='b', marker="P", label="$\sigma=10,\mu=0$", linewidth=0.5)
-	# bb, = plt.plot(b_range, b, color='g', marker='d', label="$\sigma=5,\mu=0$", linewidth=0.5)
-	# # cc, = plt.plot(c_range, c, color='r', marker='^', label="$\sigma=3,\mu=0$", linewidth=0.5)
-	# dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=2,\mu=0$", linewidth=0.5)
-	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
-	ff, = plt.plot(f_range, f, color='b', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
-	# gg, = plt.plot(g_range, g, color='r', marker='d', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
-	hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
-	ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
-	jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
-	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
-
-	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
-	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
-	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
-	#                         dd: HandlerLine2D(numpoints=1)
-
-	# }, loc='middle right')
-	plt.legend(loc='best')
-	plt.xlabel("Epoch")
-	plt.ylabel("Accuracy Score")
-	# plt.axis("auto")
-	plt.grid(True)
-	plt.show()
-	plt.savefig("Zoom_MMinfoGAN_mnist_GaussianSample.png")
-	plt.close()
-
-
-def gaussian_plot_from_pkl():
-	import numpy as np
-	import matplotlib.pyplot as plt
-	import pickle
-	plt.Figure(figsize=(15, 15))
-	dir = 'classifier_results/'
-	plt.title('MMinfoGAN_mnist_GaussianSample', fontsize=12)
-	# a= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_10.0_accuracy.pkl", "rb"))
-	# b= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_5.0_accuracy.pkl", "rb"))
-	# c= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_3.0_accuracy.pkl", "rb"))
-	# d= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))
-	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.5_accuracy.pkl", "rb"))
-	f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.4_accuracy.pkl", "rb"))
-	g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))
-	h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.2_accuracy.pkl", "rb"))
-	i = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.1_accuracy.pkl", "rb"))
-	j = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.15_accuracy.pkl", "rb"))
-	k = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_1.0_accuracy.pkl", "rb"))
-	# a_range = np.arange(len(a))
-	# b_range = np.arange(len(b))
-	# c_range = np.arange(len(c))
-	# d_range = np.arange(len(d))
-	e_range = np.arange(len(e))
-	f_range = np.arange(len(f))
-	g_range = np.arange(len(g))
-	h_range = np.arange(len(h))
-	i_range = np.arange(len(i))
-	j_range = np.arange(len(j))
-	k_range = np.arange(len(k))
-	# aa, = plt.plot(a_range, a, color='b', marker="P", label="$\sigma=10,\mu=0$", linewidth=0.5)
-	# bb, = plt.plot(b_range, b, color='g', marker='d', label="$\sigma=5,\mu=0$", linewidth=0.5)
-	# cc, = plt.plot(c_range, c, color='r', marker='^', label="$\sigma=3,\mu=0$", linewidth=0.5)
-	# dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=2,\mu=0$", linewidth=0.5)
-	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
-	# ff, = plt.plot(f_range, f, color='b', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
-	gg, = plt.plot(g_range, g, color='r', marker='d', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
-	hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
-	jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
-	ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
-	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
-	mean_line = plt.plot(e_range, np.ones_like(e_range) * 0.92, label='Benchmark', linestyle='--')
-
-	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
-	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
-	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
-	#                         dd: HandlerLine2D(numpoints=1)
-
-	# }, loc='middle right')
-	plt.legend(loc='best')
-	plt.xlabel("Epoch")
-	plt.ylabel("Accuracy Score")
-	# plt.axis("auto")
-	plt.grid(True)
-	plt.show()
-	plt.savefig("MMinfoGAN_mnist_GaussianSampler.png")
-	plt.close()
-
-
-def MM_zoom_plot_from_pkl():
-	import numpy as np
-	import matplotlib.pyplot as plt
-	import pickle
-	plt.Figure(figsize=(15, 15))
-	dir = 'classifier_results/'
-	plt.title('Zoom_MMinfoGAN_mnist_MultivariateGaussianSampler', fontsize=12)
-	# a= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_10.0_accuracy.pkl", "rb"))[2:]
-	# b= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_5.0_accuracy.pkl", "rb"))[2:]
-	# c= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_3.0_accuracy.pkl", "rb"))[2:]
-	# d= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))[2:]
-	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.5_accuracy.pkl", "rb"))[2:]
-	f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.4_accuracy.pkl", "rb"))[2:]
-	g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))[2:]
-	h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.2_accuracy.pkl", "rb"))[2:]
-	i = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.1_accuracy.pkl", "rb"))[2:]
-	j = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.15_accuracy.pkl", "rb"))[2:]
-	k = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_1.0_accuracy.pkl", "rb"))[2:]
-	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
-	# a_range = np.arange(2,len(a)+2)
-	# b_range = np.arange(2,len(b)+2)
-	# c_range = np.arange(2,len(c)+2)
-	# d_range = np.arange(2,len(d)+2)
-	e_range = np.arange(2, len(e) + 2)
-	f_range = np.arange(2, len(f) + 2)
-	g_range = np.arange(2, len(g) + 2)
-	h_range = np.arange(2, len(h) + 2)
-	i_range = np.arange(len(i))
-	j_range = np.arange(len(j))
-	k_range = np.arange(len(k))
-	# aa, = plt.plot(a_range, a, color='b', marker="P", label="$\sigma=10,\mu=0$", linewidth=0.5)
-	# bb, = plt.plot(b_range, b, color='g', marker='d', label="$\sigma=5,\mu=0$", linewidth=0.5)
-	# # cc, = plt.plot(c_range, c, color='r', marker='^', label="$\sigma=3,\mu=0$", linewidth=0.5)
-	# dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=2,\mu=0$", linewidth=0.5)
-	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
-	ff, = plt.plot(f_range, f, color='b', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
-	gg, = plt.plot(g_range, g, color='r', marker='d', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
-	hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
-	# ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
-	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
-	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
-
-	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
-	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
-	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
-	#                         dd: HandlerLine2D(numpoints=1)
-
-	# }, loc='middle right')
-	plt.legend(loc='best')
-	plt.xlabel("Epoch")
-	plt.ylabel("Accuracy Score")
-	# plt.axis("auto")
-	plt.grid(True)
-	plt.show()
-	plt.savefig("Zoom_MMinfoGAN_mnist_MultivariateGaussianSampler.png")
-	plt.close()
-
-
-def MM_plot_from_pkl():
-	import numpy as np
-	import matplotlib.pyplot as plt
-	import pickle
-	plt.Figure(figsize=(15, 15))
-	dir = 'classifier_results/'
-	plt.title('MMinfoGAN_mnist_MultivariateGaussianSampler', fontsize=12)
-	# a= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_10.0_accuracy.pkl", "rb"))
-	# b= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_5.0_accuracy.pkl", "rb"))
-	# c= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_3.0_accuracy.pkl", "rb"))
-	# d= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))
-	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.5_accuracy.pkl", "rb"))
-	f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.4_accuracy.pkl", "rb"))
-	g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))
-	h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.2_accuracy.pkl", "rb"))
-	i = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.1_accuracy.pkl", "rb"))
-	j = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.15_accuracy.pkl", "rb"))
-	k = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_1.0_accuracy.pkl", "rb"))
-	# a_range = np.arange(len(a))
-	# b_range = np.arange(len(b))
-	# c_range = np.arange(len(c))
-	# d_range = np.arange(len(d))
-	e_range = np.arange(len(e))
-	f_range = np.arange(len(f))
-	g_range = np.arange(len(g))
-	h_range = np.arange(len(h))
-	i_range = np.arange(len(i))
-	j_range = np.arange(len(j))
-	k_range = np.arange(len(k))
-	# aa, = plt.plot(a_range, a, color='b', marker="P", label="$\sigma=10,\mu=0$", linewidth=0.5)
-	# bb, = plt.plot(b_range, b, color='g', marker='d', label="$\sigma=5,\mu=0$", linewidth=0.5)
-	# cc, = plt.plot(c_range, c, color='r', marker='^', label="$\sigma=3,\mu=0$", linewidth=0.5)
-	# dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=2,\mu=0$", linewidth=0.5)
-	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
-	ff, = plt.plot(f_range, f, color='b', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
-	gg, = plt.plot(g_range, g, color='r', marker='d', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
-	hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
-	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
-	ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
-	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
-	mean_line = plt.plot(e_range, np.ones_like(e_range) * 0.92, label='Benchmark', linestyle='--')
-
-	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
-	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
-	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
-	#                         dd: HandlerLine2D(numpoints=1)
-
-	# }, loc='middle right')
-	plt.legend(loc='best')
-	plt.xlabel("Epoch")
-	plt.ylabel("Accuracy Score")
-	# plt.axis("auto")
-	plt.grid(True)
-	plt.show()
-	plt.savefig("MMinfoGAN_mnist_MultivariateGaussianSampler.png")
-	plt.close()
+# def plot_from_pkl():
+# 	import numpy as np
+# 	import matplotlib.pyplot as plt
+# 	import pickle
+# 	plt.Figure(figsize=(15, 15))
+# 	dir = 'classifier_results/'
+# 	plt.title('MMInfoGAN Accuracy by Sampling Method', fontsize=12)
+# 	a = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.2_accuracy.pkl", "rb"))
+# 	b = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))
+# 	c = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_UniformSample_accuracy.pkl", "rb"))
+# 	d = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultiModalUniformSample_accuracy.pkl", "rb"))
+# 	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))
+# 	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
+# 	a_range = np.arange(len(a))
+# 	e_range = np.arange(len(e))
+# 	b_range = np.arange(len(b))
+# 	c_range = np.arange(len(c))
+# 	d_range = np.arange(len(d))
+# 	aa, = plt.plot(a_range, a, color='b', marker="P", label="MM Gaussian Sample", linewidth=0.5)
+# 	bb, = plt.plot(b_range, b, color='g', marker='.', label="Gaussian Sample", linewidth=0.5)
+# 	cc, = plt.plot(c_range, c, color='r', marker='^', label="Uniform Sample", linewidth=0.5)
+# 	dd, = plt.plot(d_range, d, color='y', marker="o", label="MM Uniform Sample", linewidth=0.5)
+# 	ee, = plt.plot(e_range, e, color='c', marker="*", label="Truncated Normal Sample", linewidth=0.5)
+# 	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.92, label='Benchmark', linestyle='--')
+#
+# 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
+# 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+# 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
+# 	#                         dd: HandlerLine2D(numpoints=1)
+#
+# 	# }, loc='middle right')
+# 	plt.legend(loc='best')
+# 	plt.xlabel("Epoch")
+# 	plt.ylabel("Confidence Score")
+# 	# plt.axis("auto")
+# 	plt.grid(True)
+# 	plt.show()
+# 	plt.savefig("MMInfoGAN Accuracy by Sampling Method.png")
+# 	plt.close()
+#
+#
+# def truncated__zoom_plot_from_pkl():
+# 	import numpy as np
+# 	import matplotlib.pyplot as plt
+# 	import pickle
+# 	plt.Figure(figsize=(15, 15))
+# 	dir = 'classifier_results/'
+# 	plt.title('Zoom_MMinfoGAN_mnist_TruncatedGaussianSample', fontsize=12)
+# 	a = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_10.0_accuracy.pkl", "rb"))[2:]
+# 	b = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_5.0_accuracy.pkl", "rb"))[2:]
+# 	c = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_3.0_accuracy.pkl", "rb"))[2:]
+# 	d = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))[2:]
+# 	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.5_accuracy.pkl", "rb"))[2:]
+# 	f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.4_accuracy.pkl", "rb"))[2:]
+# 	g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))[2:]
+# 	h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.2_accuracy.pkl", "rb"))[2:]
+# 	# i= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.1_accuracy.pkl", "rb"))
+# 	j = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.15_accuracy.pkl", "rb"))[2:]
+# 	k = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_1.0_accuracy.pkl", "rb"))[2:]
+# 	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
+# 	a_range = np.arange(2, len(a) + 2)
+# 	b_range = np.arange(2, len(b) + 2)
+# 	c_range = np.arange(2, len(c) + 2)
+# 	d_range = np.arange(2, len(d) + 2)
+# 	e_range = np.arange(2, len(e) + 2)
+# 	f_range = np.arange(2, len(f) + 2)
+# 	g_range = np.arange(2, len(g) + 2)
+# 	h_range = np.arange(2, len(h) + 2)
+# 	# i_range = np.arange(len(i))
+# 	j_range = np.arange(len(j))
+# 	k_range = np.arange(len(k))
+# 	aa, = plt.plot(a_range, a, color='b', marker="P", label="$\sigma=10,\mu=0$", linewidth=0.5)
+# 	bb, = plt.plot(b_range, b, color='g', marker='d', label="$\sigma=5,\mu=0$", linewidth=0.5)
+# 	# cc, = plt.plot(c_range, c, color='r', marker='^', label="$\sigma=3,\mu=0$", linewidth=0.5)
+# 	dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=2,\mu=0$", linewidth=0.5)
+# 	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
+# 	# ff, = plt.plot(f_range, f, color='g', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
+# 	# gg, = plt.plot(g_range, g, color='r', marker='>', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
+# 	# hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
+# 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
+# 	# kk, = plt.plot(k_range, k, color='k', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
+# 	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.92, label='Benchmark', linestyle='--')
+#
+# 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
+# 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+# 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
+# 	#                         dd: HandlerLine2D(numpoints=1)
+#
+# 	# }, loc='middle right')
+# 	plt.legend(loc='best')
+# 	plt.xlabel("Epoch")
+# 	plt.ylabel("Accuracy Score")
+# 	# plt.axis("auto")
+# 	plt.grid(True)
+# 	plt.show()
+# 	plt.savefig("Zoom_MMinfoGAN_mnist_TruncatedGaussianSample.png")
+# 	plt.close()
+#
+#
+# def truncated_plot_from_pkl():
+# 	import numpy as np
+# 	import matplotlib.pyplot as plt
+# 	import pickle
+# 	plt.Figure(figsize=(15, 15))
+# 	dir = 'classifier_results/'
+# 	plt.title('MMinfoGAN_mnist_TruncatedGaussianSample', fontsize=12)
+# 	a = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_10.0_accuracy.pkl", "rb"))
+# 	b = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_5.0_accuracy.pkl", "rb"))
+# 	c = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_3.0_accuracy.pkl", "rb"))
+# 	d = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))
+# 	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.5_accuracy.pkl", "rb"))
+# 	f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.4_accuracy.pkl", "rb"))
+# 	g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))
+# 	h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.2_accuracy.pkl", "rb"))
+# 	# i= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.1_accuracy.pkl", "rb"))
+# 	j = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_0.15_accuracy.pkl", "rb"))
+# 	k = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_1.0_accuracy.pkl", "rb"))
+# 	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
+# 	a_range = np.arange(len(a))
+# 	b_range = np.arange(len(b))
+# 	c_range = np.arange(len(c))
+# 	d_range = np.arange(len(d))
+# 	e_range = np.arange(len(e))
+# 	f_range = np.arange(len(f))
+# 	g_range = np.arange(len(g))
+# 	h_range = np.arange(len(h))
+# 	# i_range = np.arange(len(i))
+# 	j_range = np.arange(len(j))
+# 	k_range = np.arange(len(k))
+# 	aa, = plt.plot(a_range, a, color='b', marker="P", label="$\sigma=10,\mu=0$", linewidth=0.5)
+# 	# bb, = plt.plot(b_range, b, color='g', marker='d', label="$\sigma=5,\mu=0$", linewidth=0.5)
+# 	# cc, = plt.plot(c_range, c, color='r', marker='^', label="$\sigma=3,\mu=0$", linewidth=0.5)
+# 	dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=2,\mu=0$", linewidth=0.5)
+# 	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
+# 	ff, = plt.plot(f_range, f, color='g', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
+# 	gg, = plt.plot(g_range, g, color='c', marker='>', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
+# 	# hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
+# 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
+# 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
+# 	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.92, label='Benchmark', linestyle='--')
+#
+# 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
+# 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+# 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
+# 	#                         dd: HandlerLine2D(numpoints=1)
+#
+# 	# }, loc='middle right')
+# 	plt.legend(loc='best')
+# 	plt.xlabel("Epoch")
+# 	plt.ylabel("Accuracy Score")
+# 	# plt.axis("auto")
+# 	plt.grid(True)
+# 	plt.show()
+# 	plt.savefig("MMinfoGAN_mnist_TruncatedGaussianSample.png")
+# 	plt.close()
+#
+#
+# def gaussian_zoom_plot_from_pkl():
+# 	import numpy as np
+# 	import matplotlib.pyplot as plt
+# 	import pickle
+# 	plt.Figure(figsize=(15, 15))
+# 	dir = 'classifier_results/'
+# 	plt.title('Zoom_MMinfoGAN_mnist_GaussianSample', fontsize=12)
+# 	# a= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_10.0_accuracy.pkl", "rb"))[2:]
+# 	# b= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_5.0_accuracy.pkl", "rb"))[2:]
+# 	# c= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_3.0_accuracy.pkl", "rb"))[2:]
+# 	# d= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))[2:]
+# 	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.5_accuracy.pkl", "rb"))[2:]
+# 	f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.4_accuracy.pkl", "rb"))[2:]
+# 	g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))[2:]
+# 	h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.2_accuracy.pkl", "rb"))[2:]
+# 	i = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.1_accuracy.pkl", "rb"))[2:]
+# 	j = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.15_accuracy.pkl", "rb"))[2:]
+# 	k = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_1.0_accuracy.pkl", "rb"))[2:]
+# 	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
+# 	# a_range = np.arange(2,len(a)+2)
+# 	# b_range = np.arange(2,len(b)+2)
+# 	# c_range = np.arange(2,len(c)+2)
+# 	# d_range = np.arange(2,len(d)+2)
+# 	e_range = np.arange(2, len(e) + 2)
+# 	f_range = np.arange(2, len(f) + 2)
+# 	g_range = np.arange(2, len(g) + 2)
+# 	h_range = np.arange(2, len(h) + 2)
+# 	i_range = np.arange(len(i))
+# 	j_range = np.arange(len(j))
+# 	k_range = np.arange(len(k))
+# 	# aa, = plt.plot(a_range, a, color='b', marker="P", label="$\sigma=10,\mu=0$", linewidth=0.5)
+# 	# bb, = plt.plot(b_range, b, color='g', marker='d', label="$\sigma=5,\mu=0$", linewidth=0.5)
+# 	# # cc, = plt.plot(c_range, c, color='r', marker='^', label="$\sigma=3,\mu=0$", linewidth=0.5)
+# 	# dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=2,\mu=0$", linewidth=0.5)
+# 	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
+# 	ff, = plt.plot(f_range, f, color='b', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
+# 	# gg, = plt.plot(g_range, g, color='r', marker='d', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
+# 	hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
+# 	ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
+# 	jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
+# 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
+#
+# 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
+# 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+# 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
+# 	#                         dd: HandlerLine2D(numpoints=1)
+#
+# 	# }, loc='middle right')
+# 	plt.legend(loc='best')
+# 	plt.xlabel("Epoch")
+# 	plt.ylabel("Accuracy Score")
+# 	# plt.axis("auto")
+# 	plt.grid(True)
+# 	plt.show()
+# 	plt.savefig("Zoom_MMinfoGAN_mnist_GaussianSample.png")
+# 	plt.close()
+#
+#
+# def gaussian_plot_from_pkl():
+# 	import numpy as np
+# 	import matplotlib.pyplot as plt
+# 	import pickle
+# 	plt.Figure(figsize=(15, 15))
+# 	dir = 'classifier_results/'
+# 	plt.title('MMinfoGAN_mnist_GaussianSample', fontsize=12)
+# 	# a= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_10.0_accuracy.pkl", "rb"))
+# 	# b= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_5.0_accuracy.pkl", "rb"))
+# 	# c= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_3.0_accuracy.pkl", "rb"))
+# 	# d= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateGaussianSample_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))
+# 	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.5_accuracy.pkl", "rb"))
+# 	f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.4_accuracy.pkl", "rb"))
+# 	g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))
+# 	h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.2_accuracy.pkl", "rb"))
+# 	i = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.1_accuracy.pkl", "rb"))
+# 	j = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.15_accuracy.pkl", "rb"))
+# 	k = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_1.0_accuracy.pkl", "rb"))
+# 	# a_range = np.arange(len(a))
+# 	# b_range = np.arange(len(b))
+# 	# c_range = np.arange(len(c))
+# 	# d_range = np.arange(len(d))
+# 	e_range = np.arange(len(e))
+# 	f_range = np.arange(len(f))
+# 	g_range = np.arange(len(g))
+# 	h_range = np.arange(len(h))
+# 	i_range = np.arange(len(i))
+# 	j_range = np.arange(len(j))
+# 	k_range = np.arange(len(k))
+# 	# aa, = plt.plot(a_range, a, color='b', marker="P", label="$\sigma=10,\mu=0$", linewidth=0.5)
+# 	# bb, = plt.plot(b_range, b, color='g', marker='d', label="$\sigma=5,\mu=0$", linewidth=0.5)
+# 	# cc, = plt.plot(c_range, c, color='r', marker='^', label="$\sigma=3,\mu=0$", linewidth=0.5)
+# 	# dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=2,\mu=0$", linewidth=0.5)
+# 	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
+# 	# ff, = plt.plot(f_range, f, color='b', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
+# 	gg, = plt.plot(g_range, g, color='r', marker='d', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
+# 	hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
+# 	jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
+# 	ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
+# 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
+# 	mean_line = plt.plot(e_range, np.ones_like(e_range) * 0.92, label='Benchmark', linestyle='--')
+#
+# 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
+# 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+# 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
+# 	#                         dd: HandlerLine2D(numpoints=1)
+#
+# 	# }, loc='middle right')
+# 	plt.legend(loc='best')
+# 	plt.xlabel("Epoch")
+# 	plt.ylabel("Accuracy Score")
+# 	# plt.axis("auto")
+# 	plt.grid(True)
+# 	plt.show()
+# 	plt.savefig("MMinfoGAN_mnist_GaussianSampler.png")
+# 	plt.close()
+#
+#
+# def MM_zoom_plot_from_pkl():
+# 	import numpy as np
+# 	import matplotlib.pyplot as plt
+# 	import pickle
+# 	plt.Figure(figsize=(15, 15))
+# 	dir = 'classifier_results/'
+# 	plt.title('Zoom_MMinfoGAN_mnist_MultivariateGaussianSampler', fontsize=12)
+# 	# a= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_10.0_accuracy.pkl", "rb"))[2:]
+# 	# b= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_5.0_accuracy.pkl", "rb"))[2:]
+# 	# c= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_3.0_accuracy.pkl", "rb"))[2:]
+# 	# d= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))[2:]
+# 	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.5_accuracy.pkl", "rb"))[2:]
+# 	f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.4_accuracy.pkl", "rb"))[2:]
+# 	g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))[2:]
+# 	h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.2_accuracy.pkl", "rb"))[2:]
+# 	i = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.1_accuracy.pkl", "rb"))[2:]
+# 	j = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.15_accuracy.pkl", "rb"))[2:]
+# 	k = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_1.0_accuracy.pkl", "rb"))[2:]
+# 	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
+# 	# a_range = np.arange(2,len(a)+2)
+# 	# b_range = np.arange(2,len(b)+2)
+# 	# c_range = np.arange(2,len(c)+2)
+# 	# d_range = np.arange(2,len(d)+2)
+# 	e_range = np.arange(2, len(e) + 2)
+# 	f_range = np.arange(2, len(f) + 2)
+# 	g_range = np.arange(2, len(g) + 2)
+# 	h_range = np.arange(2, len(h) + 2)
+# 	i_range = np.arange(len(i))
+# 	j_range = np.arange(len(j))
+# 	k_range = np.arange(len(k))
+# 	# aa, = plt.plot(a_range, a, color='b', marker="P", label="$\sigma=10,\mu=0$", linewidth=0.5)
+# 	# bb, = plt.plot(b_range, b, color='g', marker='d', label="$\sigma=5,\mu=0$", linewidth=0.5)
+# 	# # cc, = plt.plot(c_range, c, color='r', marker='^', label="$\sigma=3,\mu=0$", linewidth=0.5)
+# 	# dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=2,\mu=0$", linewidth=0.5)
+# 	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
+# 	ff, = plt.plot(f_range, f, color='b', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
+# 	gg, = plt.plot(g_range, g, color='r', marker='d', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
+# 	hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
+# 	# ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
+# 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
+# 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
+#
+# 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
+# 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+# 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
+# 	#                         dd: HandlerLine2D(numpoints=1)
+#
+# 	# }, loc='middle right')
+# 	plt.legend(loc='best')
+# 	plt.xlabel("Epoch")
+# 	plt.ylabel("Accuracy Score")
+# 	# plt.axis("auto")
+# 	plt.grid(True)
+# 	plt.show()
+# 	plt.savefig("Zoom_MMinfoGAN_mnist_MultivariateGaussianSampler.png")
+# 	plt.close()
+#
+#
+# def MM_plot_from_pkl():
+# 	import numpy as np
+# 	import matplotlib.pyplot as plt
+# 	import pickle
+# 	plt.Figure(figsize=(15, 15))
+# 	dir = 'classifier_results/'
+# 	plt.title('MMinfoGAN_mnist_MultivariateGaussianSampler', fontsize=12)
+# 	# a= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_10.0_accuracy.pkl", "rb"))
+# 	# b= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_5.0_accuracy.pkl", "rb"))
+# 	# c= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_3.0_accuracy.pkl", "rb"))
+# 	# d= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))
+# 	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.5_accuracy.pkl", "rb"))
+# 	f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.4_accuracy.pkl", "rb"))
+# 	g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))
+# 	h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.2_accuracy.pkl", "rb"))
+# 	i = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.1_accuracy.pkl", "rb"))
+# 	j = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_0.15_accuracy.pkl", "rb"))
+# 	k = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.0_sigma_1.0_accuracy.pkl", "rb"))
+# 	# a_range = np.arange(len(a))
+# 	# b_range = np.arange(len(b))
+# 	# c_range = np.arange(len(c))
+# 	# d_range = np.arange(len(d))
+# 	e_range = np.arange(len(e))
+# 	f_range = np.arange(len(f))
+# 	g_range = np.arange(len(g))
+# 	h_range = np.arange(len(h))
+# 	i_range = np.arange(len(i))
+# 	j_range = np.arange(len(j))
+# 	k_range = np.arange(len(k))
+# 	# aa, = plt.plot(a_range, a, color='b', marker="P", label="$\sigma=10,\mu=0$", linewidth=0.5)
+# 	# bb, = plt.plot(b_range, b, color='g', marker='d', label="$\sigma=5,\mu=0$", linewidth=0.5)
+# 	# cc, = plt.plot(c_range, c, color='r', marker='^', label="$\sigma=3,\mu=0$", linewidth=0.5)
+# 	# dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=2,\mu=0$", linewidth=0.5)
+# 	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
+# 	ff, = plt.plot(f_range, f, color='b', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
+# 	gg, = plt.plot(g_range, g, color='r', marker='d', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
+# 	hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
+# 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
+# 	ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
+# 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
+# 	mean_line = plt.plot(e_range, np.ones_like(e_range) * 0.92, label='Benchmark', linestyle='--')
+#
+# 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
+# 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+# 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
+# 	#                         dd: HandlerLine2D(numpoints=1)
+#
+# 	# }, loc='middle right')
+# 	plt.legend(loc='best')
+# 	plt.xlabel("Epoch")
+# 	plt.ylabel("Accuracy Score")
+# 	# plt.axis("auto")
+# 	plt.grid(True)
+# 	plt.show()
+# 	plt.savefig("MMinfoGAN_mnist_MultivariateGaussianSampler.png")
+# 	plt.close()
 
 
 def main():
@@ -754,14 +766,15 @@ def main():
 		exit()
 	fname = args.fname
 	dir = args.dir_name
+	original_dataset_name = args.original
 	do_preprocess = args.preprocess
 	if do_preprocess:
-		preprocess_data(dir, fname)
+		preprocess_data(dir, fname, original_dataset_name=original_dataset_name)
 
 	else:
-		c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir)
+		c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir, original_dataset_name='mnist')
 		c.train()
 
 
 if __name__ == '__main__':
-	main()  # gaussian_plot_from_pkl()  # gaussian_zoom_plot_from_pkl()  # truncated__zoom_plot_from_pkl()  # truncated_plot_from_pkl()  # MM_zoom_plot_from_pkl()  # MM_plot_from_pkl()  # plot_from_pkl()
+	main()  # c = CNNClassifier("mnist")  # c.test()
