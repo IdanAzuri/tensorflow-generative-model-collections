@@ -350,14 +350,14 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 		_, confidence, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 		bincount = np.argsort(np.bincount(arg_max))
 		new_label = bincount.argmax()
-		while new_label in assigned_labels:
-			print("OCCUPIED LABEL {}".format(new_label))
-			trials += 1
-			if trials < 4:
-				new_label = bincount[-trials]
-			else:
-				new_label = [i for i in np.arange(10) if i not in assigned_labels][0]
-			print("{}ed option LABEL {}".format(trials, new_label))
+		# while new_label in assigned_labels:
+		# 	print("OCCUPIED LABEL {}".format(new_label))
+		# 	trials += 1
+		# 	if trials < 4:
+		# 		new_label = bincount[-trials]
+		# 	else:
+		# 		new_label = [i for i in np.arange(10) if i not in assigned_labels][0]
+		# 	print("{}ed option LABEL {}".format(trials, new_label))
 		assigned_labels.append(new_label)
 		print("Assinging:{}".format(new_label))
 		data_y_categorical[mask] = new_label

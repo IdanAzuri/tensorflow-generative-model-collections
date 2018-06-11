@@ -10,10 +10,10 @@ def plot_from_pkl():
 	plt.Figure(figsize=(15, 15))
 
 	plt.title('MMInfoGAN Accuracy by Sampling Method', fontsize=12)
-	a = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_accuracy.pkl", "rb"))[10:100]
+	a = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.3_accuracy.pkl", "rb"))[10:100]
 	b = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))[10:100]
 	c = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_UniformSample_mu_0_sigma_0.15_accuracy.pkl", "rb"))[10:100]
-	d = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultiModalUniformSample_mu_0_sigma_0.15_accuracy.pkl", "rb"))[10:100]
+	d = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultiModalUniformSample_mu_0_sigma_0.15_accuracy.pkl", "rb"))[10:]
 	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_TruncatedGaussianSample_mu_0.0_sigma_1.0_accuracy.pkl", "rb"))[10:100]
 	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
 	a_range = np.arange(len(a))
@@ -24,11 +24,11 @@ def plot_from_pkl():
 	# print(np.std(a)/np.sqrt(len(a)))
 	# plt.errorbar(a_range, a, yerr=np.mean(a)/len(a),errorevery=10, color='b', marker="P", label="MM Gaussian Sample", linewidth=0.5)
 	aa, = plt.plot(a_range, a,  color='b', marker="P", label="MM Gaussian Sample", linewidth=0.5)
-	bb = plt.plot(b_range, b, color='g', marker='.', label="Gaussian Sample", linewidth=0.5)
+	# bb = plt.plot(b_range, b, color='g', marker='.', label="Gaussian Sample", linewidth=0.5)
 	cc = plt.plot(c_range, c, color='r', marker='^', label="Uniform Sample", linewidth=0.5)
-	dd = plt.plot(d_range, d, color='y', marker="o", label="MM Uniform Sample", linewidth=0.5)
-	ee = plt.plot(e_range, e, color='c', marker="*", label="Truncated Normal Sample", linewidth=0.5)
-	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.98, label='Benchmark', linestyle='--')
+	# dd = plt.plot(d_range, d, color='y', marker="o", label="MM Uniform Sample", linewidth=0.5)
+	# ee = plt.plot(e_range, e, color='c', marker="*", label="Truncated Normal Sample", linewidth=0.5)
+	mean_line = plt.plot(a_range, np.ones_like(a_range) * 0.98, label='Benchmark', linestyle='--')
 
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
