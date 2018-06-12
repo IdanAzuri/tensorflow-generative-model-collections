@@ -26,7 +26,7 @@ from __future__ import division
 from __future__ import print_function
 import matplotlib
 
-# matplotlib.use('Agg')
+matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 from matplotlib.legend_handler import HandlerLine2D
