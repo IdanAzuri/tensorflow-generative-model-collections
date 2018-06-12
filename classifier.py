@@ -349,7 +349,7 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 		dummy_labels = data_y[:10000]  # no meaning for the labels
 		_, confidence, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 		bincount = np.argsort(np.bincount(arg_max))
-		new_label = bincount.argmax()
+		new_label = bincount.argmax() + 1
 		# while new_label in assigned_labels:
 		# 	print("OCCUPIED LABEL {}".format(new_label))
 		# 	trials += 1
