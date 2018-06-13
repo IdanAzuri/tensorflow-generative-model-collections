@@ -57,7 +57,7 @@ class MultiModalInfoGAN(object):
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 
 		# train
-		self.learning_rate = 0.00005
+		self.learning_rate = 0.0002
 		self.beta1 = 0.5
 
 		# test

@@ -22,10 +22,13 @@ def plot_from_pkl():
 	c_range = np.arange(len(c))
 	d_range = np.arange(len(d))
 	# print(np.std(a)/np.sqrt(len(a)))
-	# plt.errorbar(a_range, a, yerr=np.mean(a)/len(a),errorevery=10, color='b', marker="P", label="MM Gaussian Sample", linewidth=0.5)
+	plt.errorbar(a_range, a,ecolor='r',elinewidth=1.,linestyle='-.', yerr=np.mean(a)/len(a),errorevery=10, color='b', marker="P",
+	             label="MM Gaussian "
+	                                                                                                                      "Sample",
+	             linewidth=0.5)
 	aa, = plt.plot(a_range, a,  color='b', marker="P", label="MM Gaussian Sample", linewidth=0.5)
 	# bb = plt.plot(b_range, b, color='g', marker='.', label="Gaussian Sample", linewidth=0.5)
-	cc = plt.plot(c_range, c, color='r', marker='^', label="Uniform Sample", linewidth=0.5)
+	cc = plt.plot(c_range, c, color='c', marker='^', label="Uniform Sample", linewidth=0.5)
 	# dd = plt.plot(d_range, d, color='y', marker="o", label="MM Uniform Sample", linewidth=0.5)
 	# ee = plt.plot(e_range, e, color='c', marker="*", label="Truncated Normal Sample", linewidth=0.5)
 	mean_line = plt.plot(a_range, np.ones_like(a_range) * 0.98, label='Benchmark', linestyle='--')
