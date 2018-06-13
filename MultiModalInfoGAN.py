@@ -535,11 +535,9 @@ class MultiModalInfoGAN(object):
 
 	def get_model_dir(self):
 		if self.wgan_gp:
-			return "wgan_{}_{}_batch{}_z{}_continous{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim,
-			                                                   self.len_continuous_code)
+			return "wgan_{}_{}_batch{}".format(self.model_name, self.dataset_name, self.batch_size)
 		else:
-			return "{}_{}_batch{}_z{}_continous{}".format(self.model_name, self.dataset_name, self.batch_size, self.z_dim,
-			                                              self.len_continuous_code)
+			return "{}_{}_batch{}".format(self.model_name, self.dataset_name, self.batch_size)
 
 	def save(self, checkpoint_dir, step):
 		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
