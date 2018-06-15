@@ -42,7 +42,7 @@ from utils import load_mnist
 FLAGS = None
 
 np.random.seed(517)
-
+CONFIDENCE_THRESHOLD = 0.9
 
 # losses
 
@@ -209,7 +209,8 @@ class CNNClassifier():
 		self.accuracy = tf.reduce_mean(correct_prediction)
 		# tf.summary.scalar('accuracy', self.accuracy)
 
-		self.confidence = tf.cast(tf.reduce_mean(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), axis=0), tf.float32)
+		# self.confidence = tf.cast(tf.reduce_mean(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), axis=0), tf.float32)
+		self.confidence = tf.cast(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), tf.float32)
 		# tf.summary.scalar('confidence', self.confidence)
 
 		self.argmax = tf.argmax(self.y_conv, 1)
@@ -335,6 +336,7 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 	data_y = one_hot_encoder(data_y)
 	pretraind = CNNClassifier(original_dataset_name)
 	indices = np.argwhere(data_y == 1)
+	low_confidence_indices = []
 	for i in range(10):
 		mask = (indices[:, 1] == i)
 		tmp = data_X[np.where(mask == True)][:10000]
@@ -346,13 +348,16 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 		# dummy_labels = z
 		dummy_labels = data_y[:10000]  # no meaning for the labels
 		_, confidence, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+		low_confidence_indices += np.argwhere(confidence < CONFIDENCE_THRESHOLD)
 		new_label = np.bincount(arg_max).argmax() + 1
 		print("Assinging:{}".format(new_label))
 		data_y_categorical[mask] = new_label
 		print(np.bincount(arg_max))
-
+	low_confidence_indices = np.asarray(low_confidence_indices)
+	data_y_categorical= data_y_categorical[~low_confidence_indices]
 	data_y = one_hot_encoder(data_y_categorical)
-	data_X, data_y = shuffle(data_X, data_y, random_state=0)
+	data_X = data_X[~low_confidence_indices]
+	# data_X, data_y = shuffle(data_X, data_y, random_state=0)
 	pickle.dump(data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'))
 	pickle.dump(data_X, open("{}edited_generated_training_set_{}.pkl".format(dir, pkl_fname), 'wb'))
 
