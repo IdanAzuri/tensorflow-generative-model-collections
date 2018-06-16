@@ -1,0 +1,548 @@
+2018-06-04 16:33:04.840878: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1105] Found device 0 with properties: 
+name: Tesla P100-SXM2-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.4805
+pciBusID: 000a:01:00.0
+totalMemory: 15.90GiB freeMemory: 15.61GiB
+2018-06-04 16:33:04.841081: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 000a:01:00.0, compute capability: 6.0)
+2018-06-04 16:33:19.158554: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 000a:01:00.0, compute capability: 6.0)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:127: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:129: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:138: RuntimeWarning: invalid value encountered in subtract
+  itemp = int_conv(temp-a)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:162: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:164: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:171: RuntimeWarning: invalid value encountered in subtract
+  if any(temp-a != zero):
+model has been loaded from fashion-mnist_classifier.pkl
+Saving graph to: logs/fashion-mnist/train
+---------
+Variables: name (type shape) [size]
+---------
+Variable:0 (float32_ref 5x5x1x32) [800, bytes: 3200]
+Variable_1:0 (float32_ref 32) [32, bytes: 128]
+Variable_2:0 (float32_ref 5x5x32x64) [51200, bytes: 204800]
+Variable_3:0 (float32_ref 64) [64, bytes: 256]
+Variable_4:0 (float32_ref 3136x1024) [3211264, bytes: 12845056]
+Variable_5:0 (float32_ref 1024) [1024, bytes: 4096]
+Variable_6:0 (float32_ref 1024x10) [10240, bytes: 40960]
+Variable_7:0 (float32_ref 10) [10, bytes: 40]
+discriminator/d_conv1/w:0 (float32_ref 4x4x1x64) [1024, bytes: 4096]
+discriminator/d_conv1/biases:0 (float32_ref 64) [64, bytes: 256]
+discriminator/d_conv2/w:0 (float32_ref 4x4x64x128) [131072, bytes: 524288]
+discriminator/d_conv2/biases:0 (float32_ref 128) [128, bytes: 512]
+discriminator/d_bn2/beta:0 (float32_ref 128) [128, bytes: 512]
+discriminator/d_bn2/gamma:0 (float32_ref 128) [128, bytes: 512]
+discriminator/d_fc3/Matrix:0 (float32_ref 6272x1024) [6422528, bytes: 25690112]
+discriminator/d_fc3/bias:0 (float32_ref 1024) [1024, bytes: 4096]
+discriminator/d_bn3/beta:0 (float32_ref 1024) [1024, bytes: 4096]
+discriminator/d_bn3/gamma:0 (float32_ref 1024) [1024, bytes: 4096]
+discriminator/d_fc4/Matrix:0 (float32_ref 1024x1) [1024, bytes: 4096]
+discriminator/d_fc4/bias:0 (float32_ref 1) [1, bytes: 4]
+generator/g_fc1/Matrix:0 (float32_ref 74x1024) [75776, bytes: 303104]
+generator/g_fc1/bias:0 (float32_ref 1024) [1024, bytes: 4096]
+generator/g_bn1/beta:0 (float32_ref 1024) [1024, bytes: 4096]
+generator/g_bn1/gamma:0 (float32_ref 1024) [1024, bytes: 4096]
+generator/g_fc2/Matrix:0 (float32_ref 1024x6272) [6422528, bytes: 25690112]
+generator/g_fc2/bias:0 (float32_ref 6272) [6272, bytes: 25088]
+generator/g_bn2/beta:0 (float32_ref 6272) [6272, bytes: 25088]
+generator/g_bn2/gamma:0 (float32_ref 6272) [6272, bytes: 25088]
+generator/g_dc3/w:0 (float32_ref 4x4x64x128) [131072, bytes: 524288]
+generator/g_dc3/biases:0 (float32_ref 64) [64, bytes: 256]
+generator/g_bn3/beta:0 (float32_ref 64) [64, bytes: 256]
+generator/g_bn3/gamma:0 (float32_ref 64) [64, bytes: 256]
+generator/g_dc4/w:0 (float32_ref 4x4x1x64) [1024, bytes: 4096]
+generator/g_dc4/biases:0 (float32_ref 1) [1, bytes: 4]
+classifier/c_fc1/Matrix:0 (float32_ref 1024x64) [65536, bytes: 262144]
+classifier/c_fc1/bias:0 (float32_ref 64) [64, bytes: 256]
+classifier/c_bn1/beta:0 (float32_ref 64) [64, bytes: 256]
+classifier/c_bn1/gamma:0 (float32_ref 64) [64, bytes: 256]
+classifier/c_fc2/Matrix:0 (float32_ref 64x12) [768, bytes: 3072]
+classifier/c_fc2/bias:0 (float32_ref 12) [12, bytes: 48]
+Total size of variables: 16552792
+Total bytes of variables: 66211168
+ [*] Reading checkpoints...
+ [*] Success to read MultiModalInfoGAN.model-43721
+ [*] Load SUCCESS
+ [*] Training finished!
+step 39: accuracy:0.10312499850988388, confidence:0.8748121857643127, loss:101.11164093017578
+ [*] Testing finished!
+2018-06-04 16:35:31.824182: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1105] Found device 0 with properties: 
+name: Tesla P100-SXM2-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.4805
+pciBusID: 000a:01:00.0
+totalMemory: 15.90GiB freeMemory: 15.61GiB
+2018-06-04 16:35:31.879752: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 000a:01:00.0, compute capability: 6.0)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:127: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:129: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:138: RuntimeWarning: invalid value encountered in subtract
+  itemp = int_conv(temp-a)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:162: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:164: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:171: RuntimeWarning: invalid value encountered in subtract
+  if any(temp-a != zero):
+model has been loaded from mnist_classifier.pkl
+Saving graph to: logs/mnist/train
+argmax:[8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8
+ 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8]
+step 0: accuracy:0.10000000149011612, confidence:0.4536423683166504, loss:3.7923431396484375
+[ 0  0  0  0  0  0  0  0 60]
+argmax:[6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6
+ 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6]
+step 0: accuracy:0.10000000149011612, confidence:0.4814472198486328, loss:4.493922710418701
+[ 0  0  0  0  0  0 60]
+argmax:[8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8
+ 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8]
+step 0: accuracy:0.10000000149011612, confidence:0.4524744153022766, loss:3.532423496246338
+[ 0  0  0  0  0  0  0  0 60]
+argmax:[2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+ 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2]
+step 0: accuracy:0.10000000149011612, confidence:0.9058682322502136, loss:5.100031852722168
+[ 0  0 60]
+argmax:[8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8
+ 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8]
+step 0: accuracy:0.10000000149011612, confidence:0.6163128018379211, loss:3.955848217010498
+[ 0  0  0  0  0  0  0  0 60]
+argmax:[8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8
+ 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8]
+step 0: accuracy:0.10000000149011612, confidence:0.918320894241333, loss:4.582433223724365
+[ 0  0  0  0  0  0  0  0 60]
+argmax:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+step 0: accuracy:0.10000000149011612, confidence:0.6882333755493164, loss:5.01073694229126
+[60]
+argmax:[6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6
+ 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6]
+step 0: accuracy:0.10000000149011612, confidence:0.5602290034294128, loss:3.730114221572876
+[ 0  0  0  0  0  0 60]
+argmax:[8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8
+ 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8]
+step 0: accuracy:0.10000000149011612, confidence:0.5080193877220154, loss:4.11486291885376
+[ 0  0  0  0  0  0  0  0 60]
+argmax:[2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+ 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2]
+step 0: accuracy:0.10000000149011612, confidence:0.6502267122268677, loss:4.100398540496826
+[ 0  0 60]
+2018-06-04 16:35:47.558057: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1105] Found device 0 with properties: 
+name: Tesla P100-SXM2-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.4805
+pciBusID: 000a:01:00.0
+totalMemory: 15.90GiB freeMemory: 15.61GiB
+2018-06-04 16:35:47.572540: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 000a:01:00.0, compute capability: 6.0)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:127: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:129: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:138: RuntimeWarning: invalid value encountered in subtract
+  itemp = int_conv(temp-a)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:162: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:164: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:171: RuntimeWarning: invalid value encountered in subtract
+  if any(temp-a != zero):
+Saving graph to: logs/fashion-mnist_GaussianSample_train
+step 0: accuracy:0.08100000023841858, confidence:0.8109354972839355, loss:6.057619094848633
+epoch0: step0/160
+step 0: accuracy:0.1679999977350235, confidence:0.8051103949546814, loss:9.908456802368164
+epoch0: step100/160
+step 0: accuracy:0.18199999630451202, confidence:0.8172100782394409, loss:9.960970878601074
+epoch1: step0/160
+step 100: accuracy:0.18400000035762787, confidence:0.8436211943626404, loss:9.689444541931152
+epoch1: step100/160
+step 0: accuracy:0.17800000309944153, confidence:0.8375873565673828, loss:9.660491943359375
+epoch2: step0/160
+step 200: accuracy:0.1589999943971634, confidence:0.853436291217804, loss:9.591829299926758
+epoch2: step100/160
+step 0: accuracy:0.1860000044107437, confidence:0.8248884677886963, loss:9.291780471801758
+epoch3: step0/160
+step 300: accuracy:0.17900000512599945, confidence:0.8627303242683411, loss:9.867311477661133
+epoch3: step100/160
+step 0: accuracy:0.19300000369548798, confidence:0.8418242335319519, loss:8.85309886932373
+epoch4: step0/160
+step 400: accuracy:0.16699999570846558, confidence:0.8591417074203491, loss:9.332404136657715
+epoch4: step100/160
+step 0: accuracy:0.17800000309944153, confidence:0.8426389694213867, loss:8.960668563842773
+epoch5: step0/160
+step 500: accuracy:0.16500000655651093, confidence:0.8693109154701233, loss:9.091837882995605
+epoch5: step100/160
+step 0: accuracy:0.19200000166893005, confidence:0.8589437007904053, loss:8.733002662658691
+epoch6: step0/160
+step 600: accuracy:0.1979999989271164, confidence:0.8658690452575684, loss:8.497123718261719
+epoch6: step100/160
+step 0: accuracy:0.1889999955892563, confidence:0.8594282269477844, loss:8.327726364135742
+epoch7: step0/160
+step 700: accuracy:0.17599999904632568, confidence:0.8628798723220825, loss:8.533968925476074
+epoch7: step100/160
+step 0: accuracy:0.1889999955892563, confidence:0.8489829897880554, loss:8.022924423217773
+epoch8: step0/160
+step 800: accuracy:0.15600000321865082, confidence:0.8304330706596375, loss:8.385807991027832
+epoch8: step100/160
+step 0: accuracy:0.1860000044107437, confidence:0.8670582175254822, loss:8.48326587677002
+epoch9: step0/160
+step 900: accuracy:0.16699999570846558, confidence:0.8577433228492737, loss:8.37437629699707
+epoch9: step100/160
+step 0: accuracy:0.17599999904632568, confidence:0.8604992032051086, loss:8.129740715026855
+epoch10: step0/160
+step 1000: accuracy:0.20100000500679016, confidence:0.859099268913269, loss:8.034585952758789
+epoch10: step100/160
+step 0: accuracy:0.17800000309944153, confidence:0.8486180305480957, loss:8.184032440185547
+epoch11: step0/160
+step 1100: accuracy:0.20100000500679016, confidence:0.8782491683959961, loss:7.761297225952148
+epoch11: step100/160
+step 0: accuracy:0.17399999499320984, confidence:0.8812555074691772, loss:8.071672439575195
+epoch12: step0/160
+step 1200: accuracy:0.1979999989271164, confidence:0.8714112043380737, loss:7.614891529083252
+epoch12: step100/160
+step 0: accuracy:0.18400000035762787, confidence:0.8580229878425598, loss:7.541642189025879
+epoch13: step0/160
+step 1300: accuracy:0.18700000643730164, confidence:0.8852095007896423, loss:7.8375420570373535
+epoch13: step100/160
+step 0: accuracy:0.17800000309944153, confidence:0.856980562210083, loss:7.550082206726074
+epoch14: step0/160
+step 1400: accuracy:0.18000000715255737, confidence:0.8874763250350952, loss:7.955534934997559
+epoch14: step100/160
+step 0: accuracy:0.18199999630451202, confidence:0.8551046848297119, loss:7.570213317871094
+epoch15: step0/160
+step 1500: accuracy:0.1889999955892563, confidence:0.8783522844314575, loss:7.54379415512085
+epoch15: step100/160
+step 0: accuracy:0.18299999833106995, confidence:0.8507595658302307, loss:7.509740352630615
+epoch16: step0/160
+step 1600: accuracy:0.20000000298023224, confidence:0.8696900010108948, loss:7.425206184387207
+epoch16: step100/160
+step 0: accuracy:0.17800000309944153, confidence:0.8512635827064514, loss:7.468705654144287
+epoch17: step0/160
+step 1700: accuracy:0.15600000321865082, confidence:0.8503902554512024, loss:7.457037448883057
+epoch17: step100/160
+step 0: accuracy:0.16200000047683716, confidence:0.8507786989212036, loss:7.526455879211426
+epoch18: step0/160
+step 1800: accuracy:0.1770000010728836, confidence:0.8500152826309204, loss:7.187744140625
+epoch18: step100/160
+step 0: accuracy:0.19499999284744263, confidence:0.8609592318534851, loss:7.161092281341553
+epoch19: step0/160
+step 1900: accuracy:0.18199999630451202, confidence:0.8481267690658569, loss:7.1190900802612305
+epoch19: step100/160
+step 0: accuracy:0.1720000058412552, confidence:0.8692286610603333, loss:7.534826278686523
+epoch20: step0/160
+step 2000: accuracy:0.17599999904632568, confidence:0.8730746507644653, loss:6.984179973602295
+epoch20: step100/160
+step 0: accuracy:0.19099999964237213, confidence:0.8974402546882629, loss:7.055408954620361
+epoch21: step0/160
+step 2100: accuracy:0.19099999964237213, confidence:0.8989166617393494, loss:7.119258403778076
+epoch21: step100/160
+step 0: accuracy:0.1860000044107437, confidence:0.8849122524261475, loss:7.015130996704102
+epoch22: step0/160
+step 2200: accuracy:0.19099999964237213, confidence:0.8968911170959473, loss:7.139454364776611
+epoch22: step100/160
+step 0: accuracy:0.19699999690055847, confidence:0.8732394576072693, loss:6.780920505523682
+epoch23: step0/160
+step 2300: accuracy:0.18199999630451202, confidence:0.893812358379364, loss:7.14444637298584
+epoch23: step100/160
+step 0: accuracy:0.18000000715255737, confidence:0.8716776967048645, loss:6.9979472160339355
+epoch24: step0/160
+step 2400: accuracy:0.19300000369548798, confidence:0.8757838606834412, loss:6.764585971832275
+epoch24: step100/160
+step 0: accuracy:0.18799999356269836, confidence:0.8625715970993042, loss:6.8765668869018555
+epoch25: step0/160
+step 2500: accuracy:0.1899999976158142, confidence:0.8659235835075378, loss:6.7773590087890625
+epoch25: step100/160
+step 0: accuracy:0.19099999964237213, confidence:0.8807864189147949, loss:7.09099006652832
+epoch26: step0/160
+step 2600: accuracy:0.16300000250339508, confidence:0.8607669472694397, loss:7.173100471496582
+epoch26: step100/160
+step 0: accuracy:0.18700000643730164, confidence:0.8678516745567322, loss:6.940535068511963
+epoch27: step0/160
+step 2700: accuracy:0.18700000643730164, confidence:0.8897265195846558, loss:7.0384111404418945
+epoch27: step100/160
+step 0: accuracy:0.20000000298023224, confidence:0.8689983487129211, loss:6.898862361907959
+epoch28: step0/160
+step 2800: accuracy:0.1860000044107437, confidence:0.8673381805419922, loss:6.95645809173584
+epoch28: step100/160
+step 0: accuracy:0.18199999630451202, confidence:0.8507251143455505, loss:6.9274821281433105
+epoch29: step0/160
+step 2900: accuracy:0.17900000512599945, confidence:0.8631940484046936, loss:7.144552707672119
+epoch29: step100/160
+step 0: accuracy:0.1720000058412552, confidence:0.8564793467521667, loss:7.154736518859863
+epoch30: step0/160
+step 3000: accuracy:0.20600000023841858, confidence:0.878660261631012, loss:6.932355880737305
+epoch30: step100/160
+step 0: accuracy:0.17499999701976776, confidence:0.8617290258407593, loss:7.223344802856445
+epoch31: step0/160
+step 3100: accuracy:0.16699999570846558, confidence:0.8813669085502625, loss:7.358366966247559
+epoch31: step100/160
+step 0: accuracy:0.18700000643730164, confidence:0.8810579180717468, loss:7.156120300292969
+epoch32: step0/160
+step 3200: accuracy:0.2029999941587448, confidence:0.8659299612045288, loss:6.946938991546631
+epoch32: step100/160
+step 0: accuracy:0.18299999833106995, confidence:0.8829232454299927, loss:7.164572238922119
+epoch33: step0/160
+step 3300: accuracy:0.1899999976158142, confidence:0.9016037583351135, loss:7.379602432250977
+epoch33: step100/160
+step 0: accuracy:0.20000000298023224, confidence:0.9084944128990173, loss:7.394341468811035
+epoch34: step0/160
+step 3400: accuracy:0.17900000512599945, confidence:0.8702316880226135, loss:7.138232231140137
+epoch34: step100/160
+step 0: accuracy:0.19099999964237213, confidence:0.8833513855934143, loss:7.2248005867004395
+epoch35: step0/160
+step 3500: accuracy:0.18700000643730164, confidence:0.8820999264717102, loss:7.259237289428711
+epoch35: step100/160
+step 0: accuracy:0.16599999368190765, confidence:0.8725101351737976, loss:7.251307010650635
+epoch36: step0/160
+step 3600: accuracy:0.18799999356269836, confidence:0.8917503952980042, loss:7.335549831390381
+epoch36: step100/160
+step 0: accuracy:0.20000000298023224, confidence:0.8738827109336853, loss:6.991227626800537
+epoch37: step0/160
+step 3700: accuracy:0.18700000643730164, confidence:0.8801057934761047, loss:7.262787342071533
+epoch37: step100/160
+step 0: accuracy:0.19200000166893005, confidence:0.8801370859146118, loss:6.970979690551758
+epoch38: step0/160
+step 3800: accuracy:0.17299999296665192, confidence:0.8891605734825134, loss:7.382170677185059
+epoch38: step100/160
+step 0: accuracy:0.1889999955892563, confidence:0.885934054851532, loss:7.278428554534912
+epoch39: step0/160
+step 3900: accuracy:0.20200000703334808, confidence:0.9146038889884949, loss:7.520249843597412
+epoch39: step100/160
+step 0: accuracy:0.18799999356269836, confidence:0.8808146119117737, loss:7.158695220947266
+epoch40: step0/160
+step 4000: accuracy:0.19300000369548798, confidence:0.8794549703598022, loss:7.223827362060547
+epoch40: step100/160
+step 0: accuracy:0.17800000309944153, confidence:0.8749906420707703, loss:7.118288040161133
+epoch41: step0/160
+step 4100: accuracy:0.1860000044107437, confidence:0.867307722568512, loss:5.142827033996582
+epoch41: step100/160
+step 0: accuracy:0.17100000381469727, confidence:0.8113126754760742, loss:6.350042819976807
+epoch42: step0/160
+step 4200: accuracy:0.17499999701976776, confidence:0.8210718035697937, loss:6.42207145690918
+epoch42: step100/160
+step 0: accuracy:0.18199999630451202, confidence:0.8285095691680908, loss:6.360945224761963
+epoch43: step0/160
+step 4300: accuracy:0.19499999284744263, confidence:0.8398977518081665, loss:6.265994071960449
+epoch43: step100/160
+step 0: accuracy:0.17100000381469727, confidence:0.8388447761535645, loss:6.517526149749756
+epoch44: step0/160
+step 4400: accuracy:0.1899999976158142, confidence:0.8343600630760193, loss:6.2656731605529785
+epoch44: step100/160
+step 0: accuracy:0.1679999977350235, confidence:0.8340606093406677, loss:6.483736038208008
+epoch45: step0/160
+step 4500: accuracy:0.17100000381469727, confidence:0.8427489995956421, loss:6.500171661376953
+epoch45: step100/160
+step 0: accuracy:0.1589999943971634, confidence:0.846042275428772, loss:6.582202434539795
+epoch46: step0/160
+step 4600: accuracy:0.17599999904632568, confidence:0.851272702217102, loss:6.537399768829346
+epoch46: step100/160
+step 0: accuracy:0.17900000512599945, confidence:0.8567402958869934, loss:6.460176944732666
+epoch47: step0/160
+step 4700: accuracy:0.1809999942779541, confidence:0.8478729128837585, loss:6.418132305145264
+epoch47: step100/160
+step 0: accuracy:0.19099999964237213, confidence:0.8484175801277161, loss:6.390182018280029
+epoch48: step0/160
+step 4800: accuracy:0.1860000044107437, confidence:0.8568003177642822, loss:6.426333904266357
+epoch48: step100/160
+step 0: accuracy:0.21299999952316284, confidence:0.8574833869934082, loss:6.270971775054932
+epoch49: step0/160
+step 4900: accuracy:0.17299999296665192, confidence:0.8523107171058655, loss:6.479276180267334
+epoch49: step100/160
+step 0: accuracy:0.17399999499320984, confidence:0.8568455576896667, loss:6.573273658752441
+epoch50: step0/160
+step 5000: accuracy:0.1850000023841858, confidence:0.8580082654953003, loss:6.440587043762207
+epoch50: step100/160
+step 0: accuracy:0.17900000512599945, confidence:0.8690581321716309, loss:6.7718682289123535
+epoch51: step0/160
+step 5100: accuracy:0.1889999955892563, confidence:0.8483045101165771, loss:6.470694065093994
+epoch51: step100/160
+step 0: accuracy:0.1850000023841858, confidence:0.8594619035720825, loss:6.74308443069458
+epoch52: step0/160
+step 5200: accuracy:0.19200000166893005, confidence:0.8603217005729675, loss:6.641716957092285
+epoch52: step100/160
+step 0: accuracy:0.15700000524520874, confidence:0.865774929523468, loss:7.097095489501953
+epoch53: step0/160
+step 5300: accuracy:0.1889999955892563, confidence:0.8681120872497559, loss:6.674471855163574
+epoch53: step100/160
+step 0: accuracy:0.18199999630451202, confidence:0.8641570806503296, loss:6.808255195617676
+epoch54: step0/160
+step 5400: accuracy:0.19200000166893005, confidence:0.8661637306213379, loss:6.672572135925293
+epoch54: step100/160
+step 0: accuracy:0.2199999988079071, confidence:0.8686333298683167, loss:6.559896945953369
+epoch55: step0/160
+step 5500: accuracy:0.1979999989271164, confidence:0.868283212184906, loss:6.8707966804504395
+epoch55: step100/160
+step 0: accuracy:0.1809999942779541, confidence:0.8725084066390991, loss:7.164045333862305
+epoch56: step0/160
+step 5600: accuracy:0.20000000298023224, confidence:0.8710875511169434, loss:6.727672100067139
+epoch56: step100/160
+step 0: accuracy:0.17499999701976776, confidence:0.8718197345733643, loss:7.136758327484131
+epoch57: step0/160
+step 5700: accuracy:0.18700000643730164, confidence:0.8791828155517578, loss:6.809108734130859
+epoch57: step100/160
+step 0: accuracy:0.18400000035762787, confidence:0.8743696212768555, loss:6.9602437019348145
+epoch58: step0/160
+step 5800: accuracy:0.18400000035762787, confidence:0.8819087743759155, loss:7.045806407928467
+epoch58: step100/160
+step 0: accuracy:0.1770000010728836, confidence:0.8724459409713745, loss:7.207462310791016
+epoch59: step0/160
+step 5900: accuracy:0.20999999344348907, confidence:0.8767604827880859, loss:6.983778476715088
+epoch59: step100/160
+step 0: accuracy:0.20999999344348907, confidence:0.8756281137466431, loss:6.907143592834473
+epoch60: step0/160
+step 6000: accuracy:0.20800000429153442, confidence:0.8717324733734131, loss:6.940158843994141
+epoch60: step100/160
+step 0: accuracy:0.18400000035762787, confidence:0.8779608607292175, loss:7.207469940185547
+epoch61: step0/160
+step 6100: accuracy:0.19900000095367432, confidence:0.8878911137580872, loss:7.287016868591309
+epoch61: step100/160
+step 0: accuracy:0.22100000083446503, confidence:0.8940549492835999, loss:6.977744102478027
+epoch62: step0/160
+step 6200: accuracy:0.18000000715255737, confidence:0.8746010661125183, loss:7.314305305480957
+epoch62: step100/160
+step 0: accuracy:0.20999999344348907, confidence:0.8889564275741577, loss:7.1847944259643555
+epoch63: step0/160
+step 6300: accuracy:0.18700000643730164, confidence:0.8755996823310852, loss:7.329227447509766
+epoch63: step100/160
+step 0: accuracy:0.20600000023841858, confidence:0.8859065771102905, loss:7.039192199707031
+epoch64: step0/160
+step 6400: accuracy:0.19900000095367432, confidence:0.8852431774139404, loss:7.306239128112793
+epoch64: step100/160
+step 0: accuracy:0.21299999952316284, confidence:0.883159339427948, loss:7.0830512046813965
+epoch65: step0/160
+step 6500: accuracy:0.1889999955892563, confidence:0.8856744766235352, loss:7.297451496124268
+epoch65: step100/160
+step 0: accuracy:0.1889999955892563, confidence:0.8865417242050171, loss:7.438119888305664
+epoch66: step0/160
+step 6600: accuracy:0.18799999356269836, confidence:0.8594682812690735, loss:7.009802341461182
+epoch66: step100/160
+step 0: accuracy:0.19900000095367432, confidence:0.8743967413902283, loss:6.857095241546631
+epoch67: step0/160
+step 6700: accuracy:0.19300000369548798, confidence:0.8729183077812195, loss:6.974837779998779
+epoch67: step100/160
+step 0: accuracy:0.17900000512599945, confidence:0.8815582990646362, loss:7.319201469421387
+epoch68: step0/160
+step 6800: accuracy:0.1770000010728836, confidence:0.8764256834983826, loss:7.0276055335998535
+epoch68: step100/160
+step 0: accuracy:0.2070000022649765, confidence:0.8743500709533691, loss:6.876744270324707
+epoch69: step0/160
+step 6900: accuracy:0.19699999690055847, confidence:0.8833115100860596, loss:7.248016834259033
+epoch69: step100/160
+step 0: accuracy:0.19900000095367432, confidence:0.8837247490882874, loss:7.219019412994385
+epoch70: step0/160
+step 7000: accuracy:0.1889999955892563, confidence:0.8836932182312012, loss:7.3026509284973145
+epoch70: step100/160
+step 0: accuracy:0.19200000166893005, confidence:0.8745508790016174, loss:7.217850685119629
+epoch71: step0/160
+step 7100: accuracy:0.19699999690055847, confidence:0.8866232633590698, loss:7.283226490020752
+epoch71: step100/160
+step 0: accuracy:0.20800000429153442, confidence:0.8749499917030334, loss:7.001952648162842
+epoch72: step0/160
+step 7200: accuracy:0.18799999356269836, confidence:0.8771689534187317, loss:7.185179710388184
+epoch72: step100/160
+step 0: accuracy:0.19200000166893005, confidence:0.8757181167602539, loss:7.279991626739502
+epoch73: step0/160
+step 7300: accuracy:0.2029999941587448, confidence:0.8802480101585388, loss:7.107524871826172
+epoch73: step100/160
+step 0: accuracy:0.19099999964237213, confidence:0.8762648105621338, loss:7.266689300537109
+epoch74: step0/160
+step 7400: accuracy:0.21199999749660492, confidence:0.8838100433349609, loss:7.059373378753662
+epoch74: step100/160
+step 0: accuracy:0.19900000095367432, confidence:0.8688868284225464, loss:7.076875686645508
+epoch75: step0/160
+step 7500: accuracy:0.1889999955892563, confidence:0.8704522252082825, loss:7.22992467880249
+epoch75: step100/160
+step 0: accuracy:0.20000000298023224, confidence:0.8724402785301208, loss:7.280092716217041
+epoch76: step0/160
+step 7600: accuracy:0.19200000166893005, confidence:0.8797022104263306, loss:7.410363674163818
+epoch76: step100/160
+step 0: accuracy:0.1850000023841858, confidence:0.8731685876846313, loss:7.2939982414245605
+epoch77: step0/160
+step 7700: accuracy:0.22499999403953552, confidence:0.8728256821632385, loss:7.047843933105469
+epoch77: step100/160
+step 0: accuracy:0.19900000095367432, confidence:0.8747513890266418, loss:7.185130596160889
+epoch78: step0/160
+step 7800: accuracy:0.1899999976158142, confidence:0.8775519132614136, loss:7.428342342376709
+epoch78: step100/160
+step 0: accuracy:0.19300000369548798, confidence:0.8861995935440063, loss:7.37981653213501
+epoch79: step0/160
+step 7900: accuracy:0.19499999284744263, confidence:0.8720958232879639, loss:7.129256725311279
+epoch79: step100/160
+step 0: accuracy:0.1809999942779541, confidence:0.8677966594696045, loss:7.462044715881348
+epoch80: step0/160
+step 8000: accuracy:0.22499999403953552, confidence:0.8908677101135254, loss:7.232649326324463
+epoch80: step100/160
+step 0: accuracy:0.20600000023841858, confidence:0.8808206915855408, loss:7.290326118469238
+epoch81: step0/160
+step 8100: accuracy:0.21799999475479126, confidence:0.8765116930007935, loss:7.269227504730225
+epoch81: step100/160
+step 0: accuracy:0.20900000631809235, confidence:0.8776299953460693, loss:7.280760288238525
+epoch82: step0/160
+step 8200: accuracy:0.20100000500679016, confidence:0.8849726915359497, loss:7.209407806396484
+epoch82: step100/160
+step 0: accuracy:0.18299999833106995, confidence:0.8812942504882812, loss:7.691345691680908
+epoch83: step0/160
+step 8300: accuracy:0.19699999690055847, confidence:0.8798633813858032, loss:7.404600620269775
+epoch83: step100/160
+step 0: accuracy:0.19699999690055847, confidence:0.8828797340393066, loss:7.5678324699401855
+epoch84: step0/160
+step 8400: accuracy:0.18799999356269836, confidence:0.8749919533729553, loss:7.478592395782471
+epoch84: step100/160
+step 0: accuracy:0.1850000023841858, confidence:0.8851262927055359, loss:7.600540637969971
+epoch85: step0/160
+step 8500: accuracy:0.1899999976158142, confidence:0.8815648555755615, loss:7.559507846832275
+epoch85: step100/160
+step 0: accuracy:0.19499999284744263, confidence:0.8790580034255981, loss:7.716178894042969
+epoch86: step0/160
+step 8600: accuracy:0.19099999964237213, confidence:0.8903074264526367, loss:7.805845737457275
+epoch86: step100/160
+step 0: accuracy:0.20100000500679016, confidence:0.9026535153388977, loss:7.7456841468811035
+epoch87: step0/160
+step 8700: accuracy:0.17100000381469727, confidence:0.8818255066871643, loss:7.834290027618408
+epoch87: step100/160
+step 0: accuracy:0.19200000166893005, confidence:0.8894535303115845, loss:7.762452125549316
+epoch88: step0/160
+step 8800: accuracy:0.20999999344348907, confidence:0.9021018743515015, loss:7.826076030731201
+epoch88: step100/160
+step 0: accuracy:0.21400000154972076, confidence:0.8925091028213501, loss:7.596099376678467
+epoch89: step0/160
+step 8900: accuracy:0.1979999989271164, confidence:0.876311182975769, loss:7.62606954574585
+epoch89: step100/160
+step 0: accuracy:0.1860000044107437, confidence:0.8930816054344177, loss:8.26154899597168
+epoch90: step0/160
+step 9000: accuracy:0.20200000703334808, confidence:0.9065396785736084, loss:7.824425220489502
+epoch90: step100/160
+step 0: accuracy:0.18799999356269836, confidence:0.901623010635376, loss:7.9656758308410645
+epoch91: step0/160
+step 9100: accuracy:0.1940000057220459, confidence:0.8979974389076233, loss:8.017685890197754
+epoch91: step100/160
+step 0: accuracy:0.1940000057220459, confidence:0.8964570164680481, loss:7.891336917877197
+epoch92: step0/160
+step 9200: accuracy:0.20499999821186066, confidence:0.8954479098320007, loss:7.887764930725098
+epoch92: step100/160
+step 0: accuracy:0.210999995470047, confidence:0.8944985270500183, loss:7.7862162590026855
+epoch93: step0/160
+step 9300: accuracy:0.2150000035762787, confidence:0.8950775265693665, loss:7.86277961730957
+epoch93: step100/160
+step 0: accuracy:0.21299999952316284, confidence:0.901923656463623, loss:7.892085552215576
+epoch94: step0/160
+step 9400: accuracy:0.21400000154972076, confidence:0.8935620188713074, loss:7.619189739227295
+epoch94: step100/160
+step 0: accuracy:0.21199999749660492, confidence:0.8994477391242981, loss:7.869295120239258
+epoch95: step0/160
+step 9500: accuracy:0.18400000035762787, confidence:0.9057384133338928, loss:8.451586723327637
+epoch95: step100/160
+step 0: accuracy:0.19200000166893005, confidence:0.7654017806053162, loss:6.719066143035889
+epoch96: step0/160
+step 9600: accuracy:0.17800000309944153, confidence:0.8506289720535278, loss:7.125362873077393
+epoch96: step100/160
+step 0: accuracy:0.17399999499320984, confidence:0.8524483442306519, loss:6.96118688583374
+epoch97: step0/160
+step 9700: accuracy:0.16300000250339508, confidence:0.853347897529602, loss:7.180759906768799
+epoch97: step100/160
+step 0: accuracy:0.18199999630451202, confidence:0.8530688285827637, loss:6.931771755218506
+epoch98: step0/160
+step 9800: accuracy:0.16599999368190765, confidence:0.8555600643157959, loss:7.006127834320068
+epoch98: step100/160
+step 0: accuracy:0.17900000512599945, confidence:0.850859522819519, loss:7.048885345458984
+epoch99: step0/160
+step 9900: accuracy:0.18400000035762787, confidence:0.8497586250305176, loss:6.941490173339844
+epoch99: step100/160

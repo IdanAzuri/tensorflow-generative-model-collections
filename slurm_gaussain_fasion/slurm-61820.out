@@ -1,0 +1,2364 @@
+2018-06-15 17:27:15.772810: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1105] Found device 0 with properties: 
+name: Tesla P100-SXM2-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.4805
+pciBusID: 0002:01:00.0
+totalMemory: 15.90GiB freeMemory: 15.61GiB
+2018-06-15 17:27:15.773022: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 0002:01:00.0, compute capability: 6.0)
+2018-06-15 17:27:20.984147: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 0002:01:00.0, compute capability: 6.0)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:127: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:129: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:138: RuntimeWarning: invalid value encountered in subtract
+  itemp = int_conv(temp-a)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:162: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:164: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:171: RuntimeWarning: invalid value encountered in subtract
+  if any(temp-a != zero):
+CHEKPOINT DIR: multi-gaussian/mu_0.1_sigma0.3
+model has been loaded from fashion-mnist_classifier.pkl
+---------
+Variables: name (type shape) [size]
+---------
+Variable:0 (float32_ref 5x5x1x32) [800, bytes: 3200]
+Variable_1:0 (float32_ref 32) [32, bytes: 128]
+Variable_2:0 (float32_ref 5x5x32x64) [51200, bytes: 204800]
+Variable_3:0 (float32_ref 64) [64, bytes: 256]
+Variable_4:0 (float32_ref 3136x1024) [3211264, bytes: 12845056]
+Variable_5:0 (float32_ref 1024) [1024, bytes: 4096]
+Variable_6:0 (float32_ref 1024x10) [10240, bytes: 40960]
+Variable_7:0 (float32_ref 10) [10, bytes: 40]
+discriminator/d_conv1/w:0 (float32_ref 4x4x1x64) [1024, bytes: 4096]
+discriminator/d_conv1/biases:0 (float32_ref 64) [64, bytes: 256]
+discriminator/d_conv2/w:0 (float32_ref 4x4x64x128) [131072, bytes: 524288]
+discriminator/d_conv2/biases:0 (float32_ref 128) [128, bytes: 512]
+discriminator/d_bn2/beta:0 (float32_ref 128) [128, bytes: 512]
+discriminator/d_bn2/gamma:0 (float32_ref 128) [128, bytes: 512]
+discriminator/d_fc3/Matrix:0 (float32_ref 6272x1024) [6422528, bytes: 25690112]
+discriminator/d_fc3/bias:0 (float32_ref 1024) [1024, bytes: 4096]
+discriminator/d_bn3/beta:0 (float32_ref 1024) [1024, bytes: 4096]
+discriminator/d_bn3/gamma:0 (float32_ref 1024) [1024, bytes: 4096]
+discriminator/d_fc4/Matrix:0 (float32_ref 1024x1) [1024, bytes: 4096]
+discriminator/d_fc4/bias:0 (float32_ref 1) [1, bytes: 4]
+generator/g_fc1/Matrix:0 (float32_ref 74x1024) [75776, bytes: 303104]
+generator/g_fc1/bias:0 (float32_ref 1024) [1024, bytes: 4096]
+generator/g_bn1/beta:0 (float32_ref 1024) [1024, bytes: 4096]
+generator/g_bn1/gamma:0 (float32_ref 1024) [1024, bytes: 4096]
+generator/g_fc2/Matrix:0 (float32_ref 1024x6272) [6422528, bytes: 25690112]
+generator/g_fc2/bias:0 (float32_ref 6272) [6272, bytes: 25088]
+generator/g_bn2/beta:0 (float32_ref 6272) [6272, bytes: 25088]
+generator/g_bn2/gamma:0 (float32_ref 6272) [6272, bytes: 25088]
+generator/g_dc3/w:0 (float32_ref 4x4x64x128) [131072, bytes: 524288]
+generator/g_dc3/biases:0 (float32_ref 64) [64, bytes: 256]
+generator/g_bn3/beta:0 (float32_ref 64) [64, bytes: 256]
+generator/g_bn3/gamma:0 (float32_ref 64) [64, bytes: 256]
+generator/g_dc4/w:0 (float32_ref 4x4x1x64) [1024, bytes: 4096]
+generator/g_dc4/biases:0 (float32_ref 1) [1, bytes: 4]
+classifier/c_fc1/Matrix:0 (float32_ref 1024x64) [65536, bytes: 262144]
+classifier/c_fc1/bias:0 (float32_ref 64) [64, bytes: 256]
+classifier/c_bn1/beta:0 (float32_ref 64) [64, bytes: 256]
+classifier/c_bn1/gamma:0 (float32_ref 64) [64, bytes: 256]
+classifier/c_fc2/Matrix:0 (float32_ref 64x12) [768, bytes: 3072]
+classifier/c_fc2/bias:0 (float32_ref 12) [12, bytes: 48]
+Total size of variables: 16552792
+Total bytes of variables: 66211168
+ [*] Reading checkpoints...
+ [*] Success to read MultiModalInfoGAN.model-43721
+ [*] Load SUCCESS
+
+
+SAMPLES SIZE=4680,LABELS=299520
+
+
+SAVED TRAINING SET generated_training_set_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.3_czcc_czrc_rzcc_rzrc
+ [*] Training finished!
+ [*] Testing finished!
+2018-06-15 17:28:22.562726: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1105] Found device 0 with properties: 
+name: Tesla P100-SXM2-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.4805
+pciBusID: 0002:01:00.0
+totalMemory: 15.90GiB freeMemory: 15.61GiB
+2018-06-15 17:28:22.562884: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 0002:01:00.0, compute capability: 6.0)
+2018-06-15 17:28:23.974937: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 0002:01:00.0, compute capability: 6.0)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:127: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:129: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:138: RuntimeWarning: invalid value encountered in subtract
+  itemp = int_conv(temp-a)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:162: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:164: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:171: RuntimeWarning: invalid value encountered in subtract
+  if any(temp-a != zero):
+CHEKPOINT DIR: multi-gaussian/mu_0.1_sigma0.3
+model has been loaded from fashion-mnist_classifier.pkl
+---------
+Variables: name (type shape) [size]
+---------
+Variable:0 (float32_ref 5x5x1x32) [800, bytes: 3200]
+Variable_1:0 (float32_ref 32) [32, bytes: 128]
+Variable_2:0 (float32_ref 5x5x32x64) [51200, bytes: 204800]
+Variable_3:0 (float32_ref 64) [64, bytes: 256]
+Variable_4:0 (float32_ref 3136x1024) [3211264, bytes: 12845056]
+Variable_5:0 (float32_ref 1024) [1024, bytes: 4096]
+Variable_6:0 (float32_ref 1024x10) [10240, bytes: 40960]
+Variable_7:0 (float32_ref 10) [10, bytes: 40]
+discriminator/d_conv1/w:0 (float32_ref 4x4x1x64) [1024, bytes: 4096]
+discriminator/d_conv1/biases:0 (float32_ref 64) [64, bytes: 256]
+discriminator/d_conv2/w:0 (float32_ref 4x4x64x128) [131072, bytes: 524288]
+discriminator/d_conv2/biases:0 (float32_ref 128) [128, bytes: 512]
+discriminator/d_bn2/beta:0 (float32_ref 128) [128, bytes: 512]
+discriminator/d_bn2/gamma:0 (float32_ref 128) [128, bytes: 512]
+discriminator/d_fc3/Matrix:0 (float32_ref 6272x1024) [6422528, bytes: 25690112]
+discriminator/d_fc3/bias:0 (float32_ref 1024) [1024, bytes: 4096]
+discriminator/d_bn3/beta:0 (float32_ref 1024) [1024, bytes: 4096]
+discriminator/d_bn3/gamma:0 (float32_ref 1024) [1024, bytes: 4096]
+discriminator/d_fc4/Matrix:0 (float32_ref 1024x1) [1024, bytes: 4096]
+discriminator/d_fc4/bias:0 (float32_ref 1) [1, bytes: 4]
+generator/g_fc1/Matrix:0 (float32_ref 74x1024) [75776, bytes: 303104]
+generator/g_fc1/bias:0 (float32_ref 1024) [1024, bytes: 4096]
+generator/g_bn1/beta:0 (float32_ref 1024) [1024, bytes: 4096]
+generator/g_bn1/gamma:0 (float32_ref 1024) [1024, bytes: 4096]
+generator/g_fc2/Matrix:0 (float32_ref 1024x6272) [6422528, bytes: 25690112]
+generator/g_fc2/bias:0 (float32_ref 6272) [6272, bytes: 25088]
+generator/g_bn2/beta:0 (float32_ref 6272) [6272, bytes: 25088]
+generator/g_bn2/gamma:0 (float32_ref 6272) [6272, bytes: 25088]
+generator/g_dc3/w:0 (float32_ref 4x4x64x128) [131072, bytes: 524288]
+generator/g_dc3/biases:0 (float32_ref 64) [64, bytes: 256]
+generator/g_bn3/beta:0 (float32_ref 64) [64, bytes: 256]
+generator/g_bn3/gamma:0 (float32_ref 64) [64, bytes: 256]
+generator/g_dc4/w:0 (float32_ref 4x4x1x64) [1024, bytes: 4096]
+generator/g_dc4/biases:0 (float32_ref 1) [1, bytes: 4]
+classifier/c_fc1/Matrix:0 (float32_ref 1024x64) [65536, bytes: 262144]
+classifier/c_fc1/bias:0 (float32_ref 64) [64, bytes: 256]
+classifier/c_bn1/beta:0 (float32_ref 64) [64, bytes: 256]
+classifier/c_bn1/gamma:0 (float32_ref 64) [64, bytes: 256]
+classifier/c_fc2/Matrix:0 (float32_ref 64x12) [768, bytes: 3072]
+classifier/c_fc2/bias:0 (float32_ref 12) [12, bytes: 48]
+Total size of variables: 16552792
+Total bytes of variables: 66211168
+ [*] Reading checkpoints...
+ [*] Success to read MultiModalInfoGAN.model-43721
+ [*] Load SUCCESS
+
+
+SAMPLES SIZE=4680,LABELS=299520
+
+
+SAVED TRAINING SET generated_training_set_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.3_czcc_rzcc_czrc_rzrc
+ [*] Training finished!
+ [*] Testing finished!
+2018-06-15 17:29:50.794030: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1105] Found device 0 with properties: 
+name: Tesla P100-SXM2-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.4805
+pciBusID: 0002:01:00.0
+totalMemory: 15.90GiB freeMemory: 15.61GiB
+2018-06-15 17:29:50.794230: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 0002:01:00.0, compute capability: 6.0)
+2018-06-15 17:29:52.244076: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 0002:01:00.0, compute capability: 6.0)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:127: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:129: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:138: RuntimeWarning: invalid value encountered in subtract
+  itemp = int_conv(temp-a)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:162: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:164: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:171: RuntimeWarning: invalid value encountered in subtract
+  if any(temp-a != zero):
+CHEKPOINT DIR: multi-gaussian/mu_0.1_sigma0.3
+model has been loaded from fashion-mnist_classifier.pkl
+---------
+Variables: name (type shape) [size]
+---------
+Variable:0 (float32_ref 5x5x1x32) [800, bytes: 3200]
+Variable_1:0 (float32_ref 32) [32, bytes: 128]
+Variable_2:0 (float32_ref 5x5x32x64) [51200, bytes: 204800]
+Variable_3:0 (float32_ref 64) [64, bytes: 256]
+Variable_4:0 (float32_ref 3136x1024) [3211264, bytes: 12845056]
+Variable_5:0 (float32_ref 1024) [1024, bytes: 4096]
+Variable_6:0 (float32_ref 1024x10) [10240, bytes: 40960]
+Variable_7:0 (float32_ref 10) [10, bytes: 40]
+discriminator/d_conv1/w:0 (float32_ref 4x4x1x64) [1024, bytes: 4096]
+discriminator/d_conv1/biases:0 (float32_ref 64) [64, bytes: 256]
+discriminator/d_conv2/w:0 (float32_ref 4x4x64x128) [131072, bytes: 524288]
+discriminator/d_conv2/biases:0 (float32_ref 128) [128, bytes: 512]
+discriminator/d_bn2/beta:0 (float32_ref 128) [128, bytes: 512]
+discriminator/d_bn2/gamma:0 (float32_ref 128) [128, bytes: 512]
+discriminator/d_fc3/Matrix:0 (float32_ref 6272x1024) [6422528, bytes: 25690112]
+discriminator/d_fc3/bias:0 (float32_ref 1024) [1024, bytes: 4096]
+discriminator/d_bn3/beta:0 (float32_ref 1024) [1024, bytes: 4096]
+discriminator/d_bn3/gamma:0 (float32_ref 1024) [1024, bytes: 4096]
+discriminator/d_fc4/Matrix:0 (float32_ref 1024x1) [1024, bytes: 4096]
+discriminator/d_fc4/bias:0 (float32_ref 1) [1, bytes: 4]
+generator/g_fc1/Matrix:0 (float32_ref 74x1024) [75776, bytes: 303104]
+generator/g_fc1/bias:0 (float32_ref 1024) [1024, bytes: 4096]
+generator/g_bn1/beta:0 (float32_ref 1024) [1024, bytes: 4096]
+generator/g_bn1/gamma:0 (float32_ref 1024) [1024, bytes: 4096]
+generator/g_fc2/Matrix:0 (float32_ref 1024x6272) [6422528, bytes: 25690112]
+generator/g_fc2/bias:0 (float32_ref 6272) [6272, bytes: 25088]
+generator/g_bn2/beta:0 (float32_ref 6272) [6272, bytes: 25088]
+generator/g_bn2/gamma:0 (float32_ref 6272) [6272, bytes: 25088]
+generator/g_dc3/w:0 (float32_ref 4x4x64x128) [131072, bytes: 524288]
+generator/g_dc3/biases:0 (float32_ref 64) [64, bytes: 256]
+generator/g_bn3/beta:0 (float32_ref 64) [64, bytes: 256]
+generator/g_bn3/gamma:0 (float32_ref 64) [64, bytes: 256]
+generator/g_dc4/w:0 (float32_ref 4x4x1x64) [1024, bytes: 4096]
+generator/g_dc4/biases:0 (float32_ref 1) [1, bytes: 4]
+classifier/c_fc1/Matrix:0 (float32_ref 1024x64) [65536, bytes: 262144]
+classifier/c_fc1/bias:0 (float32_ref 64) [64, bytes: 256]
+classifier/c_bn1/beta:0 (float32_ref 64) [64, bytes: 256]
+classifier/c_bn1/gamma:0 (float32_ref 64) [64, bytes: 256]
+classifier/c_fc2/Matrix:0 (float32_ref 64x12) [768, bytes: 3072]
+classifier/c_fc2/bias:0 (float32_ref 12) [12, bytes: 48]
+Total size of variables: 16552792
+Total bytes of variables: 66211168
+ [*] Reading checkpoints...
+ [*] Success to read MultiModalInfoGAN.model-43721
+ [*] Load SUCCESS
+
+
+SAMPLES SIZE=4680,LABELS=299520
+
+
+SAVED TRAINING SET generated_training_set_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.3_rzcc_rzrc_czcc_czrc
+ [*] Training finished!
+ [*] Testing finished!
+2018-06-15 17:30:46.111991: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1105] Found device 0 with properties: 
+name: Tesla P100-SXM2-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.4805
+pciBusID: 0002:01:00.0
+totalMemory: 15.90GiB freeMemory: 15.61GiB
+2018-06-15 17:30:46.112044: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 0002:01:00.0, compute capability: 6.0)
+2018-06-15 17:30:47.565074: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 0002:01:00.0, compute capability: 6.0)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:127: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:129: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:138: RuntimeWarning: invalid value encountered in subtract
+  itemp = int_conv(temp-a)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:162: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:164: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:171: RuntimeWarning: invalid value encountered in subtract
+  if any(temp-a != zero):
+CHEKPOINT DIR: multi-gaussian/mu_0.1_sigma0.3
+model has been loaded from fashion-mnist_classifier.pkl
+---------
+Variables: name (type shape) [size]
+---------
+Variable:0 (float32_ref 5x5x1x32) [800, bytes: 3200]
+Variable_1:0 (float32_ref 32) [32, bytes: 128]
+Variable_2:0 (float32_ref 5x5x32x64) [51200, bytes: 204800]
+Variable_3:0 (float32_ref 64) [64, bytes: 256]
+Variable_4:0 (float32_ref 3136x1024) [3211264, bytes: 12845056]
+Variable_5:0 (float32_ref 1024) [1024, bytes: 4096]
+Variable_6:0 (float32_ref 1024x10) [10240, bytes: 40960]
+Variable_7:0 (float32_ref 10) [10, bytes: 40]
+discriminator/d_conv1/w:0 (float32_ref 4x4x1x64) [1024, bytes: 4096]
+discriminator/d_conv1/biases:0 (float32_ref 64) [64, bytes: 256]
+discriminator/d_conv2/w:0 (float32_ref 4x4x64x128) [131072, bytes: 524288]
+discriminator/d_conv2/biases:0 (float32_ref 128) [128, bytes: 512]
+discriminator/d_bn2/beta:0 (float32_ref 128) [128, bytes: 512]
+discriminator/d_bn2/gamma:0 (float32_ref 128) [128, bytes: 512]
+discriminator/d_fc3/Matrix:0 (float32_ref 6272x1024) [6422528, bytes: 25690112]
+discriminator/d_fc3/bias:0 (float32_ref 1024) [1024, bytes: 4096]
+discriminator/d_bn3/beta:0 (float32_ref 1024) [1024, bytes: 4096]
+discriminator/d_bn3/gamma:0 (float32_ref 1024) [1024, bytes: 4096]
+discriminator/d_fc4/Matrix:0 (float32_ref 1024x1) [1024, bytes: 4096]
+discriminator/d_fc4/bias:0 (float32_ref 1) [1, bytes: 4]
+generator/g_fc1/Matrix:0 (float32_ref 74x1024) [75776, bytes: 303104]
+generator/g_fc1/bias:0 (float32_ref 1024) [1024, bytes: 4096]
+generator/g_bn1/beta:0 (float32_ref 1024) [1024, bytes: 4096]
+generator/g_bn1/gamma:0 (float32_ref 1024) [1024, bytes: 4096]
+generator/g_fc2/Matrix:0 (float32_ref 1024x6272) [6422528, bytes: 25690112]
+generator/g_fc2/bias:0 (float32_ref 6272) [6272, bytes: 25088]
+generator/g_bn2/beta:0 (float32_ref 6272) [6272, bytes: 25088]
+generator/g_bn2/gamma:0 (float32_ref 6272) [6272, bytes: 25088]
+generator/g_dc3/w:0 (float32_ref 4x4x64x128) [131072, bytes: 524288]
+generator/g_dc3/biases:0 (float32_ref 64) [64, bytes: 256]
+generator/g_bn3/beta:0 (float32_ref 64) [64, bytes: 256]
+generator/g_bn3/gamma:0 (float32_ref 64) [64, bytes: 256]
+generator/g_dc4/w:0 (float32_ref 4x4x1x64) [1024, bytes: 4096]
+generator/g_dc4/biases:0 (float32_ref 1) [1, bytes: 4]
+classifier/c_fc1/Matrix:0 (float32_ref 1024x64) [65536, bytes: 262144]
+classifier/c_fc1/bias:0 (float32_ref 64) [64, bytes: 256]
+classifier/c_bn1/beta:0 (float32_ref 64) [64, bytes: 256]
+classifier/c_bn1/gamma:0 (float32_ref 64) [64, bytes: 256]
+classifier/c_fc2/Matrix:0 (float32_ref 64x12) [768, bytes: 3072]
+classifier/c_fc2/bias:0 (float32_ref 12) [12, bytes: 48]
+Total size of variables: 16552792
+Total bytes of variables: 66211168
+ [*] Reading checkpoints...
+ [*] Success to read MultiModalInfoGAN.model-43721
+ [*] Load SUCCESS
+
+
+SAMPLES SIZE=4680,LABELS=299520
+
+
+SAVED TRAINING SET generated_training_set_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.3_czrc_czcc_rzcc_rzrc
+ [*] Training finished!
+ [*] Testing finished!
+2018-06-15 17:31:33.713618: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1105] Found device 0 with properties: 
+name: Tesla P100-SXM2-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.4805
+pciBusID: 0002:01:00.0
+totalMemory: 15.90GiB freeMemory: 15.61GiB
+2018-06-15 17:31:33.713829: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 0002:01:00.0, compute capability: 6.0)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:127: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:129: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:138: RuntimeWarning: invalid value encountered in subtract
+  itemp = int_conv(temp-a)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:162: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:164: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:171: RuntimeWarning: invalid value encountered in subtract
+  if any(temp-a != zero):
+model has been loaded from fashion-mnist_classifier.pkl
+argmax:[1 1 1 ..., 1 1 1]
+step 0: accuracy:0.0, confidence:0.999897837638855, loss:15.28077507019043
+Assinging:2
+[    0 10000]
+argmax:[7 7 7 ..., 7 7 7]
+step 0: accuracy:0.0, confidence:0.9864776134490967, loss:9.444977760314941
+Assinging:8
+[   0    0    0    0    0 1014    0 8986]
+argmax:[6 6 6 ..., 0 0 0]
+step 0: accuracy:0.0, confidence:0.8829774260520935, loss:8.891048431396484
+Assinging:7
+[1342  234    0  624    0  117 7683]
+argmax:[9 9 9 ..., 9 7 7]
+step 0: accuracy:0.8671000003814697, confidence:0.9430062770843506, loss:1.0847657918930054
+Assinging:10
+[   0    0    0    0    0 1092    0  237    0 8671]
+argmax:[8 8 8 ..., 8 8 8]
+step 0: accuracy:0.0, confidence:0.9806717038154602, loss:11.119180679321289
+Assinging:9
+[ 273    0   39    0    0    0   78    0 9610]
+argmax:[7 7 7 ..., 7 7 7]
+step 0: accuracy:0.08290000259876251, confidence:0.8628005981445312, loss:2.540034294128418
+Assinging:8
+[   0    0    0    0    0  819    0 8274   78  829]
+argmax:[6 6 6 ..., 2 2 2]
+step 0: accuracy:0.0, confidence:0.9600427746772766, loss:12.709464073181152
+Assinging:7
+[   0    0 1147    0  507    0 8346]
+argmax:[6 6 6 ..., 4 4 4]
+step 0: accuracy:0.0, confidence:0.9765031933784485, loss:17.493059158325195
+Assinging:7
+[   0    0    0    0 1221    0 8580    0  199]
+argmax:[0 0 0 ..., 0 0 0]
+step 0: accuracy:0.0, confidence:0.950979471206665, loss:11.92620849609375
+Assinging:1
+[9253  117    0  351    0    0  279]
+argmax:[6 6 6 ..., 6 6 6]
+step 0: accuracy:0.0, confidence:0.9581444263458252, loss:16.62432098388672
+Assinging:7
+[   0    0    0    0  819   39 9142]
+2018-06-15 17:31:48.782758: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1105] Found device 0 with properties: 
+name: Tesla P100-SXM2-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.4805
+pciBusID: 0002:01:00.0
+totalMemory: 15.90GiB freeMemory: 15.61GiB
+2018-06-15 17:31:48.782973: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 0002:01:00.0, compute capability: 6.0)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:127: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:129: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:138: RuntimeWarning: invalid value encountered in subtract
+  itemp = int_conv(temp-a)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:162: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:164: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:171: RuntimeWarning: invalid value encountered in subtract
+  if any(temp-a != zero):
+model has been loaded from fashion-mnist_classifier.pkl
+argmax:[4 4 4 ..., 4 4 4]
+step 0: accuracy:0.0, confidence:0.9977971911430359, loss:18.35471534729004
+Assinging:5
+[   0    0    6    0 9994]
+argmax:[7 7 7 ..., 7 7 7]
+step 0: accuracy:0.0, confidence:0.9993608593940735, loss:12.057779312133789
+Assinging:8
+[    0     0     0     0     0     0     0 10000]
+argmax:[0 0 0 ..., 0 0 0]
+step 0: accuracy:0.0, confidence:0.9864873290061951, loss:13.75218391418457
+Assinging:1
+[9923    0    0    0    0    0   77]
+argmax:[8 8 8 ..., 8 8 8]
+step 0: accuracy:0.0, confidence:0.8212214708328247, loss:7.991454601287842
+Assinging:9
+[   0    0    0    0    0    0  127    0 9873]
+argmax:[8 8 8 ..., 8 8 8]
+step 0: accuracy:0.0, confidence:0.9914863109588623, loss:11.657610893249512
+Assinging:9
+[    0     0     0     0     0     0     0     0 10000]
+argmax:[9 9 9 ..., 9 9 9]
+step 0: accuracy:1.0, confidence:0.9999857544898987, loss:1.4256270333135035e-05
+Assinging:10
+[    0     0     0     0     0     0     0     0     0 10000]
+argmax:[1 1 1 ..., 1 1 1]
+step 0: accuracy:0.0, confidence:0.9955205917358398, loss:14.231959342956543
+Assinging:2
+[   0 9998    0    0    2]
+argmax:[3 3 3 ..., 3 3 3]
+step 0: accuracy:0.0, confidence:0.9888784289360046, loss:10.511598587036133
+Assinging:4
+[   0    0    0 9942    0    0   58]
+argmax:[8 8 8 ..., 8 8 9]
+step 0: accuracy:0.018799999728798866, confidence:0.9350569248199463, loss:3.139451742172241
+Assinging:9
+[   0    0    0    0    0    0    0    0 9812  188]
+argmax:[4 4 4 ..., 4 4 4]
+step 0: accuracy:0.0, confidence:0.7810956835746765, loss:8.712372779846191
+Assinging:5
+[   0    0   29    0 9297    0  674]
+2018-06-15 17:32:05.546596: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1105] Found device 0 with properties: 
+name: Tesla P100-SXM2-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.4805
+pciBusID: 0002:01:00.0
+totalMemory: 15.90GiB freeMemory: 15.61GiB
+2018-06-15 17:32:05.546807: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 0002:01:00.0, compute capability: 6.0)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:127: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:129: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:138: RuntimeWarning: invalid value encountered in subtract
+  itemp = int_conv(temp-a)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:162: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:164: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:171: RuntimeWarning: invalid value encountered in subtract
+  if any(temp-a != zero):
+model has been loaded from fashion-mnist_classifier.pkl
+argmax:[5 5 5 ..., 9 9 9]
+step 0: accuracy:0.0357000008225441, confidence:0.9884958267211914, loss:10.936187744140625
+Assinging:6
+[   0    0  117    0    0 9479    0    0   47  357]
+argmax:[4 2 4 ..., 4 4 2]
+step 0: accuracy:0.0, confidence:0.878945529460907, loss:14.363668441772461
+Assinging:3
+[  10    0 7275    0 1720    0  995]
+argmax:[7 7 7 ..., 7 7 7]
+step 0: accuracy:0.0, confidence:0.9759185314178467, loss:7.7003631591796875
+Assinging:8
+[   0    0    0    0    0 1207    0 8793]
+argmax:[9 9 9 ..., 7 7 7]
+step 0: accuracy:0.9283000230789185, confidence:0.9914513826370239, loss:0.28056058287620544
+Assinging:10
+[   0    0    0    0    0    0    0  717    0 9283]
+argmax:[8 8 8 ..., 8 8 8]
+step 0: accuracy:0.0, confidence:0.9777480363845825, loss:9.194150924682617
+Assinging:9
+[   0    0    0    0    0  181   13    0 9806]
+argmax:[4 4 4 ..., 4 4 4]
+step 0: accuracy:0.0, confidence:0.962287187576294, loss:13.436195373535156
+Assinging:5
+[   0    0  328  748 8832    0   92]
+argmax:[2 2 2 ..., 4 4 4]
+step 0: accuracy:0.0, confidence:0.8729101419448853, loss:12.525693893432617
+Assinging:3
+[   2    0 3810    0 3804    0 2383    0    1]
+argmax:[3 3 3 ..., 3 3 3]
+step 0: accuracy:0.0, confidence:0.9725704193115234, loss:14.20338249206543
+Assinging:4
+[  82    0   41 9551    0    0  326]
+argmax:[1 1 1 ..., 1 1 1]
+step 0: accuracy:0.0, confidence:0.9839283227920532, loss:18.197507858276367
+Assinging:2
+[ 206 9675    8  111]
+argmax:[0 0 0 ..., 6 0 8]
+step 0: accuracy:0.0, confidence:0.9759458899497986, loss:18.115047454833984
+Assinging:1
+[9274    0    0    0    0    0  592    0  134]
+/usr/lib/python3/dist-packages/numpy/core/machar.py:127: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:129: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:138: RuntimeWarning: invalid value encountered in subtract
+  itemp = int_conv(temp-a)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:162: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:164: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:171: RuntimeWarning: invalid value encountered in subtract
+  if any(temp-a != zero):
+Traceback (most recent call last):
+  File "classifier.py", line 379, in <module>
+    main()  # c = CNNClassifier("mnist")  # c.test()
+  File "classifier.py", line 371, in main
+    preprocess_data(dir, fname, original_dataset_name=original_dataset_name)
+  File "classifier.py", line 328, in preprocess_data
+    data_X = pickle.load(open(pkl_path, 'rb'))
+FileNotFoundError: [Errno 2] No such file or directory: '/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/generated_training_set_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.3_czrc_czcc_rzcc__rzrc.pkl'
+2018-06-15 17:32:24.423737: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1105] Found device 0 with properties: 
+name: Tesla P100-SXM2-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.4805
+pciBusID: 0002:01:00.0
+totalMemory: 15.90GiB freeMemory: 15.61GiB
+2018-06-15 17:32:24.423953: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 0002:01:00.0, compute capability: 6.0)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:127: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:129: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:138: RuntimeWarning: invalid value encountered in subtract
+  itemp = int_conv(temp-a)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:162: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:164: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:171: RuntimeWarning: invalid value encountered in subtract
+  if any(temp-a != zero):
+step 0: accuracy:0.13600000739097595, confidence:0.7852186560630798, loss:7.758459568023682
+epoch0: step0/4680
+step 0: accuracy:0.11800000071525574, confidence:1.0, loss:56.386173248291016
+epoch0: step500/4680
+step 0: accuracy:0.12300000339746475, confidence:0.9999080300331116, loss:11.440788269042969
+epoch0: step1000/4680
+step 0: accuracy:0.08500000089406967, confidence:0.9997785687446594, loss:10.782712936401367
+epoch0: step1500/4680
+step 0: accuracy:0.08699999749660492, confidence:0.9997856616973877, loss:11.070450782775879
+epoch0: step2000/4680
+step 0: accuracy:0.10199999809265137, confidence:0.9998465776443481, loss:10.430489540100098
+epoch0: step2500/4680
+step 0: accuracy:0.10199999809265137, confidence:0.9996261596679688, loss:9.786670684814453
+epoch0: step3000/4680
+step 0: accuracy:0.07900000363588333, confidence:0.9866623282432556, loss:6.979280471801758
+epoch0: step3500/4680
+step 0: accuracy:0.0949999988079071, confidence:0.9917296767234802, loss:7.380616188049316
+epoch0: step4000/4680
+step 0: accuracy:0.08500000089406967, confidence:0.9990200400352478, loss:10.085525512695312
+epoch0: step4500/4680
+step 0: accuracy:0.08299999684095383, confidence:0.9990864396095276, loss:10.171041488647461
+epoch1: step0/4680
+step 500: accuracy:0.09700000286102295, confidence:0.9979789853096008, loss:8.116229057312012
+epoch1: step500/4680
+step 1000: accuracy:0.09000000357627869, confidence:0.999968945980072, loss:12.032554626464844
+epoch1: step1000/4680
+step 1500: accuracy:0.08799999952316284, confidence:0.9995966553688049, loss:9.738340377807617
+epoch1: step1500/4680
+step 2000: accuracy:0.0949999988079071, confidence:0.9997988343238831, loss:11.041152954101562
+epoch1: step2000/4680
+step 2500: accuracy:0.10599999874830246, confidence:0.9999187588691711, loss:12.99158000946045
+epoch1: step2500/4680
+step 3000: accuracy:0.09700000286102295, confidence:0.9996706247329712, loss:10.580565452575684
+epoch1: step3000/4680
+step 3500: accuracy:0.11400000005960464, confidence:0.9632542133331299, loss:5.569465637207031
+epoch1: step3500/4680
+step 4000: accuracy:0.08799999952316284, confidence:0.9895921349525452, loss:7.10495138168335
+epoch1: step4000/4680
+step 4500: accuracy:0.09000000357627869, confidence:0.9973940253257751, loss:8.29020881652832
+epoch1: step4500/4680
+step 0: accuracy:0.10100000351667404, confidence:0.9982232451438904, loss:8.448780059814453
+epoch2: step0/4680
+step 1000: accuracy:0.08399999886751175, confidence:0.9962586164474487, loss:8.206966400146484
+epoch2: step500/4680
+step 2000: accuracy:0.11500000208616257, confidence:0.9999561309814453, loss:11.449146270751953
+epoch2: step1000/4680
+step 3000: accuracy:0.09600000083446503, confidence:0.9993972182273865, loss:9.769120216369629
+epoch2: step1500/4680
+step 4000: accuracy:0.0949999988079071, confidence:0.998478353023529, loss:9.204628944396973
+epoch2: step2000/4680
+step 5000: accuracy:0.11400000005960464, confidence:0.9994034171104431, loss:9.959760665893555
+epoch2: step2500/4680
+step 6000: accuracy:0.10400000214576721, confidence:0.999348521232605, loss:9.462823867797852
+epoch2: step3000/4680
+step 7000: accuracy:0.1080000028014183, confidence:0.9882302284240723, loss:6.47300910949707
+epoch2: step3500/4680
+step 8000: accuracy:0.1080000028014183, confidence:0.9941583871841431, loss:7.100120544433594
+epoch2: step4000/4680
+step 9000: accuracy:0.09700000286102295, confidence:0.9975713491439819, loss:7.995708465576172
+epoch2: step4500/4680
+step 0: accuracy:0.09799999743700027, confidence:0.9987866282463074, loss:8.544769287109375
+epoch3: step0/4680
+step 1500: accuracy:0.13699999451637268, confidence:0.9989942312240601, loss:9.084149360656738
+epoch3: step500/4680
+step 3000: accuracy:0.1120000034570694, confidence:0.9856288433074951, loss:6.323914051055908
+epoch3: step1000/4680
+step 4500: accuracy:0.09799999743700027, confidence:0.9890841245651245, loss:7.389763355255127
+epoch3: step1500/4680
+step 6000: accuracy:0.10400000214576721, confidence:0.9934158325195312, loss:7.6966938972473145
+epoch3: step2000/4680
+step 7500: accuracy:0.09799999743700027, confidence:0.9989057183265686, loss:9.266951560974121
+epoch3: step2500/4680
+step 9000: accuracy:0.11100000143051147, confidence:0.9993235468864441, loss:9.178909301757812
+epoch3: step3000/4680
+step 10500: accuracy:0.11500000208616257, confidence:0.9595844745635986, loss:5.451723098754883
+epoch3: step3500/4680
+step 12000: accuracy:0.10499999672174454, confidence:0.9845744967460632, loss:6.33016300201416
+epoch3: step4000/4680
+step 13500: accuracy:0.10499999672174454, confidence:0.9913206696510315, loss:6.504975318908691
+epoch3: step4500/4680
+step 0: accuracy:0.10000000149011612, confidence:0.9981497526168823, loss:7.888365745544434
+epoch4: step0/4680
+step 2000: accuracy:0.12999999523162842, confidence:0.9833837747573853, loss:6.636556148529053
+epoch4: step500/4680
+step 4000: accuracy:0.10000000149011612, confidence:0.983357310295105, loss:6.340230941772461
+epoch4: step1000/4680
+step 6000: accuracy:0.10999999940395355, confidence:0.979627788066864, loss:6.725418567657471
+epoch4: step1500/4680
+step 8000: accuracy:0.09700000286102295, confidence:0.9902475476264954, loss:7.211712837219238
+epoch4: step2000/4680
+step 10000: accuracy:0.10599999874830246, confidence:0.9961668252944946, loss:8.24205493927002
+epoch4: step2500/4680
+step 12000: accuracy:0.10000000149011612, confidence:0.9986088871955872, loss:9.035152435302734
+epoch4: step3000/4680
+step 14000: accuracy:0.10999999940395355, confidence:0.9064504504203796, loss:4.729824066162109
+epoch4: step3500/4680
+step 16000: accuracy:0.10599999874830246, confidence:0.9599149227142334, loss:5.5274577140808105
+epoch4: step4000/4680
+step 18000: accuracy:0.11100000143051147, confidence:0.9912369251251221, loss:6.5301995277404785
+epoch4: step4500/4680
+step 0: accuracy:0.09600000083446503, confidence:0.9966344833374023, loss:7.4647111892700195
+epoch5: step0/4680
+step 2500: accuracy:0.0949999988079071, confidence:0.9677965044975281, loss:6.21393346786499
+epoch5: step500/4680
+step 5000: accuracy:0.09700000286102295, confidence:0.9040349125862122, loss:5.526647090911865
+epoch5: step1000/4680
+step 7500: accuracy:0.0989999994635582, confidence:0.9564270973205566, loss:6.991800785064697
+epoch5: step1500/4680
+step 10000: accuracy:0.09799999743700027, confidence:0.99006587266922, loss:7.613051891326904
+epoch5: step2000/4680
+step 12500: accuracy:0.10499999672174454, confidence:0.998911440372467, loss:9.373876571655273
+epoch5: step2500/4680
+step 15000: accuracy:0.11299999803304672, confidence:0.9977439641952515, loss:8.435409545898438
+epoch5: step3000/4680
+step 17500: accuracy:0.09799999743700027, confidence:0.793771505355835, loss:4.251672267913818
+epoch5: step3500/4680
+step 20000: accuracy:0.09700000286102295, confidence:0.8673442602157593, loss:4.671113967895508
+epoch5: step4000/4680
+step 22500: accuracy:0.10199999809265137, confidence:0.9932615756988525, loss:7.036537170410156
+epoch5: step4500/4680
+step 0: accuracy:0.10100000351667404, confidence:0.9976308345794678, loss:7.8963751792907715
+epoch6: step0/4680
+step 3000: accuracy:0.10700000077486038, confidence:0.9640543460845947, loss:7.025482654571533
+epoch6: step500/4680
+step 6000: accuracy:0.11999999731779099, confidence:0.952602207660675, loss:5.972014427185059
+epoch6: step1000/4680
+step 9000: accuracy:0.09799999743700027, confidence:0.9191800355911255, loss:5.742525577545166
+epoch6: step1500/4680
+step 12000: accuracy:0.10599999874830246, confidence:0.9693952798843384, loss:7.081006050109863
+epoch6: step2000/4680
+step 15000: accuracy:0.11299999803304672, confidence:0.9973368644714355, loss:8.43256950378418
+epoch6: step2500/4680
+step 18000: accuracy:0.10100000351667404, confidence:0.9983161091804504, loss:8.517276763916016
+epoch6: step3000/4680
+step 21000: accuracy:0.12399999797344208, confidence:0.6770595908164978, loss:4.389773368835449
+epoch6: step3500/4680
+step 24000: accuracy:0.1080000028014183, confidence:0.7938649654388428, loss:4.894059658050537
+epoch6: step4000/4680
+step 27000: accuracy:0.10999999940395355, confidence:0.9912549257278442, loss:6.925108909606934
+epoch6: step4500/4680
+step 0: accuracy:0.10700000077486038, confidence:0.9957639575004578, loss:7.557703971862793
+epoch7: step0/4680
+step 3500: accuracy:0.11900000274181366, confidence:0.9740168452262878, loss:7.902427673339844
+epoch7: step500/4680
+step 7000: accuracy:0.10899999737739563, confidence:0.9560968279838562, loss:6.316668510437012
+epoch7: step1000/4680
+step 10500: accuracy:0.09399999678134918, confidence:0.8859701752662659, loss:5.305753231048584
+epoch7: step1500/4680
+step 14000: accuracy:0.10400000214576721, confidence:0.9713442325592041, loss:7.707894802093506
+epoch7: step2000/4680
+step 17500: accuracy:0.08900000154972076, confidence:0.9950718879699707, loss:8.33963680267334
+epoch7: step2500/4680
+step 21000: accuracy:0.09200000017881393, confidence:0.9991039037704468, loss:9.152098655700684
+epoch7: step3000/4680
+step 24500: accuracy:0.1340000033378601, confidence:0.6922556161880493, loss:4.605103015899658
+epoch7: step3500/4680
+step 28000: accuracy:0.10000000149011612, confidence:0.8410956263542175, loss:5.3958353996276855
+epoch7: step4000/4680
+step 31500: accuracy:0.10000000149011612, confidence:0.9934849739074707, loss:7.786124229431152
+epoch7: step4500/4680
+step 0: accuracy:0.09399999678134918, confidence:0.9964667558670044, loss:8.265138626098633
+epoch8: step0/4680
+step 4000: accuracy:0.10400000214576721, confidence:0.9616459012031555, loss:7.32886266708374
+epoch8: step500/4680
+step 8000: accuracy:0.11400000005960464, confidence:0.9689902067184448, loss:7.26890754699707
+epoch8: step1000/4680
+step 12000: accuracy:0.10599999874830246, confidence:0.9207219481468201, loss:6.006458759307861
+epoch8: step1500/4680
+step 16000: accuracy:0.10300000011920929, confidence:0.9068564176559448, loss:6.481672286987305
+epoch8: step2000/4680
+step 20000: accuracy:0.11400000005960464, confidence:0.995710551738739, loss:8.334585189819336
+epoch8: step2500/4680
+step 24000: accuracy:0.11100000143051147, confidence:0.9983779788017273, loss:8.925874710083008
+epoch8: step3000/4680
+step 28000: accuracy:0.1340000033378601, confidence:0.6984687447547913, loss:4.15004301071167
+epoch8: step3500/4680
+step 32000: accuracy:0.0949999988079071, confidence:0.7592290043830872, loss:4.896130084991455
+epoch8: step4000/4680
+step 36000: accuracy:0.10999999940395355, confidence:0.9941567778587341, loss:8.300948143005371
+epoch8: step4500/4680
+step 0: accuracy:0.09200000017881393, confidence:0.9964145421981812, loss:8.592594146728516
+epoch9: step0/4680
+step 4500: accuracy:0.10100000351667404, confidence:0.960917592048645, loss:7.013906478881836
+epoch9: step500/4680
+step 9000: accuracy:0.10999999940395355, confidence:0.9252134561538696, loss:6.939855575561523
+epoch9: step1000/4680
+step 13500: accuracy:0.0989999994635582, confidence:0.8734357953071594, loss:6.849137783050537
+epoch9: step1500/4680
+step 18000: accuracy:0.07699999958276749, confidence:0.951885461807251, loss:6.975617408752441
+epoch9: step2000/4680
+step 22500: accuracy:0.10899999737739563, confidence:0.9982724785804749, loss:9.355720520019531
+epoch9: step2500/4680
+step 27000: accuracy:0.09600000083446503, confidence:0.9943111538887024, loss:8.489856719970703
+epoch9: step3000/4680
+step 31500: accuracy:0.10700000077486038, confidence:0.8207603693008423, loss:4.507306098937988
+epoch9: step3500/4680
+step 36000: accuracy:0.11599999666213989, confidence:0.7089454531669617, loss:4.314550876617432
+epoch9: step4000/4680
+step 40500: accuracy:0.10199999809265137, confidence:0.9908910989761353, loss:9.337076187133789
+epoch9: step4500/4680
+step 0: accuracy:0.09200000017881393, confidence:0.9948238134384155, loss:9.554357528686523
+epoch10: step0/4680
+step 5000: accuracy:0.12099999934434891, confidence:0.9476805329322815, loss:7.525444030761719
+epoch10: step500/4680
+step 10000: accuracy:0.09799999743700027, confidence:0.9640713334083557, loss:7.919583797454834
+epoch10: step1000/4680
+step 15000: accuracy:0.10599999874830246, confidence:0.8982750177383423, loss:6.539734840393066
+epoch10: step1500/4680
+step 20000: accuracy:0.11800000071525574, confidence:0.8738725781440735, loss:7.065555095672607
+epoch10: step2000/4680
+step 25000: accuracy:0.09799999743700027, confidence:0.9992441534996033, loss:10.222352981567383
+epoch10: step2500/4680
+step 30000: accuracy:0.11500000208616257, confidence:0.9895282983779907, loss:8.135543823242188
+epoch10: step3000/4680
+step 35000: accuracy:0.10400000214576721, confidence:0.9116254448890686, loss:5.659155368804932
+epoch10: step3500/4680
+step 40000: accuracy:0.11999999731779099, confidence:0.7648470401763916, loss:4.694058895111084
+epoch10: step4000/4680
+step 45000: accuracy:0.0989999994635582, confidence:0.9869662523269653, loss:9.605284690856934
+epoch10: step4500/4680
+step 0: accuracy:0.11599999666213989, confidence:0.9911289811134338, loss:9.56208324432373
+epoch11: step0/4680
+step 5500: accuracy:0.11699999868869781, confidence:0.9637615084648132, loss:7.471887588500977
+epoch11: step500/4680
+step 11000: accuracy:0.1080000028014183, confidence:0.8512064218521118, loss:7.093661785125732
+epoch11: step1000/4680
+step 16500: accuracy:0.08799999952316284, confidence:0.8962230086326599, loss:7.364534378051758
+epoch11: step1500/4680
+step 22000: accuracy:0.11699999868869781, confidence:0.8598179817199707, loss:6.657461166381836
+epoch11: step2000/4680
+step 27500: accuracy:0.11500000208616257, confidence:0.9951989650726318, loss:9.283740997314453
+epoch11: step2500/4680
+step 33000: accuracy:0.1080000028014183, confidence:0.9842029809951782, loss:8.501876831054688
+epoch11: step3000/4680
+step 38500: accuracy:0.11999999731779099, confidence:0.9113603234291077, loss:5.862504005432129
+epoch11: step3500/4680
+step 44000: accuracy:0.11299999803304672, confidence:0.7814751267433167, loss:4.9945454597473145
+epoch11: step4000/4680
+step 49500: accuracy:0.10999999940395355, confidence:0.9964255094528198, loss:11.97377872467041
+epoch11: step4500/4680
+step 0: accuracy:0.10999999940395355, confidence:0.996039867401123, loss:11.173733711242676
+epoch12: step0/4680
+step 6000: accuracy:0.12399999797344208, confidence:0.9387638568878174, loss:6.884016990661621
+epoch12: step500/4680
+step 12000: accuracy:0.09000000357627869, confidence:0.8196883201599121, loss:6.987576961517334
+epoch12: step1000/4680
+step 18000: accuracy:0.07599999755620956, confidence:0.8631837964057922, loss:7.286062240600586
+epoch12: step1500/4680
+step 24000: accuracy:0.09399999678134918, confidence:0.9321771264076233, loss:7.491593837738037
+epoch12: step2000/4680
+step 30000: accuracy:0.08799999952316284, confidence:0.9989836812019348, loss:10.9607515335083
+epoch12: step2500/4680
+step 36000: accuracy:0.10400000214576721, confidence:0.9770047664642334, loss:8.250761032104492
+epoch12: step3000/4680
+step 42000: accuracy:0.10300000011920929, confidence:0.9414783120155334, loss:6.704016208648682
+epoch12: step3500/4680
+step 48000: accuracy:0.10300000011920929, confidence:0.8354131579399109, loss:5.239424228668213
+epoch12: step4000/4680
+step 54000: accuracy:0.10899999737739563, confidence:0.9917378425598145, loss:11.501100540161133
+epoch12: step4500/4680
+step 0: accuracy:0.10000000149011612, confidence:0.9920473098754883, loss:11.063980102539062
+epoch13: step0/4680
+step 6500: accuracy:0.12200000137090683, confidence:0.9603928327560425, loss:8.112058639526367
+epoch13: step500/4680
+step 13000: accuracy:0.05400000140070915, confidence:0.8145280480384827, loss:6.637851715087891
+epoch13: step1000/4680
+step 19500: accuracy:0.07699999958276749, confidence:0.8587939739227295, loss:6.887904167175293
+epoch13: step1500/4680
+step 26000: accuracy:0.12399999797344208, confidence:0.8459054827690125, loss:8.274955749511719
+epoch13: step2000/4680
+step 32500: accuracy:0.10100000351667404, confidence:0.9941662549972534, loss:9.609823226928711
+epoch13: step2500/4680
+step 39000: accuracy:0.10499999672174454, confidence:0.98655766248703, loss:8.602163314819336
+epoch13: step3000/4680
+step 45500: accuracy:0.0989999994635582, confidence:0.7979053854942322, loss:5.039819717407227
+epoch13: step3500/4680
+step 52000: accuracy:0.050999999046325684, confidence:0.7527238130569458, loss:5.048658847808838
+epoch13: step4000/4680
+step 58500: accuracy:0.10700000077486038, confidence:0.9878637194633484, loss:11.598348617553711
+epoch13: step4500/4680
+step 0: accuracy:0.11100000143051147, confidence:0.9908339977264404, loss:11.16137409210205
+epoch14: step0/4680
+step 7000: accuracy:0.12399999797344208, confidence:0.9139118194580078, loss:6.182592391967773
+epoch14: step500/4680
+step 14000: accuracy:0.06199999898672104, confidence:0.7984192371368408, loss:6.236219882965088
+epoch14: step1000/4680
+step 21000: accuracy:0.07199999690055847, confidence:0.862176775932312, loss:7.113404273986816
+epoch14: step1500/4680
+step 28000: accuracy:0.10300000011920929, confidence:0.9565695524215698, loss:6.736300945281982
+epoch14: step2000/4680
+step 35000: accuracy:0.08900000154972076, confidence:0.9999219179153442, loss:14.308195114135742
+epoch14: step2500/4680
+step 42000: accuracy:0.11599999666213989, confidence:0.9805853366851807, loss:9.426586151123047
+epoch14: step3000/4680
+step 49000: accuracy:0.1080000028014183, confidence:0.933114230632782, loss:6.780500411987305
+epoch14: step3500/4680
+step 56000: accuracy:0.10300000011920929, confidence:0.7894102931022644, loss:5.624567031860352
+epoch14: step4000/4680
+step 63000: accuracy:0.10300000011920929, confidence:0.9976931214332581, loss:13.946215629577637
+epoch14: step4500/4680
+step 0: accuracy:0.10199999809265137, confidence:0.9953668713569641, loss:12.676301002502441
+epoch15: step0/4680
+step 7500: accuracy:0.10199999809265137, confidence:0.9714794754981995, loss:7.947449207305908
+epoch15: step500/4680
+step 15000: accuracy:0.07199999690055847, confidence:0.8257246613502502, loss:6.544349670410156
+epoch15: step1000/4680
+step 22500: accuracy:0.0729999989271164, confidence:0.8888199925422668, loss:8.471914291381836
+epoch15: step1500/4680
+step 30000: accuracy:0.09700000286102295, confidence:0.894615650177002, loss:7.6255574226379395
+epoch15: step2000/4680
+step 37500: accuracy:0.10499999672174454, confidence:0.9890998601913452, loss:9.610315322875977
+epoch15: step2500/4680
+step 45000: accuracy:0.0949999988079071, confidence:0.9394821524620056, loss:8.46480941772461
+epoch15: step3000/4680
+step 52500: accuracy:0.0989999994635582, confidence:0.9342369437217712, loss:7.372032165527344
+epoch15: step3500/4680
+step 60000: accuracy:0.08900000154972076, confidence:0.8691076636314392, loss:5.95709228515625
+epoch15: step4000/4680
+step 67500: accuracy:0.0989999994635582, confidence:0.9981296062469482, loss:14.345979690551758
+epoch15: step4500/4680
+step 0: accuracy:0.09200000017881393, confidence:0.9940294027328491, loss:12.67447280883789
+epoch16: step0/4680
+step 8000: accuracy:0.13199999928474426, confidence:0.9569928050041199, loss:7.591116428375244
+epoch16: step500/4680
+step 16000: accuracy:0.050999999046325684, confidence:0.8273426294326782, loss:6.8064985275268555
+epoch16: step1000/4680
+step 24000: accuracy:0.07999999821186066, confidence:0.8041400909423828, loss:6.366186141967773
+epoch16: step1500/4680
+step 32000: accuracy:0.09099999815225601, confidence:0.9845576286315918, loss:9.84791374206543
+epoch16: step2000/4680
+step 40000: accuracy:0.10400000214576721, confidence:0.9919710159301758, loss:9.476326942443848
+epoch16: step2500/4680
+step 48000: accuracy:0.11699999868869781, confidence:0.9391217231750488, loss:7.452577114105225
+epoch16: step3000/4680
+step 56000: accuracy:0.10300000011920929, confidence:0.7177999019622803, loss:4.70247220993042
+epoch16: step3500/4680
+step 64000: accuracy:0.07500000298023224, confidence:0.7868906259536743, loss:5.388277530670166
+epoch16: step4000/4680
+step 72000: accuracy:0.08399999886751175, confidence:0.9696068167686462, loss:8.342849731445312
+epoch16: step4500/4680
+step 0: accuracy:0.10400000214576721, confidence:0.9828816056251526, loss:8.844728469848633
+epoch17: step0/4680
+step 8500: accuracy:0.125, confidence:0.9488394856452942, loss:6.749948501586914
+epoch17: step500/4680
+step 17000: accuracy:0.06599999964237213, confidence:0.8477376103401184, loss:6.853625774383545
+epoch17: step1000/4680
+step 25500: accuracy:0.08500000089406967, confidence:0.901393711566925, loss:8.660286903381348
+epoch17: step1500/4680
+step 34000: accuracy:0.10999999940395355, confidence:0.8638034462928772, loss:5.714497089385986
+epoch17: step2000/4680
+step 42500: accuracy:0.08699999749660492, confidence:0.9980406165122986, loss:11.671514511108398
+epoch17: step2500/4680
+step 51000: accuracy:0.10599999874830246, confidence:0.9202044606208801, loss:7.965236186981201
+epoch17: step3000/4680
+step 59500: accuracy:0.0860000029206276, confidence:0.9087459444999695, loss:6.99143123626709
+epoch17: step3500/4680
+step 68000: accuracy:0.09700000286102295, confidence:0.8308854103088379, loss:5.791369915008545
+epoch17: step4000/4680
+step 76500: accuracy:0.09099999815225601, confidence:0.9772283434867859, loss:10.763970375061035
+epoch17: step4500/4680
+step 0: accuracy:0.09200000017881393, confidence:0.982481062412262, loss:10.690378189086914
+epoch18: step0/4680
+step 9000: accuracy:0.11400000005960464, confidence:0.9435898661613464, loss:7.269370079040527
+epoch18: step500/4680
+step 18000: accuracy:0.08699999749660492, confidence:0.862800657749176, loss:6.636605262756348
+epoch18: step1000/4680
+step 27000: accuracy:0.10599999874830246, confidence:0.8135246634483337, loss:6.530550003051758
+epoch18: step1500/4680
+step 36000: accuracy:0.10700000077486038, confidence:0.930600106716156, loss:12.03976821899414
+epoch18: step2000/4680
+step 45000: accuracy:0.09600000083446503, confidence:0.9996265172958374, loss:11.743703842163086
+epoch18: step2500/4680
+step 54000: accuracy:0.10899999737739563, confidence:0.9675825238227844, loss:8.710566520690918
+epoch18: step3000/4680
+step 63000: accuracy:0.08500000089406967, confidence:0.7749565243721008, loss:5.800567150115967
+epoch18: step3500/4680
+step 72000: accuracy:0.08100000023841858, confidence:0.8304921984672546, loss:6.301479816436768
+epoch18: step4000/4680
+step 81000: accuracy:0.10000000149011612, confidence:0.9830693602561951, loss:8.361096382141113
+epoch18: step4500/4680
+step 0: accuracy:0.10199999809265137, confidence:0.9909310340881348, loss:8.710164070129395
+epoch19: step0/4680
+step 9500: accuracy:0.13199999928474426, confidence:0.9251649975776672, loss:7.86385440826416
+epoch19: step500/4680
+step 19000: accuracy:0.08900000154972076, confidence:0.8882291316986084, loss:7.847405433654785
+epoch19: step1000/4680
+step 28500: accuracy:0.10499999672174454, confidence:0.8636234402656555, loss:8.697372436523438
+epoch19: step1500/4680
+step 38000: accuracy:0.11599999666213989, confidence:0.8822705745697021, loss:6.244966983795166
+epoch19: step2000/4680
+step 47500: accuracy:0.09000000357627869, confidence:0.9860924482345581, loss:11.852242469787598
+epoch19: step2500/4680
+step 57000: accuracy:0.10000000149011612, confidence:0.948788046836853, loss:8.927200317382812
+epoch19: step3000/4680
+step 66500: accuracy:0.10700000077486038, confidence:0.8990418910980225, loss:6.805318355560303
+epoch19: step3500/4680
+step 76000: accuracy:0.10000000149011612, confidence:0.7841172218322754, loss:5.876357555389404
+epoch19: step4000/4680
+step 85500: accuracy:0.08799999952316284, confidence:0.9814319014549255, loss:11.86513614654541
+epoch19: step4500/4680
+step 0: accuracy:0.09399999678134918, confidence:0.9877777099609375, loss:11.340425491333008
+epoch20: step0/4680
+step 10000: accuracy:0.125, confidence:0.8647471070289612, loss:5.641278266906738
+epoch20: step500/4680
+step 20000: accuracy:0.06499999761581421, confidence:0.8344132304191589, loss:6.4141082763671875
+epoch20: step1000/4680
+step 30000: accuracy:0.09200000017881393, confidence:0.8164506554603577, loss:6.579922676086426
+epoch20: step1500/4680
+step 40000: accuracy:0.09799999743700027, confidence:0.9235864281654358, loss:7.711362361907959
+epoch20: step2000/4680
+step 50000: accuracy:0.10700000077486038, confidence:0.9938625693321228, loss:10.35653305053711
+epoch20: step2500/4680
+step 60000: accuracy:0.09799999743700027, confidence:0.999320924282074, loss:13.469996452331543
+epoch20: step3000/4680
+step 70000: accuracy:0.08699999749660492, confidence:0.9684142470359802, loss:8.973564147949219
+epoch20: step3500/4680
+step 80000: accuracy:0.10199999809265137, confidence:0.8889054656028748, loss:6.280340671539307
+epoch20: step4000/4680
+step 90000: accuracy:0.11400000005960464, confidence:0.9999401569366455, loss:16.019453048706055
+epoch20: step4500/4680
+step 0: accuracy:0.10000000149011612, confidence:0.9992372393608093, loss:13.527945518493652
+epoch21: step0/4680
+step 10500: accuracy:0.0989999994635582, confidence:0.9948281049728394, loss:9.995342254638672
+epoch21: step500/4680
+step 21000: accuracy:0.05000000074505806, confidence:0.8671801090240479, loss:7.389880657196045
+epoch21: step1000/4680
+step 31500: accuracy:0.10100000351667404, confidence:0.8278955817222595, loss:6.756984233856201
+epoch21: step1500/4680
+step 42000: accuracy:0.13199999928474426, confidence:0.8407387733459473, loss:6.943072319030762
+epoch21: step2000/4680
+step 52500: accuracy:0.10100000351667404, confidence:0.9928593635559082, loss:12.158295631408691
+epoch21: step2500/4680
+step 63000: accuracy:0.09600000083446503, confidence:0.942963719367981, loss:7.811914920806885
+epoch21: step3000/4680
+step 73500: accuracy:0.10100000351667404, confidence:0.855279803276062, loss:6.1960062980651855
+epoch21: step3500/4680
+step 84000: accuracy:0.10100000351667404, confidence:0.8289784789085388, loss:6.146042823791504
+epoch21: step4000/4680
+step 94500: accuracy:0.09000000357627869, confidence:0.9477186799049377, loss:10.159272193908691
+epoch21: step4500/4680
+step 0: accuracy:0.07999999821186066, confidence:0.9782100319862366, loss:10.529088020324707
+epoch22: step0/4680
+step 11000: accuracy:0.1289999932050705, confidence:0.9057702422142029, loss:6.764852046966553
+epoch22: step500/4680
+step 22000: accuracy:0.0729999989271164, confidence:0.8305165767669678, loss:6.590086936950684
+epoch22: step1000/4680
+step 33000: accuracy:0.07199999690055847, confidence:0.815298318862915, loss:6.724897384643555
+epoch22: step1500/4680
+step 44000: accuracy:0.08399999886751175, confidence:0.9868100881576538, loss:8.399001121520996
+epoch22: step2000/4680
+step 55000: accuracy:0.10199999809265137, confidence:0.9930415749549866, loss:10.523667335510254
+epoch22: step2500/4680
+step 66000: accuracy:0.10499999672174454, confidence:0.9901149868965149, loss:11.290185928344727
+epoch22: step3000/4680
+step 77000: accuracy:0.0949999988079071, confidence:0.9409793019294739, loss:7.9712629318237305
+epoch22: step3500/4680
+step 88000: accuracy:0.08900000154972076, confidence:0.8425615429878235, loss:5.9052228927612305
+epoch22: step4000/4680
+step 99000: accuracy:0.09200000017881393, confidence:0.9996774792671204, loss:14.261055946350098
+epoch22: step4500/4680
+step 0: accuracy:0.10599999874830246, confidence:0.9989226460456848, loss:12.19577407836914
+epoch23: step0/4680
+step 11500: accuracy:0.1120000034570694, confidence:0.993143618106842, loss:10.086766242980957
+epoch23: step500/4680
+step 23000: accuracy:0.07400000095367432, confidence:0.8788474798202515, loss:7.62800931930542
+epoch23: step1000/4680
+step 34500: accuracy:0.11299999803304672, confidence:0.8648624420166016, loss:7.363390922546387
+epoch23: step1500/4680
+step 46000: accuracy:0.09600000083446503, confidence:0.8850560784339905, loss:8.606854438781738
+epoch23: step2000/4680
+step 57500: accuracy:0.09399999678134918, confidence:0.9612389206886292, loss:8.990530014038086
+epoch23: step2500/4680
+step 69000: accuracy:0.0989999994635582, confidence:0.9129369258880615, loss:7.700503349304199
+epoch23: step3000/4680
+step 80500: accuracy:0.07199999690055847, confidence:0.8805392384529114, loss:6.704865455627441
+epoch23: step3500/4680
+step 92000: accuracy:0.057999998331069946, confidence:0.8325081467628479, loss:6.084589958190918
+epoch23: step4000/4680
+step 103500: accuracy:0.0949999988079071, confidence:0.9670708179473877, loss:11.034561157226562
+epoch23: step4500/4680
+step 0: accuracy:0.09300000220537186, confidence:0.980146050453186, loss:10.958712577819824
+epoch24: step0/4680
+step 12000: accuracy:0.12300000339746475, confidence:0.9170458912849426, loss:7.455539226531982
+epoch24: step500/4680
+step 24000: accuracy:0.10999999940395355, confidence:0.8531644344329834, loss:6.593603134155273
+epoch24: step1000/4680
+step 36000: accuracy:0.11599999666213989, confidence:0.8158331513404846, loss:6.564957141876221
+epoch24: step1500/4680
+step 48000: accuracy:0.09300000220537186, confidence:0.9873201251029968, loss:8.746052742004395
+epoch24: step2000/4680
+step 60000: accuracy:0.09799999743700027, confidence:0.9906807541847229, loss:10.841357231140137
+epoch24: step2500/4680
+step 72000: accuracy:0.10100000351667404, confidence:0.9553152918815613, loss:10.2057523727417
+epoch24: step3000/4680
+step 84000: accuracy:0.10999999940395355, confidence:0.9155476093292236, loss:7.236189365386963
+epoch24: step3500/4680
+step 96000: accuracy:0.09000000357627869, confidence:0.8346560597419739, loss:6.031661033630371
+epoch24: step4000/4680
+step 108000: accuracy:0.08900000154972076, confidence:0.995377779006958, loss:12.383827209472656
+epoch24: step4500/4680
+step 0: accuracy:0.10199999809265137, confidence:0.993804395198822, loss:11.161678314208984
+epoch25: step0/4680
+step 12500: accuracy:0.11500000208616257, confidence:0.9990885257720947, loss:11.557205200195312
+epoch25: step500/4680
+step 25000: accuracy:0.052000001072883606, confidence:0.8575829863548279, loss:7.454678535461426
+epoch25: step1000/4680
+step 37500: accuracy:0.07999999821186066, confidence:0.8299936652183533, loss:7.007967948913574
+epoch25: step1500/4680
+step 50000: accuracy:0.10100000351667404, confidence:0.8914690017700195, loss:7.9133477210998535
+epoch25: step2000/4680
+step 62500: accuracy:0.09000000357627869, confidence:0.9671053290367126, loss:9.394246101379395
+epoch25: step2500/4680
+step 75000: accuracy:0.0949999988079071, confidence:0.9270810484886169, loss:8.24864673614502
+epoch25: step3000/4680
+step 87500: accuracy:0.06599999964237213, confidence:0.827080249786377, loss:6.616623878479004
+epoch25: step3500/4680
+step 100000: accuracy:0.09300000220537186, confidence:0.8333017826080322, loss:6.668281078338623
+epoch25: step4000/4680
+step 112500: accuracy:0.09000000357627869, confidence:0.9808650612831116, loss:9.937359809875488
+epoch25: step4500/4680
+step 0: accuracy:0.09300000220537186, confidence:0.9903692007064819, loss:10.103618621826172
+epoch26: step0/4680
+step 13000: accuracy:0.14800000190734863, confidence:0.917137086391449, loss:8.692353248596191
+epoch26: step500/4680
+step 26000: accuracy:0.0989999994635582, confidence:0.8548360466957092, loss:7.005815029144287
+epoch26: step1000/4680
+step 39000: accuracy:0.10400000214576721, confidence:0.8329944610595703, loss:7.63588809967041
+epoch26: step1500/4680
+step 52000: accuracy:0.10599999874830246, confidence:0.9373759627342224, loss:6.9893269538879395
+epoch26: step2000/4680
+step 65000: accuracy:0.11400000005960464, confidence:0.977302074432373, loss:9.97495174407959
+epoch26: step2500/4680
+step 78000: accuracy:0.11500000208616257, confidence:0.9539645314216614, loss:9.441793441772461
+epoch26: step3000/4680
+step 91000: accuracy:0.10100000351667404, confidence:0.9043543338775635, loss:7.075886249542236
+epoch26: step3500/4680
+step 104000: accuracy:0.11100000143051147, confidence:0.8635345101356506, loss:6.197167873382568
+epoch26: step4000/4680
+step 117000: accuracy:0.08699999749660492, confidence:0.9863854050636292, loss:11.47448444366455
+epoch26: step4500/4680
+step 0: accuracy:0.08699999749660492, confidence:0.9857199788093567, loss:10.726099014282227
+epoch27: step0/4680
+step 13500: accuracy:0.0989999994635582, confidence:0.9919055104255676, loss:10.38683795928955
+epoch27: step500/4680
+step 27000: accuracy:0.05299999937415123, confidence:0.8643004894256592, loss:7.339326858520508
+epoch27: step1000/4680
+step 40500: accuracy:0.050999999046325684, confidence:0.8658164143562317, loss:8.453445434570312
+epoch27: step1500/4680
+step 54000: accuracy:0.0989999994635582, confidence:0.9006438255310059, loss:8.020462989807129
+epoch27: step2000/4680
+step 67500: accuracy:0.08399999886751175, confidence:0.9856576919555664, loss:10.198184967041016
+epoch27: step2500/4680
+step 81000: accuracy:0.10199999809265137, confidence:0.9226409196853638, loss:8.013631820678711
+epoch27: step3000/4680
+step 94500: accuracy:0.05700000002980232, confidence:0.8211133480072021, loss:6.730481147766113
+epoch27: step3500/4680
+step 108000: accuracy:0.06499999761581421, confidence:0.8393480181694031, loss:6.930578231811523
+epoch27: step4000/4680
+step 121500: accuracy:0.10000000149011612, confidence:0.986775279045105, loss:10.605222702026367
+epoch27: step4500/4680
+step 0: accuracy:0.08799999952316284, confidence:0.9913791418075562, loss:10.9151611328125
+epoch28: step0/4680
+step 14000: accuracy:0.12099999934434891, confidence:0.9215414524078369, loss:7.362576007843018
+epoch28: step500/4680
+step 28000: accuracy:0.07599999755620956, confidence:0.8456655144691467, loss:7.046710014343262
+epoch28: step1000/4680
+step 42000: accuracy:0.1379999965429306, confidence:0.8167667388916016, loss:6.631742477416992
+epoch28: step1500/4680
+step 56000: accuracy:0.11100000143051147, confidence:0.9069788455963135, loss:7.205147743225098
+epoch28: step2000/4680
+step 70000: accuracy:0.10499999672174454, confidence:0.9877296090126038, loss:11.563291549682617
+epoch28: step2500/4680
+step 84000: accuracy:0.0989999994635582, confidence:0.9564647078514099, loss:9.872404098510742
+epoch28: step3000/4680
+step 98000: accuracy:0.08399999886751175, confidence:0.913661539554596, loss:7.7971296310424805
+epoch28: step3500/4680
+step 112000: accuracy:0.07599999755620956, confidence:0.8356440663337708, loss:6.290553569793701
+epoch28: step4000/4680
+step 126000: accuracy:0.09600000083446503, confidence:0.9697477221488953, loss:10.004119873046875
+epoch28: step4500/4680
+step 0: accuracy:0.09300000220537186, confidence:0.977587878704071, loss:10.28183650970459
+epoch29: step0/4680
+step 14500: accuracy:0.11500000208616257, confidence:0.9858748912811279, loss:9.998795509338379
+epoch29: step500/4680
+step 29000: accuracy:0.09300000220537186, confidence:0.8680275678634644, loss:7.406243324279785
+epoch29: step1000/4680
+step 43500: accuracy:0.04800000041723251, confidence:0.8409972190856934, loss:7.921813488006592
+epoch29: step1500/4680
+step 58000: accuracy:0.11900000274181366, confidence:0.832721471786499, loss:6.950682163238525
+epoch29: step2000/4680
+step 72500: accuracy:0.08799999952316284, confidence:0.9717603921890259, loss:10.745843887329102
+epoch29: step2500/4680
+step 87000: accuracy:0.08299999684095383, confidence:0.9270462989807129, loss:8.763998985290527
+epoch29: step3000/4680
+step 101500: accuracy:0.061000000685453415, confidence:0.8551123142242432, loss:7.6691813468933105
+epoch29: step3500/4680
+step 116000: accuracy:0.08299999684095383, confidence:0.8403269052505493, loss:7.18276309967041
+epoch29: step4000/4680
+step 130500: accuracy:0.08399999886751175, confidence:0.9815191626548767, loss:10.207847595214844
+epoch29: step4500/4680
+2018-06-15 17:40:58.650055: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1105] Found device 0 with properties: 
+name: Tesla P100-SXM2-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.4805
+pciBusID: 0002:01:00.0
+totalMemory: 15.90GiB freeMemory: 15.61GiB
+2018-06-15 17:40:58.650262: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 0002:01:00.0, compute capability: 6.0)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:127: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:129: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:138: RuntimeWarning: invalid value encountered in subtract
+  itemp = int_conv(temp-a)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:162: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:164: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:171: RuntimeWarning: invalid value encountered in subtract
+  if any(temp-a != zero):
+step 0: accuracy:0.10300000011920929, confidence:0.7245229482650757, loss:6.6536383628845215
+epoch0: step0/4680
+step 0: accuracy:0.08799999952316284, confidence:0.999997079372406, loss:18.0647029876709
+epoch0: step500/4680
+step 0: accuracy:0.12300000339746475, confidence:1.0, loss:26.783937454223633
+epoch0: step1000/4680
+step 0: accuracy:0.10199999809265137, confidence:1.0, loss:33.44461441040039
+epoch0: step1500/4680
+step 0: accuracy:0.08299999684095383, confidence:0.9991958141326904, loss:9.910829544067383
+epoch0: step2000/4680
+step 0: accuracy:0.10199999809265137, confidence:0.9999867677688599, loss:13.34460163116455
+epoch0: step2500/4680
+step 0: accuracy:0.08900000154972076, confidence:0.9999946355819702, loss:14.825679779052734
+epoch0: step3000/4680
+step 0: accuracy:0.09600000083446503, confidence:0.9999979734420776, loss:19.25588607788086
+epoch0: step3500/4680
+step 0: accuracy:0.09200000017881393, confidence:0.9999493956565857, loss:11.5533447265625
+epoch0: step4000/4680
+step 0: accuracy:0.08900000154972076, confidence:0.9998960494995117, loss:11.066004753112793
+epoch0: step4500/4680
+step 0: accuracy:0.1120000034570694, confidence:0.9998852610588074, loss:10.677733421325684
+epoch1: step0/4680
+step 500: accuracy:0.10400000214576721, confidence:0.999405562877655, loss:9.527313232421875
+epoch1: step500/4680
+step 1000: accuracy:0.09000000357627869, confidence:0.9999722242355347, loss:12.405308723449707
+epoch1: step1000/4680
+step 1500: accuracy:0.10700000077486038, confidence:0.9999838471412659, loss:13.100387573242188
+epoch1: step1500/4680
+step 2000: accuracy:0.10899999737739563, confidence:0.9899163246154785, loss:6.931080341339111
+epoch1: step2000/4680
+step 2500: accuracy:0.10599999874830246, confidence:0.9966574311256409, loss:7.970703125
+epoch1: step2500/4680
+step 3000: accuracy:0.10700000077486038, confidence:0.9048692584037781, loss:4.615218639373779
+epoch1: step3000/4680
+step 3500: accuracy:0.11400000005960464, confidence:0.9977980256080627, loss:8.037053108215332
+epoch1: step3500/4680
+step 4000: accuracy:0.12200000137090683, confidence:0.9989723563194275, loss:8.539787292480469
+epoch1: step4000/4680
+step 4500: accuracy:0.08900000154972076, confidence:0.9995987415313721, loss:9.951560974121094
+epoch1: step4500/4680
+step 0: accuracy:0.09000000357627869, confidence:0.999504566192627, loss:9.677380561828613
+epoch2: step0/4680
+step 1000: accuracy:0.10499999672174454, confidence:0.9909915328025818, loss:6.8859124183654785
+epoch2: step500/4680
+step 2000: accuracy:0.11500000208616257, confidence:0.9998518824577332, loss:10.361639022827148
+epoch2: step1000/4680
+step 3000: accuracy:0.12099999934434891, confidence:0.9762822985649109, loss:6.074137210845947
+epoch2: step1500/4680
+step 4000: accuracy:0.0949999988079071, confidence:0.9905648231506348, loss:6.851030349731445
+epoch2: step2000/4680
+step 5000: accuracy:0.11400000005960464, confidence:0.9993777871131897, loss:9.018223762512207
+epoch2: step2500/4680
+step 6000: accuracy:0.10000000149011612, confidence:0.9915357828140259, loss:7.017618656158447
+epoch2: step3000/4680
+step 7000: accuracy:0.11100000143051147, confidence:0.9974403977394104, loss:8.127252578735352
+epoch2: step3500/4680
+step 8000: accuracy:0.0949999988079071, confidence:0.9991777539253235, loss:9.143991470336914
+epoch2: step4000/4680
+step 9000: accuracy:0.09799999743700027, confidence:0.998726487159729, loss:9.032790184020996
+epoch2: step4500/4680
+step 0: accuracy:0.10700000077486038, confidence:0.9986360669136047, loss:8.863823890686035
+epoch3: step0/4680
+step 1500: accuracy:0.10000000149011612, confidence:0.9855393171310425, loss:7.075222015380859
+epoch3: step500/4680
+step 3000: accuracy:0.1120000034570694, confidence:0.9969656467437744, loss:7.640951156616211
+epoch3: step1000/4680
+step 4500: accuracy:0.08799999952316284, confidence:0.9921151399612427, loss:8.285879135131836
+epoch3: step1500/4680
+step 6000: accuracy:0.0860000029206276, confidence:0.9921148419380188, loss:7.4253249168396
+epoch3: step2000/4680
+step 7500: accuracy:0.09799999743700027, confidence:0.9978570938110352, loss:8.380382537841797
+epoch3: step2500/4680
+step 9000: accuracy:0.1120000034570694, confidence:0.8791148066520691, loss:4.387569904327393
+epoch3: step3000/4680
+step 10500: accuracy:0.10499999672174454, confidence:0.9930790066719055, loss:7.4734392166137695
+epoch3: step3500/4680
+step 12000: accuracy:0.1080000028014183, confidence:0.9833478927612305, loss:6.29656982421875
+epoch3: step4000/4680
+step 13500: accuracy:0.08799999952316284, confidence:0.9759274125099182, loss:8.314207077026367
+epoch3: step4500/4680
+step 0: accuracy:0.09799999743700027, confidence:0.9775820970535278, loss:7.970731258392334
+epoch4: step0/4680
+step 2000: accuracy:0.10999999940395355, confidence:0.9428806304931641, loss:5.561568260192871
+epoch4: step500/4680
+step 4000: accuracy:0.10000000149011612, confidence:0.9920474290847778, loss:7.050228595733643
+epoch4: step1000/4680
+step 6000: accuracy:0.09600000083446503, confidence:0.9610538482666016, loss:8.257603645324707
+epoch4: step1500/4680
+step 8000: accuracy:0.09399999678134918, confidence:0.9994148015975952, loss:9.710329055786133
+epoch4: step2000/4680
+step 10000: accuracy:0.10599999874830246, confidence:0.9998728632926941, loss:10.716451644897461
+epoch4: step2500/4680
+step 12000: accuracy:0.0949999988079071, confidence:0.9627330303192139, loss:5.732577323913574
+epoch4: step3000/4680
+step 14000: accuracy:0.11900000274181366, confidence:0.9956603050231934, loss:8.182046890258789
+epoch4: step3500/4680
+step 16000: accuracy:0.1080000028014183, confidence:0.9862796664237976, loss:6.539130687713623
+epoch4: step4000/4680
+step 18000: accuracy:0.10000000149011612, confidence:0.9878653287887573, loss:8.53478717803955
+epoch4: step4500/4680
+step 0: accuracy:0.09700000286102295, confidence:0.9878543019294739, loss:8.435669898986816
+epoch5: step0/4680
+step 2500: accuracy:0.0989999994635582, confidence:0.8943788409233093, loss:5.271037578582764
+epoch5: step500/4680
+step 5000: accuracy:0.09700000286102295, confidence:0.9941707253456116, loss:7.713126182556152
+epoch5: step1000/4680
+step 7500: accuracy:0.08399999886751175, confidence:0.9508116245269775, loss:7.091743469238281
+epoch5: step1500/4680
+step 10000: accuracy:0.09700000286102295, confidence:0.9998496174812317, loss:11.436963081359863
+epoch5: step2000/4680
+step 12500: accuracy:0.10499999672174454, confidence:0.9999074935913086, loss:11.55826187133789
+epoch5: step2500/4680
+step 15000: accuracy:0.09700000286102295, confidence:0.9784185290336609, loss:6.5264573097229
+epoch5: step3000/4680
+step 17500: accuracy:0.1080000028014183, confidence:0.9957870244979858, loss:8.83122730255127
+epoch5: step3500/4680
+step 20000: accuracy:0.10199999809265137, confidence:0.9851455092430115, loss:6.42365026473999
+epoch5: step4000/4680
+step 22500: accuracy:0.0860000029206276, confidence:0.9904654622077942, loss:7.953398704528809
+epoch5: step4500/4680
+step 0: accuracy:0.08500000089406967, confidence:0.990871012210846, loss:7.829587936401367
+epoch6: step0/4680
+step 3000: accuracy:0.09399999678134918, confidence:0.9011004567146301, loss:5.24772834777832
+epoch6: step500/4680
+step 6000: accuracy:0.11999999731779099, confidence:0.9847466349601746, loss:6.8628644943237305
+epoch6: step1000/4680
+step 9000: accuracy:0.09099999815225601, confidence:0.8822805881500244, loss:7.600888729095459
+epoch6: step1500/4680
+step 12000: accuracy:0.0949999988079071, confidence:0.9996623396873474, loss:10.5819730758667
+epoch6: step2000/4680
+step 15000: accuracy:0.11299999803304672, confidence:0.9999350309371948, loss:11.628710746765137
+epoch6: step2500/4680
+step 18000: accuracy:0.09799999743700027, confidence:0.9955296516418457, loss:8.724533081054688
+epoch6: step3000/4680
+step 21000: accuracy:0.11500000208616257, confidence:0.9973732233047485, loss:9.477599143981934
+epoch6: step3500/4680
+step 24000: accuracy:0.0989999994635582, confidence:0.9501849412918091, loss:5.41922664642334
+epoch6: step4000/4680
+step 27000: accuracy:0.0860000029206276, confidence:0.972054123878479, loss:8.475434303283691
+epoch6: step4500/4680
+step 0: accuracy:0.09200000017881393, confidence:0.9743413329124451, loss:8.13475227355957
+epoch7: step0/4680
+step 3500: accuracy:0.10999999940395355, confidence:0.9066305756568909, loss:5.286340713500977
+epoch7: step500/4680
+step 7000: accuracy:0.10899999737739563, confidence:0.9846888780593872, loss:7.57115364074707
+epoch7: step1000/4680
+step 10500: accuracy:0.09700000286102295, confidence:0.9681615233421326, loss:8.322028160095215
+epoch7: step1500/4680
+step 14000: accuracy:0.10700000077486038, confidence:0.9997292757034302, loss:10.954833030700684
+epoch7: step2000/4680
+step 17500: accuracy:0.08900000154972076, confidence:0.9999081492424011, loss:11.972938537597656
+epoch7: step2500/4680
+step 21000: accuracy:0.09300000220537186, confidence:0.9862390160560608, loss:7.737580299377441
+epoch7: step3000/4680
+step 24500: accuracy:0.09700000286102295, confidence:0.9986525774002075, loss:11.88117504119873
+epoch7: step3500/4680
+step 28000: accuracy:0.10400000214576721, confidence:0.9676081538200378, loss:5.810672283172607
+epoch7: step4000/4680
+step 31500: accuracy:0.11599999666213989, confidence:0.9519444704055786, loss:7.2484049797058105
+epoch7: step4500/4680
+step 0: accuracy:0.10700000077486038, confidence:0.9543697834014893, loss:7.124309062957764
+epoch8: step0/4680
+step 4000: accuracy:0.09399999678134918, confidence:0.8751782178878784, loss:5.288787364959717
+epoch8: step500/4680
+step 8000: accuracy:0.11299999803304672, confidence:0.8829898238182068, loss:6.406631946563721
+epoch8: step1000/4680
+step 12000: accuracy:0.0989999994635582, confidence:0.9624893665313721, loss:7.735583782196045
+epoch8: step1500/4680
+step 16000: accuracy:0.09799999743700027, confidence:0.9987181425094604, loss:9.695241928100586
+epoch8: step2000/4680
+step 20000: accuracy:0.11400000005960464, confidence:0.9997702240943909, loss:10.909024238586426
+epoch8: step2500/4680
+step 24000: accuracy:0.08299999684095383, confidence:0.9697059392929077, loss:6.819156169891357
+epoch8: step3000/4680
+step 28000: accuracy:0.12200000137090683, confidence:0.9969721436500549, loss:11.957862854003906
+epoch8: step3500/4680
+step 32000: accuracy:0.10499999672174454, confidence:0.9682406783103943, loss:5.711800575256348
+epoch8: step4000/4680
+step 36000: accuracy:0.09099999815225601, confidence:0.9559593796730042, loss:7.9897589683532715
+epoch8: step4500/4680
+step 0: accuracy:0.10499999672174454, confidence:0.9550016522407532, loss:7.342429161071777
+epoch9: step0/4680
+step 4500: accuracy:0.09000000357627869, confidence:0.9154970645904541, loss:5.678704738616943
+epoch9: step500/4680
+step 9000: accuracy:0.11100000143051147, confidence:0.885556161403656, loss:5.892932415008545
+epoch9: step1000/4680
+step 13500: accuracy:0.0820000022649765, confidence:0.8770339488983154, loss:6.6044182777404785
+epoch9: step1500/4680
+step 18000: accuracy:0.10899999737739563, confidence:0.9968142509460449, loss:9.137267112731934
+epoch9: step2000/4680
+step 22500: accuracy:0.10899999737739563, confidence:0.9994958639144897, loss:10.91312026977539
+epoch9: step2500/4680
+step 27000: accuracy:0.09700000286102295, confidence:0.9535214900970459, loss:6.58997917175293
+epoch9: step3000/4680
+step 31500: accuracy:0.10899999737739563, confidence:0.9929890036582947, loss:12.219197273254395
+epoch9: step3500/4680
+step 36000: accuracy:0.10000000149011612, confidence:0.9900217652320862, loss:6.964718341827393
+epoch9: step4000/4680
+step 40500: accuracy:0.09799999743700027, confidence:0.9855834245681763, loss:7.715213775634766
+epoch9: step4500/4680
+step 0: accuracy:0.11400000005960464, confidence:0.987276554107666, loss:7.592245578765869
+epoch10: step0/4680
+step 5000: accuracy:0.07599999755620956, confidence:0.9115976095199585, loss:6.197844982147217
+epoch10: step500/4680
+step 10000: accuracy:0.09700000286102295, confidence:0.8780382871627808, loss:6.338692665100098
+epoch10: step1000/4680
+step 15000: accuracy:0.08900000154972076, confidence:0.9515436291694641, loss:7.8780717849731445
+epoch10: step1500/4680
+step 20000: accuracy:0.09300000220537186, confidence:0.9972969889640808, loss:9.86019515991211
+epoch10: step2000/4680
+step 25000: accuracy:0.09799999743700027, confidence:0.9994444847106934, loss:11.22057056427002
+epoch10: step2500/4680
+step 30000: accuracy:0.11299999803304672, confidence:0.9665200114250183, loss:7.238278865814209
+epoch10: step3000/4680
+step 35000: accuracy:0.1080000028014183, confidence:0.9802332520484924, loss:10.929901123046875
+epoch10: step3500/4680
+step 40000: accuracy:0.0949999988079071, confidence:0.9830912351608276, loss:6.632268905639648
+epoch10: step4000/4680
+step 45000: accuracy:0.10100000351667404, confidence:0.9657186269760132, loss:8.228605270385742
+epoch10: step4500/4680
+step 0: accuracy:0.10599999874830246, confidence:0.9665096998214722, loss:7.835854530334473
+epoch11: step0/4680
+step 5500: accuracy:0.0949999988079071, confidence:0.9535582065582275, loss:6.713909149169922
+epoch11: step500/4680
+step 11000: accuracy:0.11400000005960464, confidence:0.8891652822494507, loss:5.894883632659912
+epoch11: step1000/4680
+step 16500: accuracy:0.10400000214576721, confidence:0.9454430341720581, loss:8.221235275268555
+epoch11: step1500/4680
+step 22000: accuracy:0.0860000029206276, confidence:0.9985585808753967, loss:10.982993125915527
+epoch11: step2000/4680
+step 27500: accuracy:0.11500000208616257, confidence:0.999630331993103, loss:11.977673530578613
+epoch11: step2500/4680
+step 33000: accuracy:0.0860000029206276, confidence:0.9232675433158875, loss:6.8680219650268555
+epoch11: step3000/4680
+step 38500: accuracy:0.10100000351667404, confidence:0.9417018294334412, loss:11.392515182495117
+epoch11: step3500/4680
+step 44000: accuracy:0.1080000028014183, confidence:0.9806051254272461, loss:6.665750503540039
+epoch11: step4000/4680
+step 49500: accuracy:0.10400000214576721, confidence:0.9692661762237549, loss:8.238924026489258
+epoch11: step4500/4680
+step 0: accuracy:0.10499999672174454, confidence:0.975993275642395, loss:8.14125919342041
+epoch12: step0/4680
+step 6000: accuracy:0.09799999743700027, confidence:0.9805299639701843, loss:8.075860977172852
+epoch12: step500/4680
+step 12000: accuracy:0.11999999731779099, confidence:0.9430956244468689, loss:7.138455867767334
+epoch12: step1000/4680
+step 18000: accuracy:0.10700000077486038, confidence:0.9685258865356445, loss:8.57334041595459
+epoch12: step1500/4680
+step 24000: accuracy:0.11100000143051147, confidence:0.9981821775436401, loss:11.591794967651367
+epoch12: step2000/4680
+step 30000: accuracy:0.08799999952316284, confidence:0.9994598627090454, loss:13.06405258178711
+epoch12: step2500/4680
+step 36000: accuracy:0.08799999952316284, confidence:0.9386866092681885, loss:7.970357894897461
+epoch12: step3000/4680
+step 42000: accuracy:0.09799999743700027, confidence:0.9171903133392334, loss:11.945616722106934
+epoch12: step3500/4680
+step 48000: accuracy:0.09000000357627869, confidence:0.9174194931983948, loss:5.909689903259277
+epoch12: step4000/4680
+step 54000: accuracy:0.08500000089406967, confidence:0.9151407480239868, loss:8.549653053283691
+epoch12: step4500/4680
+step 0: accuracy:0.11900000274181366, confidence:0.952052891254425, loss:8.118428230285645
+epoch13: step0/4680
+step 6500: accuracy:0.09700000286102295, confidence:0.9890504479408264, loss:8.499550819396973
+epoch13: step500/4680
+step 13000: accuracy:0.09300000220537186, confidence:0.9644783735275269, loss:7.402073860168457
+epoch13: step1000/4680
+step 19500: accuracy:0.10100000351667404, confidence:0.9730013608932495, loss:10.076786041259766
+epoch13: step1500/4680
+step 26000: accuracy:0.09799999743700027, confidence:0.9992769956588745, loss:12.875076293945312
+epoch13: step2000/4680
+step 32500: accuracy:0.10100000351667404, confidence:0.9998178482055664, loss:14.131875038146973
+epoch13: step2500/4680
+step 39000: accuracy:0.10000000149011612, confidence:0.9448647499084473, loss:8.516063690185547
+epoch13: step3000/4680
+step 45500: accuracy:0.12999999523162842, confidence:0.9398935437202454, loss:13.35734748840332
+epoch13: step3500/4680
+step 52000: accuracy:0.10499999672174454, confidence:0.9146664142608643, loss:6.235745906829834
+epoch13: step4000/4680
+step 58500: accuracy:0.11800000071525574, confidence:0.8158299326896667, loss:7.567800998687744
+epoch13: step4500/4680
+step 0: accuracy:0.10899999737739563, confidence:0.8318641185760498, loss:7.643050670623779
+epoch14: step0/4680
+step 7000: accuracy:0.08500000089406967, confidence:0.8891388773918152, loss:6.705648899078369
+epoch14: step500/4680
+step 14000: accuracy:0.11999999731779099, confidence:0.8635900616645813, loss:8.498836517333984
+epoch14: step1000/4680
+step 21000: accuracy:0.11599999666213989, confidence:0.9971890449523926, loss:10.470157623291016
+epoch14: step1500/4680
+step 28000: accuracy:0.10999999940395355, confidence:0.9991157650947571, loss:12.54033088684082
+epoch14: step2000/4680
+step 35000: accuracy:0.08900000154972076, confidence:0.9998082518577576, loss:14.323121070861816
+epoch14: step2500/4680
+step 42000: accuracy:0.10599999874830246, confidence:0.934908390045166, loss:8.903810501098633
+epoch14: step3000/4680
+step 49000: accuracy:0.11400000005960464, confidence:0.9626483917236328, loss:14.417845726013184
+epoch14: step3500/4680
+step 56000: accuracy:0.07500000298023224, confidence:0.8504075407981873, loss:5.8973798751831055
+epoch14: step4000/4680
+step 63000: accuracy:0.12800000607967377, confidence:0.8117051720619202, loss:7.7299580574035645
+epoch14: step4500/4680
+step 0: accuracy:0.10700000077486038, confidence:0.8627278208732605, loss:7.796627521514893
+epoch15: step0/4680
+step 7500: accuracy:0.0989999994635582, confidence:0.8953754305839539, loss:6.36754846572876
+epoch15: step500/4680
+step 15000: accuracy:0.09200000017881393, confidence:0.7597959637641907, loss:5.755329132080078
+epoch15: step1000/4680
+step 22500: accuracy:0.07000000029802322, confidence:0.8510565161705017, loss:7.918924808502197
+epoch15: step1500/4680
+step 30000: accuracy:0.08299999684095383, confidence:0.9988895058631897, loss:12.822999000549316
+epoch15: step2000/4680
+step 37500: accuracy:0.10499999672174454, confidence:0.9998314380645752, loss:14.277533531188965
+epoch15: step2500/4680
+step 45000: accuracy:0.08799999952316284, confidence:0.9372255802154541, loss:9.385184288024902
+epoch15: step3000/4680
+step 52500: accuracy:0.12999999523162842, confidence:0.9605469703674316, loss:14.668437957763672
+epoch15: step3500/4680
+step 60000: accuracy:0.09600000083446503, confidence:0.9614726305007935, loss:7.259952068328857
+epoch15: step4000/4680
+step 67500: accuracy:0.13600000739097595, confidence:0.8536325693130493, loss:8.180981636047363
+epoch15: step4500/4680
+step 0: accuracy:0.12300000339746475, confidence:0.8359757661819458, loss:7.677294731140137
+epoch16: step0/4680
+step 8000: accuracy:0.06300000101327896, confidence:0.855697512626648, loss:6.663344383239746
+epoch16: step500/4680
+step 16000: accuracy:0.07999999821186066, confidence:0.8353347778320312, loss:7.833886623382568
+epoch16: step1000/4680
+step 24000: accuracy:0.08799999952316284, confidence:0.9516092538833618, loss:9.08285140991211
+epoch16: step1500/4680
+step 32000: accuracy:0.11299999803304672, confidence:0.9981719851493835, loss:12.456184387207031
+epoch16: step2000/4680
+step 40000: accuracy:0.10400000214576721, confidence:0.9997777938842773, loss:14.538036346435547
+epoch16: step2500/4680
+step 48000: accuracy:0.07400000095367432, confidence:0.8608068227767944, loss:8.983634948730469
+epoch16: step3000/4680
+step 56000: accuracy:0.10000000149011612, confidence:0.9689030051231384, loss:15.686078071594238
+epoch16: step3500/4680
+step 64000: accuracy:0.09300000220537186, confidence:0.954910933971405, loss:7.690459728240967
+epoch16: step4000/4680
+step 72000: accuracy:0.12399999797344208, confidence:0.8912764191627502, loss:8.72818374633789
+epoch16: step4500/4680
+step 0: accuracy:0.10400000214576721, confidence:0.877480685710907, loss:8.64887809753418
+epoch17: step0/4680
+step 8500: accuracy:0.10499999672174454, confidence:0.8489817976951599, loss:6.33134651184082
+epoch17: step500/4680
+step 17000: accuracy:0.07599999755620956, confidence:0.6811776161193848, loss:5.565862655639648
+epoch17: step1000/4680
+step 25500: accuracy:0.02800000086426735, confidence:0.8190458416938782, loss:7.772241592407227
+epoch17: step1500/4680
+step 34000: accuracy:0.11599999666213989, confidence:0.992716908454895, loss:13.130061149597168
+epoch17: step2000/4680
+step 42500: accuracy:0.08699999749660492, confidence:0.9998999834060669, loss:16.265398025512695
+epoch17: step2500/4680
+step 51000: accuracy:0.09300000220537186, confidence:0.9071091413497925, loss:9.799846649169922
+epoch17: step3000/4680
+step 59500: accuracy:0.10700000077486038, confidence:0.9173831939697266, loss:15.246431350708008
+epoch17: step3500/4680
+step 68000: accuracy:0.09799999743700027, confidence:0.9675425887107849, loss:8.620790481567383
+epoch17: step4000/4680
+step 76500: accuracy:0.10899999737739563, confidence:0.9176301956176758, loss:9.597810745239258
+epoch17: step4500/4680
+step 0: accuracy:0.11999999731779099, confidence:0.8853759169578552, loss:8.55028247833252
+epoch18: step0/4680
+step 9000: accuracy:0.07800000160932541, confidence:0.8948967456817627, loss:8.059237480163574
+epoch18: step500/4680
+step 18000: accuracy:0.0820000022649765, confidence:0.8429467678070068, loss:7.509377479553223
+epoch18: step1000/4680
+step 27000: accuracy:0.05999999865889549, confidence:0.8847159147262573, loss:8.424515724182129
+epoch18: step1500/4680
+step 36000: accuracy:0.0949999988079071, confidence:0.9960063099861145, loss:14.186296463012695
+epoch18: step2000/4680
+step 45000: accuracy:0.09600000083446503, confidence:0.9998733997344971, loss:16.301130294799805
+epoch18: step2500/4680
+step 54000: accuracy:0.08399999886751175, confidence:0.9097996950149536, loss:10.833941459655762
+epoch18: step3000/4680
+step 63000: accuracy:0.13600000739097595, confidence:0.9395401477813721, loss:16.255199432373047
+epoch18: step3500/4680
+step 72000: accuracy:0.11100000143051147, confidence:0.9311235547065735, loss:7.534725189208984
+epoch18: step4000/4680
+step 81000: accuracy:0.15399999916553497, confidence:0.8353942632675171, loss:9.59379768371582
+epoch18: step4500/4680
+step 0: accuracy:0.1550000011920929, confidence:0.8186025619506836, loss:8.364784240722656
+epoch19: step0/4680
+step 9500: accuracy:0.10599999874830246, confidence:0.9153065085411072, loss:7.522353172302246
+epoch19: step500/4680
+step 19000: accuracy:0.0729999989271164, confidence:0.7099616527557373, loss:5.947558403015137
+epoch19: step1000/4680
+step 28500: accuracy:0.020999999716877937, confidence:0.7438434958457947, loss:6.811890602111816
+epoch19: step1500/4680
+step 38000: accuracy:0.09200000017881393, confidence:0.9705404043197632, loss:14.901092529296875
+epoch19: step2000/4680
+step 47500: accuracy:0.09000000357627869, confidence:0.9999899864196777, loss:18.861356735229492
+epoch19: step2500/4680
+step 57000: accuracy:0.08799999952316284, confidence:0.9703826308250427, loss:12.310064315795898
+epoch19: step3000/4680
+step 66500: accuracy:0.11100000143051147, confidence:0.903795063495636, loss:14.91726303100586
+epoch19: step3500/4680
+step 76000: accuracy:0.0989999994635582, confidence:0.9123834371566772, loss:7.98403787612915
+epoch19: step4000/4680
+step 85500: accuracy:0.13099999725818634, confidence:0.8580718040466309, loss:9.420919418334961
+epoch19: step4500/4680
+step 0: accuracy:0.1340000033378601, confidence:0.8489437699317932, loss:8.675870895385742
+epoch20: step0/4680
+step 10000: accuracy:0.07900000363588333, confidence:0.8841118216514587, loss:7.620386600494385
+epoch20: step500/4680
+step 20000: accuracy:0.05400000140070915, confidence:0.8041926026344299, loss:7.130174160003662
+epoch20: step1000/4680
+step 30000: accuracy:0.08500000089406967, confidence:0.8758746385574341, loss:8.17029857635498
+epoch20: step1500/4680
+step 40000: accuracy:0.10400000214576721, confidence:0.9987092018127441, loss:14.669196128845215
+epoch20: step2000/4680
+step 50000: accuracy:0.10700000077486038, confidence:0.9998465776443481, loss:15.767900466918945
+epoch20: step2500/4680
+step 60000: accuracy:0.027000000700354576, confidence:0.8932971358299255, loss:10.599538803100586
+epoch20: step3000/4680
+step 70000: accuracy:0.10100000351667404, confidence:0.9710738658905029, loss:19.785682678222656
+epoch20: step3500/4680
+step 80000: accuracy:0.09600000083446503, confidence:0.9650681018829346, loss:9.095436096191406
+epoch20: step4000/4680
+step 90000: accuracy:0.12300000339746475, confidence:0.8856357932090759, loss:12.811714172363281
+epoch20: step4500/4680
+step 0: accuracy:0.13699999451637268, confidence:0.8560593724250793, loss:10.620187759399414
+epoch21: step0/4680
+step 10500: accuracy:0.11100000143051147, confidence:0.8639934062957764, loss:7.524490833282471
+epoch21: step500/4680
+step 21000: accuracy:0.08399999886751175, confidence:0.7020467519760132, loss:5.943821907043457
+epoch21: step1000/4680
+step 31500: accuracy:0.02800000086426735, confidence:0.6980267763137817, loss:6.199960231781006
+epoch21: step1500/4680
+step 42000: accuracy:0.08799999952316284, confidence:0.924069344997406, loss:13.941580772399902
+epoch21: step2000/4680
+step 52500: accuracy:0.10100000351667404, confidence:0.9999973177909851, loss:21.831998825073242
+epoch21: step2500/4680
+step 63000: accuracy:0.09799999743700027, confidence:0.9677043557167053, loss:12.208078384399414
+epoch21: step3000/4680
+step 73500: accuracy:0.09200000017881393, confidence:0.879504919052124, loss:14.479474067687988
+epoch21: step3500/4680
+step 84000: accuracy:0.07699999958276749, confidence:0.7835516333580017, loss:7.607691287994385
+epoch21: step4000/4680
+step 94500: accuracy:0.12300000339746475, confidence:0.864802360534668, loss:9.395835876464844
+epoch21: step4500/4680
+step 0: accuracy:0.11800000071525574, confidence:0.8549538850784302, loss:8.855116844177246
+epoch22: step0/4680
+step 11000: accuracy:0.041999999433755875, confidence:0.8055027723312378, loss:7.242395401000977
+epoch22: step500/4680
+step 22000: accuracy:0.024000000208616257, confidence:0.9023849368095398, loss:8.055134773254395
+epoch22: step1000/4680
+step 33000: accuracy:0.03799999877810478, confidence:0.7527667284011841, loss:6.3690996170043945
+epoch22: step1500/4680
+step 44000: accuracy:0.11299999803304672, confidence:0.9707647562026978, loss:11.627767562866211
+epoch22: step2000/4680
+step 55000: accuracy:0.10199999809265137, confidence:0.9999101758003235, loss:17.048397064208984
+epoch22: step2500/4680
+step 66000: accuracy:0.035999998450279236, confidence:0.893506646156311, loss:10.974580764770508
+epoch22: step3000/4680
+step 77000: accuracy:0.08100000023841858, confidence:0.8902203440666199, loss:18.33555793762207
+epoch22: step3500/4680
+step 88000: accuracy:0.10899999737739563, confidence:0.9757779836654663, loss:9.264103889465332
+epoch22: step4000/4680
+step 99000: accuracy:0.10400000214576721, confidence:0.9479730129241943, loss:12.339573860168457
+epoch22: step4500/4680
+step 0: accuracy:0.10899999737739563, confidence:0.8936166763305664, loss:10.366938591003418
+epoch23: step0/4680
+step 11500: accuracy:0.0689999982714653, confidence:0.8095058798789978, loss:8.378704071044922
+epoch23: step500/4680
+step 23000: accuracy:0.10499999672174454, confidence:0.7170750498771667, loss:6.130540370941162
+epoch23: step1000/4680
+step 34500: accuracy:0.05000000074505806, confidence:0.8126002550125122, loss:7.43145751953125
+epoch23: step1500/4680
+step 46000: accuracy:0.10599999874830246, confidence:0.9734553098678589, loss:13.546825408935547
+epoch23: step2000/4680
+step 57500: accuracy:0.09200000017881393, confidence:0.9998859763145447, loss:17.73341941833496
+epoch23: step2500/4680
+step 69000: accuracy:0.07900000363588333, confidence:0.9125774502754211, loss:10.785591125488281
+epoch23: step3000/4680
+step 80500: accuracy:0.08500000089406967, confidence:0.8759289383888245, loss:14.74998664855957
+epoch23: step3500/4680
+step 92000: accuracy:0.06300000101327896, confidence:0.7720762491226196, loss:8.127671241760254
+epoch23: step4000/4680
+step 103500: accuracy:0.13899999856948853, confidence:0.8539382815361023, loss:11.183692932128906
+epoch23: step4500/4680
+step 0: accuracy:0.1289999932050705, confidence:0.862541675567627, loss:10.174331665039062
+epoch24: step0/4680
+step 12000: accuracy:0.07599999755620956, confidence:0.793696939945221, loss:8.073826789855957
+epoch24: step500/4680
+step 24000: accuracy:0.019999999552965164, confidence:0.8378172516822815, loss:7.213621616363525
+epoch24: step1000/4680
+step 36000: accuracy:0.09000000357627869, confidence:0.6724507808685303, loss:5.515399932861328
+epoch24: step1500/4680
+step 48000: accuracy:0.08299999684095383, confidence:0.9106241464614868, loss:11.482857704162598
+epoch24: step2000/4680
+step 60000: accuracy:0.09799999743700027, confidence:0.9999945759773254, loss:20.028419494628906
+epoch24: step2500/4680
+step 72000: accuracy:0.07800000160932541, confidence:0.9317612051963806, loss:12.487677574157715
+epoch24: step3000/4680
+step 84000: accuracy:0.11900000274181366, confidence:0.910677433013916, loss:13.16604995727539
+epoch24: step3500/4680
+step 96000: accuracy:0.08399999886751175, confidence:0.7940261960029602, loss:7.148913383483887
+epoch24: step4000/4680
+step 108000: accuracy:0.13099999725818634, confidence:0.8627132177352905, loss:10.992362976074219
+epoch24: step4500/4680
+step 0: accuracy:0.1340000033378601, confidence:0.8674688339233398, loss:10.128744125366211
+epoch25: step0/4680
+step 12500: accuracy:0.10000000149011612, confidence:0.8911157250404358, loss:8.226675987243652
+epoch25: step500/4680
+step 25000: accuracy:0.08399999886751175, confidence:0.6854154467582703, loss:6.094517707824707
+epoch25: step1000/4680
+step 37500: accuracy:0.05900000035762787, confidence:0.6753895282745361, loss:5.927481174468994
+epoch25: step1500/4680
+step 50000: accuracy:0.09600000083446503, confidence:0.990183413028717, loss:13.620184898376465
+epoch25: step2000/4680
+step 62500: accuracy:0.09000000357627869, confidence:0.9988247156143188, loss:16.21939468383789
+epoch25: step2500/4680
+step 75000: accuracy:0.03700000047683716, confidence:0.8864539861679077, loss:11.751173973083496
+epoch25: step3000/4680
+step 87500: accuracy:0.09000000357627869, confidence:0.9002974629402161, loss:17.3856258392334
+epoch25: step3500/4680
+step 100000: accuracy:0.0729999989271164, confidence:0.90374755859375, loss:8.307622909545898
+epoch25: step4000/4680
+step 112500: accuracy:0.14900000393390656, confidence:0.8745622038841248, loss:10.73564338684082
+epoch25: step4500/4680
+step 0: accuracy:0.125, confidence:0.8824098706245422, loss:9.931086540222168
+epoch26: step0/4680
+step 13000: accuracy:0.04600000008940697, confidence:0.797385036945343, loss:7.7715373039245605
+epoch26: step500/4680
+step 26000: accuracy:0.035999998450279236, confidence:0.8830652236938477, loss:9.434231758117676
+epoch26: step1000/4680
+step 39000: accuracy:0.10700000077486038, confidence:0.96556556224823, loss:9.132745742797852
+epoch26: step1500/4680
+step 52000: accuracy:0.08500000089406967, confidence:0.9623658657073975, loss:12.027874946594238
+epoch26: step2000/4680
+step 65000: accuracy:0.11400000005960464, confidence:0.9998902678489685, loss:18.40410614013672
+epoch26: step2500/4680
+step 78000: accuracy:0.05999999865889549, confidence:0.8682996034622192, loss:9.977765083312988
+epoch26: step3000/4680
+step 91000: accuracy:0.03099999949336052, confidence:0.8820177316665649, loss:14.872335433959961
+epoch26: step3500/4680
+step 104000: accuracy:0.06599999964237213, confidence:0.7802968621253967, loss:7.952481269836426
+epoch26: step4000/4680
+step 117000: accuracy:0.13199999928474426, confidence:0.8614304661750793, loss:10.324418067932129
+epoch26: step4500/4680
+step 0: accuracy:0.15000000596046448, confidence:0.8540392518043518, loss:9.286876678466797
+epoch27: step0/4680
+step 13500: accuracy:0.08100000023841858, confidence:0.7253046035766602, loss:7.269062519073486
+epoch27: step500/4680
+step 27000: accuracy:0.04600000008940697, confidence:0.7540187239646912, loss:7.030300617218018
+epoch27: step1000/4680
+step 40500: accuracy:0.061000000685453415, confidence:0.6906225085258484, loss:6.109235763549805
+epoch27: step1500/4680
+step 54000: accuracy:0.09700000286102295, confidence:0.9205955862998962, loss:14.663257598876953
+epoch27: step2000/4680
+step 67500: accuracy:0.08399999886751175, confidence:0.9998851418495178, loss:18.17565155029297
+epoch27: step2500/4680
+step 81000: accuracy:0.057999998331069946, confidence:0.9070445895195007, loss:11.03032398223877
+epoch27: step3000/4680
+step 94500: accuracy:0.039000000804662704, confidence:0.8864597082138062, loss:14.4308500289917
+epoch27: step3500/4680
+step 108000: accuracy:0.07100000232458115, confidence:0.7856148481369019, loss:7.596734523773193
+epoch27: step4000/4680
+step 121500: accuracy:0.13099999725818634, confidence:0.8737167716026306, loss:11.495057106018066
+epoch27: step4500/4680
+step 0: accuracy:0.15199999511241913, confidence:0.8693093061447144, loss:9.971059799194336
+epoch28: step0/4680
+step 14000: accuracy:0.06800000369548798, confidence:0.8012819290161133, loss:8.026928901672363
+epoch28: step500/4680
+step 28000: accuracy:0.07100000232458115, confidence:0.773913562297821, loss:7.20468282699585
+epoch28: step1000/4680
+step 42000: accuracy:0.06599999964237213, confidence:0.7994847893714905, loss:6.994034767150879
+epoch28: step1500/4680
+step 56000: accuracy:0.10199999809265137, confidence:0.9745566248893738, loss:12.23912239074707
+epoch28: step2000/4680
+step 70000: accuracy:0.10499999672174454, confidence:0.9996065497398376, loss:17.052337646484375
+epoch28: step2500/4680
+step 84000: accuracy:0.05000000074505806, confidence:0.894838273525238, loss:11.110350608825684
+epoch28: step3000/4680
+step 98000: accuracy:0.08399999886751175, confidence:0.895970344543457, loss:18.117691040039062
+epoch28: step3500/4680
+step 112000: accuracy:0.10599999874830246, confidence:0.9308590888977051, loss:8.253241539001465
+epoch28: step4000/4680
+step 126000: accuracy:0.12300000339746475, confidence:0.877791702747345, loss:9.84273624420166
+epoch28: step4500/4680
+step 0: accuracy:0.11599999666213989, confidence:0.8614115715026855, loss:8.924293518066406
+epoch29: step0/4680
+step 14500: accuracy:0.08500000089406967, confidence:0.6982903480529785, loss:6.926234722137451
+epoch29: step500/4680
+step 29000: accuracy:0.13600000739097595, confidence:0.7710495591163635, loss:6.697253227233887
+epoch29: step1000/4680
+step 43500: accuracy:0.05000000074505806, confidence:0.7830288410186768, loss:7.07603120803833
+epoch29: step1500/4680
+step 58000: accuracy:0.09200000017881393, confidence:0.9824991226196289, loss:13.433145523071289
+epoch29: step2000/4680
+step 72500: accuracy:0.08799999952316284, confidence:0.9993297457695007, loss:17.1378116607666
+epoch29: step2500/4680
+step 87000: accuracy:0.08100000023841858, confidence:0.9388585686683655, loss:12.705554008483887
+epoch29: step3000/4680
+step 101500: accuracy:0.0560000017285347, confidence:0.8795412182807922, loss:14.89417839050293
+epoch29: step3500/4680
+step 116000: accuracy:0.052000001072883606, confidence:0.7897955179214478, loss:8.59734058380127
+epoch29: step4000/4680
+step 130500: accuracy:0.14000000059604645, confidence:0.8585758209228516, loss:9.52863883972168
+epoch29: step4500/4680
+2018-06-15 17:49:32.326980: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1105] Found device 0 with properties: 
+name: Tesla P100-SXM2-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.4805
+pciBusID: 0002:01:00.0
+totalMemory: 15.90GiB freeMemory: 15.61GiB
+2018-06-15 17:49:32.327181: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1195] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: Tesla P100-SXM2-16GB, pci bus id: 0002:01:00.0, compute capability: 6.0)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:127: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:129: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:138: RuntimeWarning: invalid value encountered in subtract
+  itemp = int_conv(temp-a)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:162: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:164: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:171: RuntimeWarning: invalid value encountered in subtract
+  if any(temp-a != zero):
+step 0: accuracy:0.09700000286102295, confidence:0.9732651114463806, loss:10.048186302185059
+epoch0: step0/4680
+step 0: accuracy:0.08900000154972076, confidence:1.0, loss:69.04419708251953
+epoch0: step500/4680
+step 0: accuracy:0.10999999940395355, confidence:1.0, loss:42.330238342285156
+epoch0: step1000/4680
+step 0: accuracy:0.10400000214576721, confidence:0.9997685551643372, loss:11.373594284057617
+epoch0: step1500/4680
+step 0: accuracy:0.08699999749660492, confidence:0.9995278120040894, loss:9.76962661743164
+epoch0: step2000/4680
+step 0: accuracy:0.10199999809265137, confidence:0.9976694583892822, loss:8.218809127807617
+epoch0: step2500/4680
+step 0: accuracy:0.07900000363588333, confidence:0.9971359372138977, loss:8.45942211151123
+epoch0: step3000/4680
+step 0: accuracy:0.1080000028014183, confidence:0.9971768856048584, loss:8.993901252746582
+epoch0: step3500/4680
+step 0: accuracy:0.09200000017881393, confidence:0.9999577403068542, loss:12.216733932495117
+epoch0: step4000/4680
+step 0: accuracy:0.11999999731779099, confidence:0.9999877214431763, loss:12.95541000366211
+epoch0: step4500/4680
+step 0: accuracy:0.11500000208616257, confidence:0.9999710917472839, loss:12.256922721862793
+epoch1: step0/4680
+step 500: accuracy:0.08500000089406967, confidence:0.9999650120735168, loss:12.11794376373291
+epoch1: step500/4680
+step 1000: accuracy:0.09700000286102295, confidence:0.9895899295806885, loss:7.712700843811035
+epoch1: step1000/4680
+step 1500: accuracy:0.0860000029206276, confidence:0.995029866695404, loss:9.179108619689941
+epoch1: step1500/4680
+step 2000: accuracy:0.0949999988079071, confidence:0.9724641442298889, loss:5.9103498458862305
+epoch1: step2000/4680
+step 2500: accuracy:0.10599999874830246, confidence:0.9999675154685974, loss:12.62528133392334
+epoch1: step2500/4680
+step 3000: accuracy:0.10400000214576721, confidence:0.999876856803894, loss:12.08986759185791
+epoch1: step3000/4680
+step 3500: accuracy:0.10499999672174454, confidence:0.9990862011909485, loss:9.973930358886719
+epoch1: step3500/4680
+step 4000: accuracy:0.12200000137090683, confidence:0.9960629940032959, loss:7.646585464477539
+epoch1: step4000/4680
+step 4500: accuracy:0.1289999932050705, confidence:0.9997665882110596, loss:9.724985122680664
+epoch1: step4500/4680
+step 0: accuracy:0.11500000208616257, confidence:0.9997292160987854, loss:9.702305793762207
+epoch2: step0/4680
+step 1000: accuracy:0.09200000017881393, confidence:0.9997525215148926, loss:10.08840274810791
+epoch2: step500/4680
+step 2000: accuracy:0.10100000351667404, confidence:0.9222621321678162, loss:5.248356342315674
+epoch2: step1000/4680
+step 3000: accuracy:0.09799999743700027, confidence:0.9994500875473022, loss:10.361416816711426
+epoch2: step1500/4680
+step 4000: accuracy:0.0949999988079071, confidence:0.9881932139396667, loss:7.026111125946045
+epoch2: step2000/4680
+step 5000: accuracy:0.11400000005960464, confidence:0.9976562261581421, loss:8.446481704711914
+epoch2: step2500/4680
+step 6000: accuracy:0.0949999988079071, confidence:0.9973562359809875, loss:8.615663528442383
+epoch2: step3000/4680
+step 7000: accuracy:0.09399999678134918, confidence:0.9842836260795593, loss:7.7209248542785645
+epoch2: step3500/4680
+step 8000: accuracy:0.0949999988079071, confidence:0.9975046515464783, loss:8.285096168518066
+epoch2: step4000/4680
+step 9000: accuracy:0.11400000005960464, confidence:0.9899995923042297, loss:6.642895698547363
+epoch2: step4500/4680
+step 0: accuracy:0.10599999874830246, confidence:0.992688000202179, loss:6.985897541046143
+epoch3: step0/4680
+step 1500: accuracy:0.08399999886751175, confidence:0.9993812441825867, loss:9.359530448913574
+epoch3: step500/4680
+step 3000: accuracy:0.08299999684095383, confidence:0.818295419216156, loss:4.971837043762207
+epoch3: step1000/4680
+step 4500: accuracy:0.11500000208616257, confidence:0.9936312437057495, loss:7.5040507316589355
+epoch3: step1500/4680
+step 6000: accuracy:0.10400000214576721, confidence:0.985139012336731, loss:6.940439224243164
+epoch3: step2000/4680
+step 7500: accuracy:0.09799999743700027, confidence:0.9999935030937195, loss:15.575438499450684
+epoch3: step2500/4680
+step 9000: accuracy:0.0989999994635582, confidence:0.9999999403953552, loss:17.611173629760742
+epoch3: step3000/4680
+step 10500: accuracy:0.08699999749660492, confidence:1.0, loss:22.410980224609375
+epoch3: step3500/4680
+step 12000: accuracy:0.1080000028014183, confidence:0.9998888373374939, loss:11.829593658447266
+epoch3: step4000/4680
+step 13500: accuracy:0.10300000011920929, confidence:0.9996469616889954, loss:9.950167655944824
+epoch3: step4500/4680
+step 0: accuracy:0.11400000005960464, confidence:0.999702513217926, loss:9.899757385253906
+epoch4: step0/4680
+step 2000: accuracy:0.09600000083446503, confidence:0.9995917677879333, loss:9.476473808288574
+epoch4: step500/4680
+step 4000: accuracy:0.10199999809265137, confidence:0.7929112911224365, loss:5.069767475128174
+epoch4: step1000/4680
+step 6000: accuracy:0.10100000351667404, confidence:0.9990779757499695, loss:9.31855297088623
+epoch4: step1500/4680
+step 8000: accuracy:0.09700000286102295, confidence:0.9846773743629456, loss:6.354523181915283
+epoch4: step2000/4680
+step 10000: accuracy:0.10599999874830246, confidence:0.9944895505905151, loss:7.8850860595703125
+epoch4: step2500/4680
+step 12000: accuracy:0.09600000083446503, confidence:0.9861252307891846, loss:6.795657157897949
+epoch4: step3000/4680
+step 14000: accuracy:0.09200000017881393, confidence:0.6666045188903809, loss:3.982914924621582
+epoch4: step3500/4680
+step 16000: accuracy:0.1080000028014183, confidence:0.9982137680053711, loss:9.197102546691895
+epoch4: step4000/4680
+step 18000: accuracy:0.12099999934434891, confidence:0.9931610822677612, loss:6.958880424499512
+epoch4: step4500/4680
+step 0: accuracy:0.1289999932050705, confidence:0.9963573217391968, loss:7.413348197937012
+epoch5: step0/4680
+step 2500: accuracy:0.10199999809265137, confidence:0.997450053691864, loss:7.662281513214111
+epoch5: step500/4680
+step 5000: accuracy:0.09099999815225601, confidence:0.7948172688484192, loss:4.3919878005981445
+epoch5: step1000/4680
+step 7500: accuracy:0.0949999988079071, confidence:0.9991337060928345, loss:9.671879768371582
+epoch5: step1500/4680
+step 10000: accuracy:0.09799999743700027, confidence:0.9589625000953674, loss:5.612430095672607
+epoch5: step2000/4680
+step 12500: accuracy:0.10499999672174454, confidence:0.9881799221038818, loss:7.738349437713623
+epoch5: step2500/4680
+step 15000: accuracy:0.0860000029206276, confidence:0.9780422449111938, loss:6.981606960296631
+epoch5: step3000/4680
+step 17500: accuracy:0.11999999731779099, confidence:0.5962917804718018, loss:3.5710597038269043
+epoch5: step3500/4680
+step 20000: accuracy:0.10199999809265137, confidence:0.993457019329071, loss:7.911446571350098
+epoch5: step4000/4680
+step 22500: accuracy:0.1120000034570694, confidence:0.9875922799110413, loss:6.502936840057373
+epoch5: step4500/4680
+step 0: accuracy:0.09600000083446503, confidence:0.9952854514122009, loss:7.52440071105957
+epoch6: step0/4680
+step 3000: accuracy:0.07800000160932541, confidence:0.9875525832176208, loss:6.926093578338623
+epoch6: step500/4680
+step 6000: accuracy:0.09600000083446503, confidence:0.6508089303970337, loss:3.7948195934295654
+epoch6: step1000/4680
+step 9000: accuracy:0.09300000220537186, confidence:0.9860661625862122, loss:7.462642192840576
+epoch6: step1500/4680
+step 12000: accuracy:0.10599999874830246, confidence:0.9496920108795166, loss:5.344382286071777
+epoch6: step2000/4680
+step 15000: accuracy:0.11299999803304672, confidence:0.9916927218437195, loss:8.279726028442383
+epoch6: step2500/4680
+step 18000: accuracy:0.09399999678134918, confidence:0.9728327393531799, loss:7.422004222869873
+epoch6: step3000/4680
+step 21000: accuracy:0.10899999737739563, confidence:0.5555704236030579, loss:3.553408145904541
+epoch6: step3500/4680
+step 24000: accuracy:0.0989999994635582, confidence:0.9981191754341125, loss:9.859552383422852
+epoch6: step4000/4680
+step 27000: accuracy:0.12700000405311584, confidence:0.9753190279006958, loss:5.977781295776367
+epoch6: step4500/4680
+step 0: accuracy:0.10300000011920929, confidence:0.9870367050170898, loss:6.823503017425537
+epoch7: step0/4680
+step 3500: accuracy:0.0989999994635582, confidence:0.9899658560752869, loss:6.916849613189697
+epoch7: step500/4680
+step 7000: accuracy:0.10599999874830246, confidence:0.8887959122657776, loss:4.783627033233643
+epoch7: step1000/4680
+step 10500: accuracy:0.10000000149011612, confidence:0.9941515922546387, loss:8.875174522399902
+epoch7: step1500/4680
+step 14000: accuracy:0.10400000214576721, confidence:0.9328988790512085, loss:5.369900703430176
+epoch7: step2000/4680
+step 17500: accuracy:0.08900000154972076, confidence:0.9883533716201782, loss:9.108725547790527
+epoch7: step2500/4680
+step 21000: accuracy:0.10899999737739563, confidence:0.9677222967147827, loss:7.580379009246826
+epoch7: step3000/4680
+step 24500: accuracy:0.1289999932050705, confidence:0.5565809607505798, loss:3.5102150440216064
+epoch7: step3500/4680
+step 28000: accuracy:0.10400000214576721, confidence:0.9984034299850464, loss:10.120952606201172
+epoch7: step4000/4680
+step 31500: accuracy:0.11599999666213989, confidence:0.9821397066116333, loss:6.531335353851318
+epoch7: step4500/4680
+step 0: accuracy:0.13600000739097595, confidence:0.9896216988563538, loss:6.917159080505371
+epoch8: step0/4680
+step 4000: accuracy:0.10000000149011612, confidence:0.9950237274169922, loss:8.20935344696045
+epoch8: step500/4680
+step 8000: accuracy:0.09700000286102295, confidence:0.8655396699905396, loss:5.220295429229736
+epoch8: step1000/4680
+step 12000: accuracy:0.11299999803304672, confidence:0.9889703392982483, loss:8.4829683303833
+epoch8: step1500/4680
+step 16000: accuracy:0.10100000351667404, confidence:0.9053319096565247, loss:5.330991744995117
+epoch8: step2000/4680
+step 20000: accuracy:0.11400000005960464, confidence:0.99592524766922, loss:10.59395694732666
+epoch8: step2500/4680
+step 24000: accuracy:0.0820000022649765, confidence:0.9709770679473877, loss:8.903240203857422
+epoch8: step3000/4680
+step 28000: accuracy:0.1289999932050705, confidence:0.6051383018493652, loss:3.8023135662078857
+epoch8: step3500/4680
+step 32000: accuracy:0.10499999672174454, confidence:0.9991329312324524, loss:11.727564811706543
+epoch8: step4000/4680
+step 36000: accuracy:0.09600000083446503, confidence:0.9802717566490173, loss:7.314850330352783
+epoch8: step4500/4680
+step 0: accuracy:0.11800000071525574, confidence:0.9854683876037598, loss:7.56697940826416
+epoch9: step0/4680
+step 4500: accuracy:0.1080000028014183, confidence:0.992341160774231, loss:8.231637954711914
+epoch9: step500/4680
+step 9000: accuracy:0.09799999743700027, confidence:0.8267648220062256, loss:4.7508544921875
+epoch9: step1000/4680
+step 13500: accuracy:0.08699999749660492, confidence:0.9696919918060303, loss:8.035343170166016
+epoch9: step1500/4680
+step 18000: accuracy:0.07599999755620956, confidence:0.8797647356987, loss:5.455132007598877
+epoch9: step2000/4680
+step 22500: accuracy:0.10899999737739563, confidence:0.9890686869621277, loss:9.988779067993164
+epoch9: step2500/4680
+step 27000: accuracy:0.09200000017881393, confidence:0.9425168037414551, loss:8.384227752685547
+epoch9: step3000/4680
+step 31500: accuracy:0.12300000339746475, confidence:0.6014559268951416, loss:3.787177324295044
+epoch9: step3500/4680
+step 36000: accuracy:0.10000000149011612, confidence:0.9985133409500122, loss:11.840333938598633
+epoch9: step4000/4680
+step 40500: accuracy:0.09700000286102295, confidence:0.9680269360542297, loss:7.45807409286499
+epoch9: step4500/4680
+step 0: accuracy:0.09600000083446503, confidence:0.9801954627037048, loss:8.053359985351562
+epoch10: step0/4680
+step 5000: accuracy:0.0860000029206276, confidence:0.9956218600273132, loss:9.536690711975098
+epoch10: step500/4680
+step 10000: accuracy:0.07999999821186066, confidence:0.9373707175254822, loss:6.263099193572998
+epoch10: step1000/4680
+step 15000: accuracy:0.10599999874830246, confidence:0.9712226390838623, loss:8.358346939086914
+epoch10: step1500/4680
+step 20000: accuracy:0.0989999994635582, confidence:0.859829306602478, loss:5.508577823638916
+epoch10: step2000/4680
+step 25000: accuracy:0.09799999743700027, confidence:0.9826364517211914, loss:10.58970832824707
+epoch10: step2500/4680
+step 30000: accuracy:0.0989999994635582, confidence:0.9310843348503113, loss:8.597440719604492
+epoch10: step3000/4680
+step 35000: accuracy:0.10599999874830246, confidence:0.6375781297683716, loss:4.112961769104004
+epoch10: step3500/4680
+step 40000: accuracy:0.0949999988079071, confidence:0.9991830587387085, loss:12.525290489196777
+epoch10: step4000/4680
+step 45000: accuracy:0.1120000034570694, confidence:0.9793471097946167, loss:8.108563423156738
+epoch10: step4500/4680
+step 0: accuracy:0.09099999815225601, confidence:0.9851623773574829, loss:8.646434783935547
+epoch11: step0/4680
+step 5500: accuracy:0.09099999815225601, confidence:0.9955464005470276, loss:10.200920104980469
+epoch11: step500/4680
+step 11000: accuracy:0.07999999821186066, confidence:0.9513927102088928, loss:7.873518943786621
+epoch11: step1000/4680
+step 16500: accuracy:0.10700000077486038, confidence:0.9692211747169495, loss:9.291217803955078
+epoch11: step1500/4680
+step 22000: accuracy:0.10300000011920929, confidence:0.8745982646942139, loss:5.683382987976074
+epoch11: step2000/4680
+step 27500: accuracy:0.11500000208616257, confidence:0.9712368845939636, loss:10.700336456298828
+epoch11: step2500/4680
+step 33000: accuracy:0.10300000011920929, confidence:0.9246046543121338, loss:8.857874870300293
+epoch11: step3000/4680
+step 38500: accuracy:0.09700000286102295, confidence:0.6814492344856262, loss:4.528748035430908
+epoch11: step3500/4680
+step 44000: accuracy:0.1080000028014183, confidence:0.9838815927505493, loss:9.61381721496582
+epoch11: step4000/4680
+step 49500: accuracy:0.11500000208616257, confidence:0.9697452783584595, loss:8.337820053100586
+epoch11: step4500/4680
+step 0: accuracy:0.11299999803304672, confidence:0.9819269180297852, loss:9.017491340637207
+epoch12: step0/4680
+step 6000: accuracy:0.08699999749660492, confidence:0.9956530928611755, loss:10.226552963256836
+epoch12: step500/4680
+step 12000: accuracy:0.10000000149011612, confidence:0.9653267860412598, loss:7.382835865020752
+epoch12: step1000/4680
+step 18000: accuracy:0.08799999952316284, confidence:0.993204653263092, loss:10.79285717010498
+epoch12: step1500/4680
+step 24000: accuracy:0.08900000154972076, confidence:0.862932562828064, loss:5.923356056213379
+epoch12: step2000/4680
+step 30000: accuracy:0.08799999952316284, confidence:0.9702359437942505, loss:11.92735767364502
+epoch12: step2500/4680
+step 36000: accuracy:0.11500000208616257, confidence:0.9189038276672363, loss:8.248045921325684
+epoch12: step3000/4680
+step 42000: accuracy:0.12600000202655792, confidence:0.6200207471847534, loss:4.142352104187012
+epoch12: step3500/4680
+step 48000: accuracy:0.09000000357627869, confidence:0.9960275888442993, loss:11.488998413085938
+epoch12: step4000/4680
+step 54000: accuracy:0.10400000214576721, confidence:0.9562941193580627, loss:7.912940979003906
+epoch12: step4500/4680
+step 0: accuracy:0.1080000028014183, confidence:0.9722200632095337, loss:8.63583755493164
+epoch13: step0/4680
+step 6500: accuracy:0.10499999672174454, confidence:0.9909829497337341, loss:10.362464904785156
+epoch13: step500/4680
+step 13000: accuracy:0.10100000351667404, confidence:0.9346103072166443, loss:7.650781154632568
+epoch13: step1000/4680
+step 19500: accuracy:0.0949999988079071, confidence:0.9338415861129761, loss:9.612714767456055
+epoch13: step1500/4680
+step 26000: accuracy:0.10700000077486038, confidence:0.8432271480560303, loss:6.243206977844238
+epoch13: step2000/4680
+step 32500: accuracy:0.10100000351667404, confidence:0.9955861568450928, loss:12.581254959106445
+epoch13: step2500/4680
+step 39000: accuracy:0.12600000202655792, confidence:0.9351335167884827, loss:9.336912155151367
+epoch13: step3000/4680
+step 45500: accuracy:0.0989999994635582, confidence:0.7397897839546204, loss:4.977598190307617
+epoch13: step3500/4680
+step 52000: accuracy:0.10599999874830246, confidence:0.9546399116516113, loss:9.543340682983398
+epoch13: step4000/4680
+step 58500: accuracy:0.10700000077486038, confidence:0.9664462804794312, loss:9.744592666625977
+epoch13: step4500/4680
+step 0: accuracy:0.1120000034570694, confidence:0.9745107293128967, loss:9.687464714050293
+epoch14: step0/4680
+step 7000: accuracy:0.09300000220537186, confidence:0.9964578747749329, loss:11.446298599243164
+epoch14: step500/4680
+step 14000: accuracy:0.09099999815225601, confidence:0.9705392122268677, loss:7.8831562995910645
+epoch14: step1000/4680
+step 21000: accuracy:0.09600000083446503, confidence:0.9811416268348694, loss:10.022419929504395
+epoch14: step1500/4680
+step 28000: accuracy:0.0820000022649765, confidence:0.8429678082466125, loss:6.31896448135376
+epoch14: step2000/4680
+step 35000: accuracy:0.08900000154972076, confidence:0.9815706014633179, loss:13.173299789428711
+epoch14: step2500/4680
+step 42000: accuracy:0.11400000005960464, confidence:0.930945873260498, loss:8.939055442810059
+epoch14: step3000/4680
+step 49000: accuracy:0.09300000220537186, confidence:0.6873384714126587, loss:4.728231906890869
+epoch14: step3500/4680
+step 56000: accuracy:0.08399999886751175, confidence:0.9873255491256714, loss:10.35519790649414
+epoch14: step4000/4680
+step 63000: accuracy:0.11299999803304672, confidence:0.945730984210968, loss:7.988827228546143
+epoch14: step4500/4680
+step 0: accuracy:0.10000000149011612, confidence:0.9561784863471985, loss:8.708724021911621
+epoch15: step0/4680
+step 7500: accuracy:0.09000000357627869, confidence:0.9962154030799866, loss:12.517303466796875
+epoch15: step500/4680
+step 15000: accuracy:0.0989999994635582, confidence:0.957718551158905, loss:8.814889907836914
+epoch15: step1000/4680
+step 22500: accuracy:0.09399999678134918, confidence:0.9936587810516357, loss:11.478517532348633
+epoch15: step1500/4680
+step 30000: accuracy:0.07500000298023224, confidence:0.8389565348625183, loss:6.25188684463501
+epoch15: step2000/4680
+step 37500: accuracy:0.10499999672174454, confidence:0.9960504770278931, loss:13.688239097595215
+epoch15: step2500/4680
+step 45000: accuracy:0.09099999815225601, confidence:0.9330199956893921, loss:9.925751686096191
+epoch15: step3000/4680
+step 52500: accuracy:0.12399999797344208, confidence:0.7236576676368713, loss:4.944291114807129
+epoch15: step3500/4680
+step 60000: accuracy:0.09799999743700027, confidence:0.9276076555252075, loss:8.56156063079834
+epoch15: step4000/4680
+step 67500: accuracy:0.10199999809265137, confidence:0.9716851711273193, loss:10.68225383758545
+epoch15: step4500/4680
+step 0: accuracy:0.10700000077486038, confidence:0.967814028263092, loss:9.91080093383789
+epoch16: step0/4680
+step 8000: accuracy:0.07999999821186066, confidence:0.9780840277671814, loss:10.360507011413574
+epoch16: step500/4680
+step 16000: accuracy:0.08699999749660492, confidence:0.9828160405158997, loss:10.646903991699219
+epoch16: step1000/4680
+step 24000: accuracy:0.09099999815225601, confidence:0.9825150966644287, loss:10.396320343017578
+epoch16: step1500/4680
+step 32000: accuracy:0.06800000369548798, confidence:0.8569927215576172, loss:6.74690055847168
+epoch16: step2000/4680
+step 40000: accuracy:0.10400000214576721, confidence:0.9515179991722107, loss:10.877195358276367
+epoch16: step2500/4680
+step 48000: accuracy:0.11500000208616257, confidence:0.9251484274864197, loss:8.847177505493164
+epoch16: step3000/4680
+step 56000: accuracy:0.0949999988079071, confidence:0.7097774147987366, loss:4.921121597290039
+epoch16: step3500/4680
+step 64000: accuracy:0.09600000083446503, confidence:0.9749134182929993, loss:9.619414329528809
+epoch16: step4000/4680
+step 72000: accuracy:0.11400000005960464, confidence:0.9475971460342407, loss:8.45272159576416
+epoch16: step4500/4680
+step 0: accuracy:0.12800000607967377, confidence:0.9512455463409424, loss:8.921378135681152
+epoch17: step0/4680
+step 8500: accuracy:0.08699999749660492, confidence:0.9960848093032837, loss:13.270001411437988
+epoch17: step500/4680
+step 17000: accuracy:0.10000000149011612, confidence:0.9260311126708984, loss:6.90729284286499
+epoch17: step1000/4680
+step 25500: accuracy:0.1120000034570694, confidence:0.9782270193099976, loss:10.723945617675781
+epoch17: step1500/4680
+step 34000: accuracy:0.07800000160932541, confidence:0.860811710357666, loss:7.006807327270508
+epoch17: step2000/4680
+step 42500: accuracy:0.08699999749660492, confidence:0.9985642433166504, loss:16.162899017333984
+epoch17: step2500/4680
+step 51000: accuracy:0.10999999940395355, confidence:0.9333468079566956, loss:9.972087860107422
+epoch17: step3000/4680
+step 59500: accuracy:0.10199999809265137, confidence:0.7363678216934204, loss:5.542779922485352
+epoch17: step3500/4680
+step 68000: accuracy:0.10499999672174454, confidence:0.912794828414917, loss:8.406353950500488
+epoch17: step4000/4680
+step 76500: accuracy:0.11800000071525574, confidence:0.9636912941932678, loss:9.933653831481934
+epoch17: step4500/4680
+step 0: accuracy:0.10899999737739563, confidence:0.9584156274795532, loss:9.494668960571289
+epoch18: step0/4680
+step 9000: accuracy:0.1080000028014183, confidence:0.9925037622451782, loss:11.874748229980469
+epoch18: step500/4680
+step 18000: accuracy:0.07800000160932541, confidence:0.9856577515602112, loss:11.14527702331543
+epoch18: step1000/4680
+step 27000: accuracy:0.10400000214576721, confidence:0.9969568252563477, loss:12.125977516174316
+epoch18: step1500/4680
+step 36000: accuracy:0.07599999755620956, confidence:0.8494464159011841, loss:6.845829486846924
+epoch18: step2000/4680
+step 45000: accuracy:0.09600000083446503, confidence:0.9520297050476074, loss:11.720514297485352
+epoch18: step2500/4680
+step 54000: accuracy:0.08399999886751175, confidence:0.9055209755897522, loss:8.835195541381836
+epoch18: step3000/4680
+step 63000: accuracy:0.09000000357627869, confidence:0.7282460331916809, loss:5.2489013671875
+epoch18: step3500/4680
+step 72000: accuracy:0.11900000274181366, confidence:0.9712780117988586, loss:9.326020240783691
+epoch18: step4000/4680
+step 81000: accuracy:0.10100000351667404, confidence:0.9244897961616516, loss:7.934846878051758
+epoch18: step4500/4680
+step 0: accuracy:0.1289999932050705, confidence:0.9506554007530212, loss:8.642901420593262
+epoch19: step0/4680
+step 9500: accuracy:0.08900000154972076, confidence:0.9935373663902283, loss:13.00964641571045
+epoch19: step500/4680
+step 19000: accuracy:0.09399999678134918, confidence:0.9710661172866821, loss:9.250652313232422
+epoch19: step1000/4680
+step 28500: accuracy:0.11500000208616257, confidence:0.9919615387916565, loss:12.309349060058594
+epoch19: step1500/4680
+step 38000: accuracy:0.05700000002980232, confidence:0.8413816094398499, loss:6.914504051208496
+epoch19: step2000/4680
+step 47500: accuracy:0.09000000357627869, confidence:0.9934319257736206, loss:14.882912635803223
+epoch19: step2500/4680
+step 57000: accuracy:0.1340000033378601, confidence:0.9073995351791382, loss:9.097837448120117
+epoch19: step3000/4680
+step 66500: accuracy:0.11500000208616257, confidence:0.7470710277557373, loss:5.761819362640381
+epoch19: step3500/4680
+step 76000: accuracy:0.10100000351667404, confidence:0.8914031386375427, loss:8.029566764831543
+epoch19: step4000/4680
+step 85500: accuracy:0.10300000011920929, confidence:0.9805641770362854, loss:11.487883567810059
+epoch19: step4500/4680
+step 0: accuracy:0.11999999731779099, confidence:0.9678342342376709, loss:10.367530822753906
+epoch20: step0/4680
+step 10000: accuracy:0.08500000089406967, confidence:0.9823246598243713, loss:11.419848442077637
+epoch20: step500/4680
+step 20000: accuracy:0.09600000083446503, confidence:0.9834243059158325, loss:11.492960929870605
+epoch20: step1000/4680
+step 30000: accuracy:0.10899999737739563, confidence:0.9948796629905701, loss:11.997325897216797
+epoch20: step1500/4680
+step 40000: accuracy:0.0729999989271164, confidence:0.8708747029304504, loss:7.534265518188477
+epoch20: step2000/4680
+step 50000: accuracy:0.10700000077486038, confidence:0.9543384909629822, loss:11.5120267868042
+epoch20: step2500/4680
+step 60000: accuracy:0.11500000208616257, confidence:0.9067596197128296, loss:8.629352569580078
+epoch20: step3000/4680
+step 70000: accuracy:0.11100000143051147, confidence:0.7704706192016602, loss:5.63325834274292
+epoch20: step3500/4680
+step 80000: accuracy:0.10100000351667404, confidence:0.9209126234054565, loss:8.276381492614746
+epoch20: step4000/4680
+step 90000: accuracy:0.11500000208616257, confidence:0.9089651107788086, loss:8.366066932678223
+epoch20: step4500/4680
+step 0: accuracy:0.10899999737739563, confidence:0.9437090158462524, loss:9.046693801879883
+epoch21: step0/4680
+step 10500: accuracy:0.0860000029206276, confidence:0.9940898418426514, loss:13.633613586425781
+epoch21: step500/4680
+step 21000: accuracy:0.09099999815225601, confidence:0.9590367078781128, loss:8.666519165039062
+epoch21: step1000/4680
+step 31500: accuracy:0.11699999868869781, confidence:0.9848750233650208, loss:12.077921867370605
+epoch21: step1500/4680
+step 42000: accuracy:0.06199999898672104, confidence:0.8261558413505554, loss:7.465173244476318
+epoch21: step2000/4680
+step 52500: accuracy:0.10100000351667404, confidence:0.9993036985397339, loss:17.746549606323242
+epoch21: step2500/4680
+step 63000: accuracy:0.13199999928474426, confidence:0.9048110246658325, loss:9.343779563903809
+epoch21: step3000/4680
+step 73500: accuracy:0.12800000607967377, confidence:0.7064357995986938, loss:4.999436378479004
+epoch21: step3500/4680
+step 84000: accuracy:0.1080000028014183, confidence:0.9153639078140259, loss:8.537603378295898
+epoch21: step4000/4680
+step 94500: accuracy:0.11699999868869781, confidence:0.9569474458694458, loss:10.173309326171875
+epoch21: step4500/4680
+step 0: accuracy:0.12200000137090683, confidence:0.9420445561408997, loss:9.300227165222168
+epoch22: step0/4680
+step 11000: accuracy:0.0949999988079071, confidence:0.9956744909286499, loss:12.40417766571045
+epoch22: step500/4680
+step 22000: accuracy:0.0860000029206276, confidence:0.9950732588768005, loss:11.903661727905273
+epoch22: step1000/4680
+step 33000: accuracy:0.10400000214576721, confidence:0.9814600944519043, loss:11.516535758972168
+epoch22: step1500/4680
+step 44000: accuracy:0.052000001072883606, confidence:0.8399632573127747, loss:7.195032119750977
+epoch22: step2000/4680
+step 55000: accuracy:0.09600000083446503, confidence:0.9157518148422241, loss:11.298035621643066
+epoch22: step2500/4680
+step 66000: accuracy:0.10599999874830246, confidence:0.8808994889259338, loss:8.736620903015137
+epoch22: step3000/4680
+step 77000: accuracy:0.0989999994635582, confidence:0.6492215394973755, loss:4.826009750366211
+epoch22: step3500/4680
+step 88000: accuracy:0.11100000143051147, confidence:0.9339447617530823, loss:9.175453186035156
+epoch22: step4000/4680
+step 99000: accuracy:0.11599999666213989, confidence:0.9296681880950928, loss:8.777769088745117
+epoch22: step4500/4680
+step 0: accuracy:0.11599999666213989, confidence:0.946799099445343, loss:9.377713203430176
+epoch23: step0/4680
+step 11500: accuracy:0.10300000011920929, confidence:0.9998336434364319, loss:14.166427612304688
+epoch23: step500/4680
+step 23000: accuracy:0.0729999989271164, confidence:0.9812716841697693, loss:10.163385391235352
+epoch23: step1000/4680
+step 34500: accuracy:0.09600000083446503, confidence:0.9916907548904419, loss:11.572898864746094
+epoch23: step1500/4680
+step 46000: accuracy:0.05700000002980232, confidence:0.8339207172393799, loss:7.7539873123168945
+epoch23: step2000/4680
+step 57500: accuracy:0.09200000017881393, confidence:0.9846402406692505, loss:14.895858764648438
+epoch23: step2500/4680
+step 69000: accuracy:0.1080000028014183, confidence:0.9039179086685181, loss:9.400833129882812
+epoch23: step3000/4680
+step 80500: accuracy:0.125, confidence:0.7511159777641296, loss:5.756033420562744
+epoch23: step3500/4680
+step 92000: accuracy:0.10100000351667404, confidence:0.8956525325775146, loss:8.545042991638184
+epoch23: step4000/4680
+step 103500: accuracy:0.10999999940395355, confidence:0.9787859916687012, loss:11.850493431091309
+epoch23: step4500/4680
+step 0: accuracy:0.125, confidence:0.9722602963447571, loss:10.893475532531738
+epoch24: step0/4680
+step 12000: accuracy:0.10199999809265137, confidence:0.9872317910194397, loss:10.828343391418457
+epoch24: step500/4680
+step 24000: accuracy:0.09799999743700027, confidence:0.97137850522995, loss:13.484436988830566
+epoch24: step1000/4680
+step 36000: accuracy:0.1080000028014183, confidence:0.996931791305542, loss:12.859249114990234
+epoch24: step1500/4680
+step 48000: accuracy:0.06199999898672104, confidence:0.8572402596473694, loss:7.251104831695557
+epoch24: step2000/4680
+step 60000: accuracy:0.09799999743700027, confidence:0.9824033975601196, loss:13.603415489196777
+epoch24: step2500/4680
+step 72000: accuracy:0.10199999809265137, confidence:0.8907356858253479, loss:9.113935470581055
+epoch24: step3000/4680
+step 84000: accuracy:0.08100000023841858, confidence:0.778583288192749, loss:6.015018463134766
+epoch24: step3500/4680
+step 96000: accuracy:0.10999999940395355, confidence:0.9186393618583679, loss:8.488455772399902
+epoch24: step4000/4680
+step 108000: accuracy:0.10899999737739563, confidence:0.9121929407119751, loss:8.605254173278809
+epoch24: step4500/4680
+step 0: accuracy:0.10199999809265137, confidence:0.9232482314109802, loss:9.461102485656738
+epoch25: step0/4680
+step 12500: accuracy:0.09399999678134918, confidence:0.986246645450592, loss:12.31496810913086
+epoch25: step500/4680
+step 25000: accuracy:0.07400000095367432, confidence:0.9465567469596863, loss:8.75390338897705
+epoch25: step1000/4680
+step 37500: accuracy:0.10599999874830246, confidence:0.8962068557739258, loss:10.00147819519043
+epoch25: step1500/4680
+step 50000: accuracy:0.06400000303983688, confidence:0.8846541047096252, loss:9.232789993286133
+epoch25: step2000/4680
+step 62500: accuracy:0.09000000357627869, confidence:0.9563931822776794, loss:12.730103492736816
+epoch25: step2500/4680
+step 75000: accuracy:0.11299999803304672, confidence:0.8923486471176147, loss:9.616145133972168
+epoch25: step3000/4680
+step 87500: accuracy:0.11900000274181366, confidence:0.7346751689910889, loss:5.883166790008545
+epoch25: step3500/4680
+step 100000: accuracy:0.07900000363588333, confidence:0.9276660084724426, loss:9.72776985168457
+epoch25: step4000/4680
+step 112500: accuracy:0.12600000202655792, confidence:0.9508746862411499, loss:10.081275939941406
+epoch25: step4500/4680
+step 0: accuracy:0.10999999940395355, confidence:0.9504109025001526, loss:9.773258209228516
+epoch26: step0/4680
+step 13000: accuracy:0.09000000357627869, confidence:0.9882616996765137, loss:11.85925006866455
+epoch26: step500/4680
+step 26000: accuracy:0.0949999988079071, confidence:0.9891658425331116, loss:11.353991508483887
+epoch26: step1000/4680
+step 39000: accuracy:0.09399999678134918, confidence:0.9976012706756592, loss:13.7720365524292
+epoch26: step1500/4680
+step 52000: accuracy:0.0860000029206276, confidence:0.902869701385498, loss:8.047347068786621
+epoch26: step2000/4680
+step 65000: accuracy:0.11500000208616257, confidence:0.9395067691802979, loss:11.622349739074707
+epoch26: step2500/4680
+step 78000: accuracy:0.0949999988079071, confidence:0.8704690337181091, loss:8.995165824890137
+epoch26: step3000/4680
+step 91000: accuracy:0.06800000369548798, confidence:0.7497568726539612, loss:5.709784030914307
+epoch26: step3500/4680
+step 104000: accuracy:0.10100000351667404, confidence:0.8937859535217285, loss:8.49413013458252
+epoch26: step4000/4680
+step 117000: accuracy:0.12300000339746475, confidence:0.9275467395782471, loss:9.206863403320312
+epoch26: step4500/4680
+step 0: accuracy:0.11800000071525574, confidence:0.9355611205101013, loss:9.498931884765625
+epoch27: step0/4680
+step 13500: accuracy:0.0860000029206276, confidence:0.9958664774894714, loss:14.377609252929688
+epoch27: step500/4680
+step 27000: accuracy:0.0989999994635582, confidence:0.9665561318397522, loss:9.835664749145508
+epoch27: step1000/4680
+step 40500: accuracy:0.09600000083446503, confidence:0.9482563138008118, loss:10.767338752746582
+epoch27: step1500/4680
+step 54000: accuracy:0.06700000166893005, confidence:0.8366804718971252, loss:8.140060424804688
+epoch27: step2000/4680
+step 67500: accuracy:0.08399999886751175, confidence:0.9957161545753479, loss:16.048582077026367
+epoch27: step2500/4680
+step 81000: accuracy:0.10899999737739563, confidence:0.9359216094017029, loss:10.829282760620117
+epoch27: step3000/4680
+step 94500: accuracy:0.10100000351667404, confidence:0.7027812004089355, loss:5.494156837463379
+epoch27: step3500/4680
+step 108000: accuracy:0.0989999994635582, confidence:0.9065173268318176, loss:9.238142967224121
+epoch27: step4000/4680
+step 121500: accuracy:0.1080000028014183, confidence:0.9282739162445068, loss:9.673689842224121
+epoch27: step4500/4680
+step 0: accuracy:0.11599999666213989, confidence:0.9430575370788574, loss:9.847124099731445
+epoch28: step0/4680
+step 14000: accuracy:0.09399999678134918, confidence:0.9977665543556213, loss:13.312370300292969
+epoch28: step500/4680
+step 28000: accuracy:0.09000000357627869, confidence:0.9929624199867249, loss:11.66089153289795
+epoch28: step1000/4680
+step 42000: accuracy:0.09700000286102295, confidence:0.9904268980026245, loss:13.052752494812012
+epoch28: step1500/4680
+step 56000: accuracy:0.09099999815225601, confidence:0.901948869228363, loss:8.221922874450684
+epoch28: step2000/4680
+step 70000: accuracy:0.10499999672174454, confidence:0.9928841590881348, loss:14.156062126159668
+epoch28: step2500/4680
+step 84000: accuracy:0.09200000017881393, confidence:0.907640814781189, loss:9.322328567504883
+epoch28: step3000/4680
+step 98000: accuracy:0.10400000214576721, confidence:0.7948898077011108, loss:6.164160251617432
+epoch28: step3500/4680
+step 112000: accuracy:0.1080000028014183, confidence:0.9367923736572266, loss:9.116361618041992
+epoch28: step4000/4680
+step 126000: accuracy:0.10499999672174454, confidence:0.9384560585021973, loss:8.66402530670166
+epoch28: step4500/4680
+step 0: accuracy:0.10000000149011612, confidence:0.954581081867218, loss:9.369657516479492
+epoch29: step0/4680
+step 14500: accuracy:0.09000000357627869, confidence:0.9942434430122375, loss:12.476353645324707
+epoch29: step500/4680
+step 29000: accuracy:0.11299999803304672, confidence:0.9442911148071289, loss:11.410033226013184
+epoch29: step1000/4680
+step 43500: accuracy:0.10999999940395355, confidence:0.9962643980979919, loss:12.900128364562988
+epoch29: step1500/4680
+step 58000: accuracy:0.07999999821186066, confidence:0.8111570477485657, loss:7.120070457458496
+epoch29: step2000/4680
+step 72500: accuracy:0.08799999952316284, confidence:0.9990748763084412, loss:16.892547607421875
+epoch29: step2500/4680
+step 87000: accuracy:0.10300000011920929, confidence:0.9041863083839417, loss:9.721145629882812
+epoch29: step3000/4680
+step 101500: accuracy:0.13500000536441803, confidence:0.7656791806221008, loss:6.110747337341309
+epoch29: step3500/4680
+step 116000: accuracy:0.10100000351667404, confidence:0.8049334287643433, loss:7.119635105133057
+epoch29: step4000/4680
+step 130500: accuracy:0.12200000137090683, confidence:0.9782065153121948, loss:12.749337196350098
+epoch29: step4500/4680
+/usr/lib/python3/dist-packages/numpy/core/machar.py:127: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:129: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:138: RuntimeWarning: invalid value encountered in subtract
+  itemp = int_conv(temp-a)
+/usr/lib/python3/dist-packages/numpy/core/machar.py:162: RuntimeWarning: overflow encountered in add
+  a = a + a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:164: RuntimeWarning: invalid value encountered in subtract
+  temp1 = temp - a
+/usr/lib/python3/dist-packages/numpy/core/machar.py:171: RuntimeWarning: invalid value encountered in subtract
+  if any(temp-a != zero):
+usage: classifier.py [-h] [--dir_name DIR_NAME] [--preprocess PREPROCESS]
+                     [--fname FNAME] [--original ORIGINAL]
+classifier.py: error: unrecognized arguments: python3 classifier.py -- fname
