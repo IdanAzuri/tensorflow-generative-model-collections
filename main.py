@@ -47,8 +47,8 @@ def parse_args():
 	parser.add_argument('--log_dir', type=str, default='logs', help='Directory name to save training logs')
 	parser.add_argument('--sampler', type=str, default='uniform',
 	                    choices=['uniform', 'multi-uniform', 'multi-gaussian', 'multi-gaussianTF', 'gaussian','truncated'])
-	parser.add_argument('--dataset_order', '-do', type=str, default='uniform',
-	                    help="czcc,czrc,rzcc, rzrc")
+	parser.add_argument('--dataset_order', '-do', type=str, default="czcc,czrc,rzcc,rzrc",
+	                    help="czcc,czrc,rzcc,rzrc")
 
 	parser.add_argument('--gpus', type=str, default='0')
 	parser.add_argument('--len_continuous_code', type=int, default=2)
