@@ -339,7 +339,7 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 	# low_confidence_indices = []
 	for i in range(10):
 		mask = (indices[:, 1] == i)
-		limit = min(len(data_X)//batch_size,10000)
+		limit = min(len(data_X),10000)
 		tmp = data_X[np.where(mask == True)][:limit]
 		dummy_labels = data_y[:limit]  # no meaning for the labels
 		_, confidence, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
@@ -361,7 +361,7 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 	# 	data_y_categorical= data_y_categorical[~low_confidence_indices]
 	# 	data_X = data_X[~mask_not_take]
 	data_y = one_hot_encoder(data_y_categorical)
-	# data_X, data_y = shuffle(data_X, data_y, random_state=0)
+	data_X, data_y = shuffle(data_X, data_y, random_state=0)
 	pickle.dump(data_y, open("{}{}/edited_generated_labels_{}.pkl".format(dir, dir_results, pkl_fname), 'wb'))
 	pickle.dump(data_X, open("{}{}/edited_generated_training_set_{}.pkl".format(dir, dir_results, pkl_fname), 'wb'))
 
