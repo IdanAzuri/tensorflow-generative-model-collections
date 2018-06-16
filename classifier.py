@@ -349,11 +349,11 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 		dummy_labels = data_y[:10000]  # no meaning for the labels
 		_, confidence, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 		argwhere = np.argwhere(confidence < CONFIDENCE_THRESHOLD)
-		print(argwhere)
 		low_confidence_indices += argwhere[1]
 		new_label = np.bincount(arg_max).argmax() + 1
 		print("Assinging:{}".format(new_label))
 		data_y_categorical[mask] = new_label
+		print(str(len(low_confidence_indices))+"were eleted")
 		print(np.bincount(arg_max))
 	low_confidence_indices = np.asarray(low_confidence_indices)
 	data_y_categorical= data_y_categorical[~low_confidence_indices]
