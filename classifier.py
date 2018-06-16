@@ -349,19 +349,19 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 		dummy_labels = data_y[:10000]  # no meaning for the labels
 		_, confidence, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 		argwhere = np.argwhere(confidence < CONFIDENCE_THRESHOLD)
-		low_confidence_indices += argwhere[1]
+		low_confidence_indices += argwhere[0]
 		new_label = np.bincount(arg_max).argmax() + 1
 		print("Assinging:{}".format(new_label))
 		data_y_categorical[mask] = new_label
-		print(str(len(low_confidence_indices))+"were eleted")
+		print(str(len(low_confidence_indices))+" were deleted")
 		print(np.bincount(arg_max))
 	if len(low_confidence_indices) > 0:
 		low_confidence_indices = np.asarray(low_confidence_indices)
 		mask_not_take = np.ones_like(low_confidence_indices,dtype=bool) #np.ones_like(a,dtype=bool)
 		mask_not_take[low_confidence_indices] = False
 		data_y_categorical= data_y_categorical[~low_confidence_indices]
+		data_X = data_X[~mask_not_take]
 	data_y = one_hot_encoder(data_y_categorical)
-	data_X = data_X[~mask_not_take]
 	# data_X, data_y = shuffle(data_X, data_y, random_state=0)
 	pickle.dump(data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'))
 	pickle.dump(data_X, open("{}edited_generated_training_set_{}.pkl".format(dir, pkl_fname), 'wb'))
