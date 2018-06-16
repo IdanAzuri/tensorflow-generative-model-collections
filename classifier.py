@@ -42,7 +42,7 @@ from utils import load_mnist
 FLAGS = None
 
 np.random.seed(517)
-CONFIDENCE_THRESHOLD = 0.9
+CONFIDENCE_THRESHOLD = 0.92
 
 # losses
 
@@ -336,27 +336,30 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 	data_y = one_hot_encoder(data_y)
 	pretraind = CNNClassifier(original_dataset_name)
 	indices = np.argwhere(data_y == 1)
-	low_confidence_indices = []
+	# low_confidence_indices = []
 	for i in range(10):
 		mask = (indices[:, 1] == i)
-		tmp = data_X[np.where(mask == True)][:10000]
-		dummy_labels = data_y[:10000]  # no meaning for the labels
+		limit = min(len(data_X)//batch_size,10000)
+		tmp = data_X[np.where(mask == True)][:limit]
+		dummy_labels = data_y[:limit]  # no meaning for the labels
 		_, confidence, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
-		argwhere = confidence < CONFIDENCE_THRESHOLD
+		# argwhere = np.argwhere(confidence < CONFIDENCE_THRESHOLD).flatten()
+		confidence_threshold_idx = confidence > CONFIDENCE_THRESHOLD
+		confidence= confidence[confidence_threshold_idx]
+		arg_max = arg_max[confidence_threshold_idx]
+		print(str(len(confidence))+" were taken")
 		
-		print(argwhere)
-		low_confidence_indices.extend(argwhere)
+		# low_confidence_indices.extend(argwhere)
 		new_label = np.bincount(arg_max).argmax() + 1
 		print("Assinging:{}".format(new_label))
 		data_y_categorical[mask] = new_label
-		print(str(len(low_confidence_indices))+" were deleted")
 		print(np.bincount(arg_max))
-	if len(low_confidence_indices) > 0:
-		low_confidence_indices = np.asarray(low_confidence_indices)
-		mask_not_take = np.ones_like(low_confidence_indices,dtype=bool) #np.ones_like(a,dtype=bool)
-		mask_not_take[low_confidence_indices] = False
-		data_y_categorical= data_y_categorical[~low_confidence_indices]
-		data_X = data_X[~mask_not_take]
+	# if len(low_confidence_indices) > 0:
+	# 	low_confidence_indices = np.asarray(low_confidence_indices)
+	# 	mask_not_take = np.ones_like(low_confidence_indices,dtype=bool) #np.ones_like(a,dtype=bool)
+	# 	mask_not_take[low_confidence_indices] = False
+	# 	data_y_categorical= data_y_categorical[~low_confidence_indices]
+	# 	data_X = data_X[~mask_not_take]
 	data_y = one_hot_encoder(data_y_categorical)
 	# data_X, data_y = shuffle(data_X, data_y, random_state=0)
 	pickle.dump(data_y, open("{}{}/edited_generated_labels_{}.pkl".format(dir, dir_results, pkl_fname), 'wb'))
