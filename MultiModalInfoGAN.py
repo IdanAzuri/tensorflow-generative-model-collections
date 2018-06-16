@@ -462,7 +462,7 @@ class MultiModalInfoGAN(object):
 				generated_labels_clean_z_clean_c += [label] * self.batch_size
 				if _ == 1:
 					save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-					            check_folder("{}/{}/{}_{}_{}".format(self.result_dir, self.model_dir, self.model_name, label, 'czcc.png')))
+					            "{}/{}/{}_{}_{}".format(self.result_dir, self.model_dir, self.model_name, label, 'czcc.png'))
 
 			for _ in range(datasetsize // 4):
 				# z fixed -czrc
@@ -477,7 +477,7 @@ class MultiModalInfoGAN(object):
 				generated_labels_clean_z_random_c += [label] * self.batch_size
 				if _ == 1:
 					save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-					            check_folder("{}/{}/{}_{}_{}".format(self.result_dir, self.model_dir, self.model_name, label, 'czrc.png')))
+					        "{}/{}/{}_{}_{}".format(self.result_dir, self.model_dir, self.model_name, label, 'czrc.png'))
 			for _ in range(datasetsize // 4):
 				# z random c-clean - rzcc
 				z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
@@ -489,7 +489,7 @@ class MultiModalInfoGAN(object):
 				generated_labels_random_z_clean_c += [label] * self.batch_size
 				if _ == 1:
 					save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-					            check_folder("{}/{}/{}_{}_{}".format(self.result_dir, self.model_dir, self.model_name, label, 'rzcc.png')))
+					            "{}/{}/{}_{}_{}".format(self.result_dir, self.model_dir, self.model_name, label, 'rzcc.png'))
 
 			for _ in range(datasetsize // 4):
 				# rzrc
@@ -508,7 +508,7 @@ class MultiModalInfoGAN(object):
 				generated_labels_random_z_random_c += [label] * self.batch_size
 				if _ == 1:
 					save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-					            check_folder("{}/{}/{}_{}_{}".format(self.result_dir, self.model_dir, self.model_name, label, 'rzrc.png')))
+					            "{}/{}/{}_{}_{}".format(self.result_dir, self.model_dir, self.model_name, label, 'rzrc.png'))
 
 			for i in self.dataset_creation_order:
 				if i == 'czcc':
