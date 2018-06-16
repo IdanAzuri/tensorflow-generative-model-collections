@@ -92,7 +92,7 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None, dir=None, original_dataset_name='mnist'):
+	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None, dir=None, original_dataset_name='mnist',dir_results='classifier_results/'):
 		self.num_epochs = 30
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
@@ -116,8 +116,8 @@ class CNNClassifier():
 			self.fname = pkl_fname
 			pkl_path = "{}edited_generated_training_set_{}.pkl".format(dir, pkl_fname)
 			self.set_log_dir("{}_".format(pkl_fname))
-			self.data_X = pickle.load(open(pkl_path, 'rb'))
-			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
+			self.data_X = pickle.load(open(dir_results+pkl_path, 'rb'))
+			self.data_y = pickle.load(open(dir_results+pkl_label_path, 'rb'))
 
 		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
 			# mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
@@ -291,7 +291,7 @@ class CNNClassifier():
 		self.b_fc2 = tf.Variable(tf.constant(model[7]))
 		print("model has been loaded from {}".format(self.save_to))
 
-	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P"):
+	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P", dir="classifier_results/"):
 		plt.Figure()
 		plt.title('{} {} score'.format(self.fname, name_of_measure), fontsize=18)
 		x_range = np.linspace(1, len(array) - 1, len(array))
@@ -307,7 +307,7 @@ class CNNClassifier():
 
 		name_figure = "classifier_MMinfoGAN_{}_{}".format(self.fname, name_of_measure)
 		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
-		plt.savefig(name_figure + ".png")
+		plt.savefig(dir+name_figure + ".png")
 		plt.close()
 
 
@@ -322,12 +322,12 @@ def parse_args():
 	return parser.parse_args()
 
 
-def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64):
+def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64,dir_results="classifier_results/"):
 	# mapping only once need to edit the condition
 	pkl_label_path = "{}generated_labels_{}.pkl".format(dir, pkl_fname)
 	pkl_path = "{}generated_training_set_{}.pkl".format(dir, pkl_fname)
-	data_X = pickle.load(open(pkl_path, 'rb'))
-	data_y = pickle.load(open(pkl_label_path, 'rb'))
+	data_X = pickle.load(open(dir_results+pkl_path, 'rb'))
+	data_y = pickle.load(open(dir_results+pkl_label_path, 'rb'))
 
 	data_X = np.asarray([y for x in data_X for y in x]).reshape(-1, 28, 28)
 
@@ -358,8 +358,8 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 	data_y = one_hot_encoder(data_y_categorical)
 	data_X = data_X[~low_confidence_indices]
 	# data_X, data_y = shuffle(data_X, data_y, random_state=0)
-	pickle.dump(data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'))
-	pickle.dump(data_X, open("{}edited_generated_training_set_{}.pkl".format(dir, pkl_fname), 'wb'))
+	pickle.dump(data_y, open(dir_results+"{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'))
+	pickle.dump(data_X, open(dir_results+"{}edited_generated_training_set_{}.pkl".format(dir, pkl_fname), 'wb'))
 
 
 

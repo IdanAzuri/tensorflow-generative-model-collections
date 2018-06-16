@@ -39,7 +39,7 @@ class MultiModalInfoGAN(object):
 	model_name = "MultiModalInfoGAN"  # name for checkpoint
 
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2,
-	             is_wgan_gp=False, dataset_creation_order=['czcc', 'czrc', 'rzcc', 'rzrc'], SUPERVISED=True):
+	             is_wgan_gp=False, dataset_creation_order=['czcc', 'czrc', 'rzcc', 'rzrc'], SUPERVISED=True,dir_results="classifier_results/"):
 		self.test_size = 30000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
@@ -55,7 +55,7 @@ class MultiModalInfoGAN(object):
 		self.pretrained_classifier = CNNClassifier(self.dataset_name)
 		self.dataset_creation_order = dataset_creation_order
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
-
+		self.dir_results=dir_results
 		# train
 		self.learning_rate = 0.0002
 		self.beta1 = 0.5
@@ -534,8 +534,8 @@ class MultiModalInfoGAN(object):
 		print("SAVED TRAINING SET {}".format(fname_trainingset))
 		fname_labeles = "generated_labels_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
 		                                                                  self.sampler.sigma, order_str)
-		pickle.dump(generated_dataset, open("{}.pkl".format(fname_trainingset), 'wb'))
-		pickle.dump(generated_labels, open("{}.pkl".format(fname_labeles), 'wb'))
+		pickle.dump(generated_dataset, open(self.dir_results+"{}.pkl".format(fname_trainingset), 'wb'))
+		pickle.dump(generated_labels, open(self.dir_results+"{}.pkl".format(fname_labeles), 'wb'))
 
 		return
 
