@@ -324,8 +324,8 @@ def parse_args():
 
 def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64,dir_results="classifier_results"):
 	# mapping only once need to edit the condition
-	pkl_label_path = "{}/{}generated_labels_{}.pkl".format(dir,dir_results, pkl_fname)
-	pkl_path = "{}/{}generated_training_set_{}.pkl".format(dir, dir_results,pkl_fname)
+	pkl_label_path = "{}{}generated_labels_{}.pkl".format(dir,dir_results, pkl_fname)
+	pkl_path = "{}{}generated_training_set_{}.pkl".format(dir, dir_results,pkl_fname)
 	data_X = pickle.load(open(pkl_path, 'rb'))
 	data_y = pickle.load(open(pkl_label_path, 'rb'))
 
