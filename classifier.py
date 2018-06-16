@@ -344,7 +344,7 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 		dummy_labels = data_y[:limit]  # no meaning for the labels
 		_, confidence, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 		# argwhere = np.argwhere(confidence < CONFIDENCE_THRESHOLD).flatten()
-		confidence_threshold_idx = confidence > CONFIDENCE_THRESHOLD
+		confidence_threshold_idx = confidence > min(CONFIDENCE_THRESHOLD,np.max(confidence)-1)
 		confidence= confidence[confidence_threshold_idx]
 		arg_max = arg_max[confidence_threshold_idx]
 		print(str(len(confidence))+" were taken")
