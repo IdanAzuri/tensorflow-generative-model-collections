@@ -319,8 +319,7 @@ class MultiModalInfoGAN(object):
 				# display training status
 				counter += 1
 				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (
-					epoch, idx, self.num_batches, time.time() - start_time, d_loss,
-					g_loss,))  # save training results for every 300 steps  # if np.mod(counter, 1000) == 0:  # 	samples = self.sess.run(self.fake_images, feed_dict={self.z: self.sample_z, self.y: self.test_codes})  #  # 	tot_num_samples = min(self.sample_num, self.batch_size)  # 	manifold_h = int(np.floor(np.sqrt(tot_num_samples)))  # 	manifold_w = int(np.floor(np.sqrt(tot_num_samples)))  # 	save_images(samples[:manifold_h * manifold_w, :, :, :], [manifold_h, manifold_w], './' + check_folder(  # 		self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_train_{:02d}_{:04d}.png'.format(epoch, idx))
+					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss,))
 
 			# After an epoch, start_batch_id is set to zero
 			# non-zero value is only for the first epoch after loading pre-trained model
@@ -461,9 +460,9 @@ class MultiModalInfoGAN(object):
 				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
 				generated_dataset_clean_z_clean_c.append(samples)  # storing generated images and label
 				generated_labels_clean_z_clean_c += [label] * self.batch_size
-				# if _ == 1:
-					# plt.imshow(samples[0][0].reshape(28, 28))
-					# plt.show()
+				if _ == 1:
+					save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+					            check_folder("{}/{}/{}_{}_{}".format(self.result_dir, self.model_dir, self.model_name, label, 'czcc.png')))
 
 			for _ in range(datasetsize // 4):
 				# z fixed -czrc
@@ -476,9 +475,9 @@ class MultiModalInfoGAN(object):
 				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
 				generated_dataset_clean_z_random_c.append(samples)  # storing generated images and label
 				generated_labels_clean_z_random_c += [label] * self.batch_size
-				# if _ == 1:
-					# plt.imshow(samples[0][0].reshape(28, 28))
-					# plt.show()
+				if _ == 1:
+					save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+					            check_folder("{}/{}/{}_{}_{}".format(self.result_dir, self.model_dir, self.model_name, label, 'czrc.png')))
 			for _ in range(datasetsize // 4):
 				# z random c-clean - rzcc
 				z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
@@ -488,9 +487,9 @@ class MultiModalInfoGAN(object):
 				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
 				generated_dataset_random_z_clean_c.append(samples)  # storing generated images and label
 				generated_labels_random_z_clean_c += [label] * self.batch_size
-				# if _ == 1:
-				# 	plt.imshow(samples[0][0].reshape(28, 28))
-				# 	plt.show()
+				if _ == 1:
+					save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+					            check_folder("{}/{}/{}_{}_{}".format(self.result_dir, self.model_dir, self.model_name, label, 'rzcc.png')))
 
 			for _ in range(datasetsize // 4):
 				# rzrc
@@ -507,27 +506,34 @@ class MultiModalInfoGAN(object):
 
 				generated_dataset_random_z_random_c.append(samples)  # storing generated images and label
 				generated_labels_random_z_random_c += [label] * self.batch_size
+				if _ == 1:
+					save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+					            check_folder("{}/{}/{}_{}_{}".format(self.result_dir, self.model_dir, self.model_name, label, 'rzrc.png')))
 
 			for i in self.dataset_creation_order:
 				if i == 'czcc':
 					generated_dataset += generated_dataset_clean_z_clean_c
 					generated_labels += generated_labels_clean_z_clean_c
+					print("adding czcc")
 				if i == 'czrc':
 					generated_dataset += generated_dataset_clean_z_random_c
 					generated_labels += generated_labels_clean_z_random_c
+					print("adding czrc")
 				if i == 'rzcc':
 					generated_dataset += generated_dataset_random_z_clean_c
 					generated_labels += generated_labels_random_z_clean_c
+					print("adding rzcc")
 				if i == 'rzrc':
 					generated_dataset += generated_dataset_random_z_random_c
 					generated_labels += generated_labels_random_z_random_c
+					print("adding rzrc")
 		print("\n\nSAMPLES SIZE={},LABELS={}\n\n".format(len(generated_dataset), len(generated_labels)))
 		order_str = '_'.join(self.dataset_creation_order)
 		fname_trainingset = "generated_training_set_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__,
-		                                                                                  self.sampler.mu, self.sampler.sigma, order_str)
+		                                                                            self.sampler.mu, self.sampler.sigma, order_str)
 		print("SAVED TRAINING SET {}".format(fname_trainingset))
-		fname_labeles = "generated_labels_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__,
-		                                                                        self.sampler.mu, self.sampler.sigma, order_str)
+		fname_labeles = "generated_labels_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
+		                                                                  self.sampler.sigma, order_str)
 		pickle.dump(generated_dataset, open("{}.pkl".format(fname_trainingset), 'wb'))
 		pickle.dump(generated_labels, open("{}.pkl".format(fname_labeles), 'wb'))
 
