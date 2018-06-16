@@ -451,6 +451,7 @@ class MultiModalInfoGAN(object):
 
 			generated_dataset_random_z_random_c = []
 			generated_labels_random_z_random_c = []
+			tmp=check_folder(self.result_dir + '/' + self.model_dir)
 			for _ in range(datasetsize // 4):
 				# clean samples z fixed - czcc
 				z_fixed = np.zeros([self.batch_size, self.z_dim])
