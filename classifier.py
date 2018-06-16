@@ -42,7 +42,7 @@ from utils import load_mnist
 FLAGS = None
 
 np.random.seed(517)
-CONFIDENCE_THRESHOLD = 0.95
+CONFIDENCE_THRESHOLD = 0.9
 
 # losses
 
@@ -340,15 +340,10 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 	for i in range(10):
 		mask = (indices[:, 1] == i)
 		tmp = data_X[np.where(mask == True)][:10000]
-		# dummy_labels = shuffle(np.repeat(np.arange(10), 1000))
-		# to one hot vec
-		# z = np.zeros((10000, 10))
-		# for j, l in enumerate(dummy_labels):
-		# 	z[j, l] = 1
-		# dummy_labels = z
 		dummy_labels = data_y[:10000]  # no meaning for the labels
 		_, confidence, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
-		argwhere = confidence[confidence < CONFIDENCE_THRESHOLD]
+		argwhere = confidence < CONFIDENCE_THRESHOLD
+		
 		print(argwhere)
 		low_confidence_indices.extend(argwhere)
 		new_label = np.bincount(arg_max).argmax() + 1
