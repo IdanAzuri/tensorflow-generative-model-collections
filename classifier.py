@@ -359,8 +359,8 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 		data_X = data_X[~mask_not_take]
 	data_y = one_hot_encoder(data_y_categorical)
 	# data_X, data_y = shuffle(data_X, data_y, random_state=0)
-	pickle.dump(data_y, open("{}edited_generated_labels_{}.pkl".format(dir, pkl_fname), 'wb'))
-	pickle.dump(data_X, open("{}edited_generated_training_set_{}.pkl".format(dir, pkl_fname), 'wb'))
+	pickle.dump(data_y, open("{}{}/edited_generated_labels_{}.pkl".format(dir, dir_results, pkl_fname), 'wb'))
+	pickle.dump(data_X, open("{}{}/edited_generated_training_set_{}.pkl".format(dir, dir_results, pkl_fname), 'wb'))
 
 
 
