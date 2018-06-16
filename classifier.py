@@ -92,7 +92,7 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None, dir=None, original_dataset_name='mnist',dir_results='classifier_results/'):
+	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None, dir=None, original_dataset_name='mnist',dir_results='classifier_results'):
 		self.num_epochs = 30
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
@@ -291,7 +291,7 @@ class CNNClassifier():
 		self.b_fc2 = tf.Variable(tf.constant(model[7]))
 		print("model has been loaded from {}".format(self.save_to))
 
-	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P", dir="classifier_results/"):
+	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P", dir="classifier_results"):
 		plt.Figure()
 		plt.title('{} {} score'.format(self.fname, name_of_measure), fontsize=18)
 		x_range = np.linspace(1, len(array) - 1, len(array))
@@ -322,7 +322,7 @@ def parse_args():
 	return parser.parse_args()
 
 
-def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64,dir_results="classifier_results/"):
+def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64,dir_results="classifier_results"):
 	# mapping only once need to edit the condition
 	pkl_label_path = "{}generated_labels_{}.pkl".format(dir, pkl_fname)
 	pkl_path = "{}generated_training_set_{}.pkl".format(dir, pkl_fname)
