@@ -528,59 +528,59 @@ class MultiModalInfoGAN(object):
 		return
 
 
-def get_model_dir(self):
-	if self.wgan_gp:
-		return "wgan_{}_{}_batch{}".format(self.model_name, self.dataset_name, self.batch_size)
-	else:
-		return "{}_{}_batch{}".format(self.model_name, self.dataset_name, self.batch_size)
-
-
-def save(self, checkpoint_dir, step):
-	checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
+	def get_model_dir(self):
+		if self.wgan_gp:
+			return "wgan_{}_{}_batch{}".format(self.model_name, self.dataset_name, self.batch_size)
+		else:
+			return "{}_{}_batch{}".format(self.model_name, self.dataset_name, self.batch_size)
 	
-	if not os.path.exists(checkpoint_dir):
-		os.makedirs(checkpoint_dir)
 	
-	self.saver.save(self.sess, os.path.join(checkpoint_dir, self.model_name + '.model'), global_step=step)
-
-
-def load(self, checkpoint_dir):
-	import re
-	print(" [*] Reading checkpoints...")
-	checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
+	def save(self, checkpoint_dir, step):
+		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
+		
+		if not os.path.exists(checkpoint_dir):
+			os.makedirs(checkpoint_dir)
+		
+		self.saver.save(self.sess, os.path.join(checkpoint_dir, self.model_name + '.model'), global_step=step)
 	
-	ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
-	if ckpt and ckpt.model_checkpoint_path:
-		ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
-		self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
-		counter = int(next(re.finditer("(\d+)(?!.*\d)", ckpt_name)).group(0))
-		print(" [*] Success to read {}".format(ckpt_name))
-		return True, counter
-	else:
-		print(" [*] Failed to find a checkpoint")
-		return False, 0
-
-
-def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P"):
-	plt.Figure()
-	plt.title('{} {} score'.format(self.dataset_name, name_of_measure), fontsize=18)
-	x_range = np.linspace(1, len(array) - 1, len(array))
 	
-	confidence, = plt.plot(x_range, array, color=color, marker=marker, label=name_of_measure, linewidth=2)
-	plt.legend(handler_map={confidence: HandlerLine2D(numpoints=1)})
-	plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
-	plt.yscale('linear')
-	plt.xlabel('Epoch')
-	plt.ylabel('Score')
-	plt.grid()
-	plt.show()
-	if self.wgan_gp:
-		name_figure = "WGAN_MMWinfoGAN_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
-	else:
-		name_figure = "MMinfoGAN_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
-	plt.savefig(name_figure)
-	plt.close()
-	pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
+	def load(self, checkpoint_dir):
+		import re
+		print(" [*] Reading checkpoints...")
+		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
+		
+		ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
+		if ckpt and ckpt.model_checkpoint_path:
+			ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
+			self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
+			counter = int(next(re.finditer("(\d+)(?!.*\d)", ckpt_name)).group(0))
+			print(" [*] Success to read {}".format(ckpt_name))
+			return True, counter
+		else:
+			print(" [*] Failed to find a checkpoint")
+			return False, 0
+	
+	
+	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P"):
+		plt.Figure()
+		plt.title('{} {} score'.format(self.dataset_name, name_of_measure), fontsize=18)
+		x_range = np.linspace(1, len(array) - 1, len(array))
+		
+		confidence, = plt.plot(x_range, array, color=color, marker=marker, label=name_of_measure, linewidth=2)
+		plt.legend(handler_map={confidence: HandlerLine2D(numpoints=1)})
+		plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
+		plt.yscale('linear')
+		plt.xlabel('Epoch')
+		plt.ylabel('Score')
+		plt.grid()
+		plt.show()
+		if self.wgan_gp:
+			name_figure = "WGAN_MMWinfoGAN_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
+		else:
+			name_figure = "MMinfoGAN_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, name_of_measure)
+		plt.savefig(name_figure)
+		plt.close()
+		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
 
 
 def plot_from_pkl():
