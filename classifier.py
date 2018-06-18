@@ -39,7 +39,9 @@ import argparse
 import pickle
 
 import numpy as np
-warnings.filterwarnings("ignore",category =RuntimeWarning)
+
+
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 import tensorflow as tf
 from sklearn.utils import shuffle
 
@@ -49,14 +51,14 @@ from utils import load_mnist
 FLAGS = None
 
 np.random.seed(517)
-CONFIDENCE_THRESHOLD = 0.95
+CONFIDENCE_THRESHOLD = 0.98
+
 
 # losses
 
 def one_hot_encoder(data):
 	data = data.astype(np.int32)
 	onehot = np.zeros((len(data), 10))
-	data -= 1
 	onehot[np.arange(len(data)), data] = 1
 	
 	return onehot
@@ -130,8 +132,8 @@ class CNNClassifier():
 			# mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
 			self.data_X, self.data_y = load_mnist(self.classifier_name)
 			
-			self.test_images = self.data_X[:1000].reshape(-1, 784)
-			self.test_labels = self.data_y[:1000]  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
+			self.test_images = self.data_X.reshape(-1, 784)
+			self.test_labels = self.data_y  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
 		# elif self.classifier_name == "cifar10":
 		# 	self.IMAGE_WIDTH = 32
 		# 	self.IMAGE_HEIGHT = 32
@@ -275,7 +277,7 @@ class CNNClassifier():
 			                                                    feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
 			print("argmax:{}".format(arg_max))
 			# self.test_writer.add_summary(summary, counter)
-			print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
+			print('step {}: accuracy:{}, mean_confidence:{}, loss:{}'.format(counter, accuracy, np.mean(confidence), loss))
 			return accuracy, confidence, loss, arg_max
 		else:
 			accuracy, confidence, loss = self.sess.run([self.accuracy, self.confidence, self.cross_entropy],
@@ -355,22 +357,26 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 	pretraind = CNNClassifier(original_dataset_name)
 	indices = np.argwhere(data_y == 1)
 	# low_confidence_indices = []
-	for i in range(10):
-		mask = (indices[:, 1] == i)
-		limit = min(len(data_X), 10000)
-		tmp = data_X[np.where(mask == True)][:limit]
-		dummy_labels = data_y[:limit]  # no meaning for the labels
-		_, confidence, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
-		# argwhere = np.argwhere(confidence < CONFIDENCE_THRESHOLD).flatten()
-		confidence_threshold_idx = confidence > min(CONFIDENCE_THRESHOLD, np.max(confidence) - 0.001)
-		print(np.max(confidence) - 0.001)
+	for current_label in range(10):
+		mask = (indices[:, 1] == current_label)
+		limit = min(len(data_X), 100)
+		confident = False
+		offset = 0
+		while not confident:
+			small_data_X = data_X[np.where(mask == True)][offset:limit+offset]
+			dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
+			_, confidence, _, arg_max = pretraind.test(small_data_X.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+			# argwhere = np.argwhere(confidence < CONFIDENCE_THRESHOLD).flatten()
+			confidence_threshold_idx = confidence > CONFIDENCE_THRESHOLD #min(CONFIDENCE_THRESHOLD, np.max(confidence) - 0.001)
+			offset+=50
+			if np.count_nonzero(confidence_threshold_idx) > 30:
+				confident=True
 		
-		confidence = confidence[confidence_threshold_idx]
 		arg_max = arg_max[confidence_threshold_idx]
 		print(str(len(arg_max)) + " were taken")
 		
 		# low_confidence_indices.extend(argwhere)
-		if original_dataset_name =='mnist':
+		if original_dataset_name == 'mnist':
 			new_label = np.bincount(arg_max).argmax() + 1
 		else:
 			new_label = np.bincount(arg_max).argmax()

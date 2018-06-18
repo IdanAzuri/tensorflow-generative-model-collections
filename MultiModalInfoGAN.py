@@ -458,7 +458,7 @@ class MultiModalInfoGAN(object):
 						y_one_hot = np.zeros((self.batch_size, self.y_dim))
 						y_one_hot[np.arange(self.batch_size), y] = 1
 						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
-						generated_dataset_clean_z_clean_c.append(samples)  # storing generated images and label
+						generated_dataset_clean_z_clean_c.append(samples.reshape(-1,28,28))  # storing generated images and label
 						generated_labels_clean_z_clean_c += [label] * self.batch_size
 				
 				generated_dataset += generated_dataset_clean_z_clean_c
@@ -474,7 +474,7 @@ class MultiModalInfoGAN(object):
 						y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
 						y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
 						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
-						generated_dataset_clean_z_random_c.append(samples)  # storing generated images and label
+						generated_dataset_clean_z_random_c.append(samples.reshape(-1,28,28))  # storing generated images and label
 						generated_labels_clean_z_random_c += [label] * self.batch_size
 				
 				generated_dataset += generated_dataset_clean_z_random_c
@@ -488,7 +488,7 @@ class MultiModalInfoGAN(object):
 					y_one_hot = np.zeros((self.batch_size, self.y_dim))
 					y_one_hot[np.arange(self.batch_size), y] = 1
 					samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
-					generated_dataset_random_z_clean_c.append(samples)  # storing generated images and label
+					generated_dataset_random_z_clean_c.append(samples.reshape(-1,28,28))  # storing generated images and label
 					generated_labels_random_z_clean_c += [label] * self.batch_size
 				generated_dataset += generated_dataset_random_z_clean_c
 				generated_labels += generated_labels_random_z_clean_c
@@ -507,18 +507,17 @@ class MultiModalInfoGAN(object):
 					y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
 					samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
 					
-					generated_dataset_random_z_random_c.append(samples)  # storing generated images and label
+					generated_dataset_random_z_random_c.append(samples.reshape(-1,28,28))  # storing generated images and label
 					generated_labels_random_z_random_c += [
 						                                      label] * self.batch_size  # if _ == 1:  # 	save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],  # 	            "{}/{}/{}_{}_{}".format(self.result_dir, self.model_dir, self.model_name, label, 'rzrc.png'))
 				generated_dataset += generated_dataset_random_z_random_c
 				generated_labels += generated_labels_random_z_random_c
 				print("adding rzrc")
-
-
+		
 		print("\n\nSAMPLES SIZE={},LABELS={}\n\n".format(len(generated_dataset), len(generated_labels)))
 		order_str = '_'.join(self.dataset_creation_order)
-		fname_trainingset = "generated_training_set_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu, self.sampler.sigma,
-		                                                                            order_str)
+		fname_trainingset = "generated_training_set_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
+		                                                                            self.sampler.sigma, order_str)
 		print("SAVED TRAINING SET {}".format(fname_trainingset))
 		fname_labeles = "generated_labels_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu, self.sampler.sigma,
 		                                                                  order_str)
@@ -526,14 +525,12 @@ class MultiModalInfoGAN(object):
 		pickle.dump(generated_labels, open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
 		
 		return
-
-
+	
 	def get_model_dir(self):
 		if self.wgan_gp:
 			return "wgan_{}_{}_batch{}".format(self.model_name, self.dataset_name, self.batch_size)
 		else:
 			return "{}_{}_batch{}".format(self.model_name, self.dataset_name, self.batch_size)
-	
 	
 	def save(self, checkpoint_dir, step):
 		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir)
@@ -542,7 +539,6 @@ class MultiModalInfoGAN(object):
 			os.makedirs(checkpoint_dir)
 		
 		self.saver.save(self.sess, os.path.join(checkpoint_dir, self.model_name + '.model'), global_step=step)
-	
 	
 	def load(self, checkpoint_dir):
 		import re
@@ -559,7 +555,6 @@ class MultiModalInfoGAN(object):
 		else:
 			print(" [*] Failed to find a checkpoint")
 			return False, 0
-	
 	
 	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P"):
 		plt.Figure()
@@ -585,7 +580,7 @@ class MultiModalInfoGAN(object):
 
 def plot_from_pkl():
 	import numpy as np
-	np.warnings.filterwarnings("ignore",category =RuntimeWarning)
+	np.warnings.filterwarnings("ignore", category=RuntimeWarning)
 	import matplotlib.pyplot as plt
 	import pickle
 	plt.Figure(figsize=(15, 15))
