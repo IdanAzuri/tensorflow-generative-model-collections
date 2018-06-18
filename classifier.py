@@ -48,7 +48,7 @@ FLAGS = None
 
 np.random.seed(517)
 CONFIDENCE_THRESHOLD = 0.95
-
+np.warnings.filterwarnings("ignore",category =RuntimeWarning)
 
 # losses
 

@@ -26,7 +26,6 @@ from utils import check_folder
 from utils import show_all_variables
 
 
-
 """parsing and configuration"""
 
 
@@ -35,8 +34,7 @@ def parse_args():
 	parser = argparse.ArgumentParser(description=desc)
 
 	parser.add_argument('--gan_type', type=str, default='GAN',
-	                    choices=['GAN', 'CGAN', 'infoGAN', 'ACGAN', 'EBGAN', 'BEGAN', 'WGAN', 'WGAN_GP', 'DRAGAN', 'LSGAN', 'VAE', 'CVAE',
-	                             'MultiModalInfoGAN', 'AEMultiModalInfoGAN'], help='The type of GAN', required=True)
+	                    choices=['GAN', 'CGAN', 'infoGAN', 'WGAN', 'WGAN_GP', 'MultiModalInfoGAN', 'AEMultiModalInfoGAN'], help='The type of GAN', required=True)
 	parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist', 'fashion-mnist', 'cifar10', 'celebA'], help='The name of '
 	                                                                                                                          'dataset')
 	parser.add_argument('--epoch', type=int, default=20, help='The number of epochs to run')

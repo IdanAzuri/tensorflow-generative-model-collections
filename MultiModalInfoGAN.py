@@ -585,6 +585,7 @@ class MultiModalInfoGAN(object):
 
 def plot_from_pkl():
 	import numpy as np
+	np.warnings.filterwarnings("ignore",category =RuntimeWarning)
 	import matplotlib.pyplot as plt
 	import pickle
 	plt.Figure(figsize=(15, 15))
