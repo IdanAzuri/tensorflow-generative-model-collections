@@ -233,7 +233,7 @@ class CNNClassifier():
 	# self.train_writer.add_graph(self.sess.graph)
 	# self.test_writer.add_graph(self.sess.graph)
 	
-	def train(self, confidence_in_train=True,confidence_thresh=0.95):
+	def train(self, confidence_in_train=True, confidence_thresh=0.95):
 		start_batch_id = 0  # int(1000 / self.batch_size)
 		self.num_batches = len(self.data_X) // self.batch_size
 		for epoch in range(self.num_epochs):
@@ -333,7 +333,7 @@ def parse_args():
 	parser.add_argument('--original', type=str, default="mnist")
 	parser.add_argument('--use_confidence', type=bool, default="False")
 	parser.add_argument('--confidence_thresh', type=float, default=0.95)
-
+	
 	return parser.parse_args()
 
 
@@ -361,7 +361,9 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 		dummy_labels = data_y[:limit]  # no meaning for the labels
 		_, confidence, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 		# argwhere = np.argwhere(confidence < CONFIDENCE_THRESHOLD).flatten()
-		confidence_threshold_idx = confidence > min(CONFIDENCE_THRESHOLD, np.max(confidence) - 0.05)
+		confidence_threshold_idx = confidence > min(CONFIDENCE_THRESHOLD, np.max(confidence) - 0.001)
+		print(np.max(confidence) - 0.001)
+		
 		confidence = confidence[confidence_threshold_idx]
 		arg_max = arg_max[confidence_threshold_idx]
 		print(str(len(confidence)) + " were taken")
@@ -399,7 +401,7 @@ def main():
 	
 	else:
 		c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir, original_dataset_name='mnist')
-		c.train(confidence_in_train,confidence_thresh)
+		c.train(confidence_in_train, confidence_thresh)
 
 
 if __name__ == '__main__':
