@@ -29,6 +29,7 @@ import os
 
 import matplotlib
 
+
 matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
@@ -42,10 +43,12 @@ from sklearn.utils import shuffle
 
 from utils import load_mnist
 
+
 FLAGS = None
 
 np.random.seed(517)
 CONFIDENCE_THRESHOLD = 0.95
+
 
 # losses
 
@@ -54,7 +57,7 @@ def one_hot_encoder(data):
 	onehot = np.zeros((len(data), 10))
 	data -= 1
 	onehot[np.arange(len(data)), data] = 1
-
+	
 	return onehot
 
 
@@ -95,7 +98,7 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None, dir=None, original_dataset_name='mnist',dir_results='classifier_results'):
+	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None, dir=None, original_dataset_name='mnist', dir_results='classifier_results'):
 		self.num_epochs = 30
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
@@ -114,18 +117,18 @@ class CNNClassifier():
 			self.test_labels = self.real_mnist_y
 			# self.test_labels.astype(np.float32, copy=False)
 			self.test_images = self.real_mnist_x.reshape(-1, 784)
-
-			pkl_label_path = "{}{}/edited_generated_labels_{}.pkl".format(dir,dir_results, pkl_fname)
+			
+			pkl_label_path = "{}{}/edited_generated_labels_{}.pkl".format(dir, dir_results, pkl_fname)
 			self.fname = pkl_fname
-			pkl_path = "{}{}/edited_generated_training_set_{}.pkl".format(dir,dir_results, pkl_fname)
+			pkl_path = "{}{}/edited_generated_training_set_{}.pkl".format(dir, dir_results, pkl_fname)
 			self.set_log_dir("{}_".format(pkl_fname))
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
-
+		
 		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
 			# mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
 			self.data_X, self.data_y = load_mnist(self.classifier_name)
-
+			
 			self.test_images = self.data_X[:1000].reshape(-1, 784)
 			self.test_labels = self.data_y[:1000]  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
 		# elif self.classifier_name == "cifar10":
@@ -136,7 +139,7 @@ class CNNClassifier():
 		# 	self.test_images = self.test_images.reshape(-1, 1024)
 		# 	# get number of batches for a single epoch
 		# 	self.num_batches = len(self.data_X) // self.batch_size
-
+		
 		# init_variables try to load from pickle:
 		try:
 			self.load_model()
@@ -150,34 +153,34 @@ class CNNClassifier():
 			self.b_fc1 = bias_variable([1024])
 			self.W_fc2 = weight_variable([1024, 10])
 			self.b_fc2 = bias_variable([10])
-
+		
 		self._create_model()
-
+	
 	def set_log_dir(self, log_dir_name):
 		self.log_dir = "logs/{}".format(log_dir_name)
-
+	
 	def set_dataset(self, training, labels):
 		training, labels = shuffle(training, labels, random_state=0)
 		self.data_X = np.asarray(training[1000:]).reshape(-1, 784)
 		self.data_y = np.asarray(labels[1000:]).reshape(-1, 10)
 		self.test_images = self.data_X.reshape(-1, 784)
 		self.test_labels = self.data_y  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
-
+	
 	def _deepcnn(self, x, keep_prob):
 		with tf.name_scope('reshape'):
 			x_image = tf.reshape(x, [-1, self.IMAGE_WIDTH, self.IMAGE_HEIGHT, self.c_dim])
 		h_conv1 = tf.nn.relu(conv2d(x_image, self.W_conv1) + self.b_conv1)
 		h_pool1 = max_pool_2x2(h_conv1)
-
+		
 		h_conv2 = tf.nn.relu(conv2d(h_pool1, self.W_conv2) + self.b_conv2)
 		h_pool2 = max_pool_2x2(h_conv2)
 		h_pool2_flat = tf.reshape(h_pool2, [-1, int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64])
-
+		
 		h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1)
-
+		
 		h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 		y_conv = tf.matmul(h_fc1_drop, self.W_fc2) + self.b_fc2
-
+		
 		# summary
 		# variable_summaries(self.W_conv1, 'W_conv1')
 		# variable_summaries(self.W_conv2, 'W_conv2')
@@ -188,36 +191,36 @@ class CNNClassifier():
 		# variable_summaries(self.b_fc1, 'b_fc1')
 		# variable_summaries(self.b_fc2, 'b_fc2')
 		return y_conv
-
+	
 	def _create_model(self):
 		self.x = tf.placeholder(tf.float32, [None, self.IMAGE_HEIGHT * self.IMAGE_WIDTH], name="data")
 		self.y_ = tf.placeholder(tf.float32, [None, 10], name="labels")
 		self.keep_prob = tf.placeholder(tf.float32, name="dropout")
 		# Build the graph for the deep net
 		self.y_conv = self._deepcnn(self.x, self.keep_prob)
-
+		
 		# loss
 		cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y_, logits=self.y_conv)
-		self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
-			self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)
+		self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
+			self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)
 		cross_entropy = tf.reduce_mean(cross_entropy)
 		self.cross_entropy = cross_entropy
 		cross_entropy += self.l2_regularization
 		# tf.summary.scalar('cross_entropy', cross_entropy)
-
+		
 		self.train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
-
+		
 		correct_prediction = tf.equal(tf.argmax(self.y_conv, 1), tf.argmax(self.y_, 1))
 		correct_prediction = tf.cast(correct_prediction, tf.float32)
 		self.accuracy = tf.reduce_mean(correct_prediction)
 		# tf.summary.scalar('accuracy', self.accuracy)
-
+		
 		# self.confidence = tf.cast(tf.reduce_mean(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), axis=0), tf.float32)
 		self.confidence = tf.cast(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), tf.float32)
 		# tf.summary.scalar('confidence', self.confidence)
-
+		
 		self.argmax = tf.argmax(self.y_conv, 1)
-
+		
 		# graph_location = self.log_dir + 'train'
 		# graph_location_test = self.log_dir + 'test'
 		# self.merged = tf.summary.merge_all()
@@ -226,22 +229,21 @@ class CNNClassifier():
 		# self.test_writer = tf.summary.FileWriter(graph_location_test)
 		self.sess = tf.Session()
 		self.sess.run(tf.global_variables_initializer())
-
+	
 	# self.train_writer.add_graph(self.sess.graph)
 	# self.test_writer.add_graph(self.sess.graph)
-
-	def train(self):
+	
+	def train(self, confidence_in_train=True,confidence_thresh=0.95):
 		start_batch_id = 0  # int(1000 / self.batch_size)
 		self.num_batches = len(self.data_X) // self.batch_size
 		for epoch in range(self.num_epochs):
 			for i in range(start_batch_id, self.num_batches):
 				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
-
+				
 				if i % 500 == 0:
 					self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=0)
-					accuracy, confidence, loss = self.test(self.test_images[:1000].reshape(-1, 784),
-					                                       self.test_labels[:1000].reshape(-1, 10), epoch * i)
+					accuracy, confidence, loss = self.test(self.test_images[:1000].reshape(-1, 784), self.test_labels[:1000].reshape(-1, 10), epoch * i)
 					# summary, _ = self.sess.run([self.merged, self.train_step],
 					#                            feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
 					# self.train_writer.add_summary(summary, i)
@@ -249,19 +251,26 @@ class CNNClassifier():
 					print('epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
 					self.accuracy_list.append(accuracy)
 				else:
-					self.train_step.run(session=self.sess,
-					                    feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
+					if not confidence_in_train:
+						self.train_step.run(session=self.sess, feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
+					else:
+						self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=0)
+						accuracy, confidence, loss = self.test(batch_images, batch_labels, epoch * i)
+						high_confidence_threshold_indices = confidence > min(confidence_thresh, np.max(confidence) - 0.05)
+						_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images[high_confidence_threshold_indices],
+						                                                self.y_: batch_labels[high_confidence_threshold_indices], self.keep_prob: 1.})
+		
 		if not self.classifier_name == "custom":
 			self.save_model()
 		self.plot_train_test_loss("accuracy", self.accuracy_list)
-
+	
 	# self.plot_train_test_loss("confidence", self.confidence_list)
 	# self.plot_train_test_loss("loss", self.loss_list)
-
+	
 	def test(self, test_batch, test_labels, counter=0, is_arg_max=False):
 		if is_arg_max:
 			accuracy, confidence, loss, arg_max = self.sess.run([self.accuracy, self.confidence, self.cross_entropy, self.argmax],
-				feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
+			                                                    feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
 			print("argmax:{}".format(arg_max))
 			# self.test_writer.add_summary(summary, counter)
 			print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
@@ -272,16 +281,16 @@ class CNNClassifier():
 			# self.test_writer.add_summary(summary, counter)
 			print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
 			return accuracy, confidence, loss
-
+	
 	def save_model(self):
-
+		
 		# Save the model for a pickle
-		pickle.dump([self.sess.run(self.W_conv1), self.sess.run(self.b_conv1), self.sess.run(self.W_conv2), self.sess.run(self.b_conv2),
-		             self.sess.run(self.W_fc1), self.sess.run(self.b_fc1), self.sess.run(self.W_fc2), self.sess.run(self.b_fc2)],
-		            open(self.save_to, 'wb'))
-
+		pickle.dump(
+			[self.sess.run(self.W_conv1), self.sess.run(self.b_conv1), self.sess.run(self.W_conv2), self.sess.run(self.b_conv2), self.sess.run(self.W_fc1),
+			 self.sess.run(self.b_fc1), self.sess.run(self.W_fc2), self.sess.run(self.b_fc2)], open(self.save_to, 'wb'))
+		
 		print("Model has been saved!")
-
+	
 	def load_model(self):
 		model = pickle.load(open(self.save_to, 'rb'))
 		self.W_conv1 = tf.Variable(tf.constant(model[0]))
@@ -293,12 +302,12 @@ class CNNClassifier():
 		self.W_fc2 = tf.Variable(tf.constant(model[6]))
 		self.b_fc2 = tf.Variable(tf.constant(model[7]))
 		print("model has been loaded from {}".format(self.save_to))
-
+	
 	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P", dir="classifier_results/"):
 		plt.Figure()
 		plt.title('{} {} score'.format(self.fname, name_of_measure), fontsize=18)
 		x_range = np.linspace(1, len(array) - 1, len(array))
-
+		
 		measure, = plt.plot(x_range, array, color=color, marker=marker, label=name_of_measure, linewidth=2)
 		plt.legend(handler_map={measure: HandlerLine2D(numpoints=1)})
 		plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
@@ -307,10 +316,10 @@ class CNNClassifier():
 		plt.ylabel('Score')
 		plt.grid()
 		plt.show()
-
+		
 		name_figure = "classifier_MMinfoGAN_{}_{}".format(self.fname, name_of_measure)
 		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
-		plt.savefig(dir+name_figure + ".png")
+		plt.savefig(dir + name_figure + ".png")
 		plt.close()
 
 
@@ -321,21 +330,23 @@ def parse_args():
 	parser.add_argument('--preprocess', type=bool, default=False)
 	parser.add_argument('--fname', type=str, default='fashion-mnist_MultivariateGaussianSampler')
 	parser.add_argument('--original', type=str, default="mnist")
+	parser.add_argument('--use_confidence', type=bool, default="False")
+	parser.add_argument('--confidence_thresh', type=float, default=0.95)
 
 	return parser.parse_args()
 
 
-def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64,dir_results="classifier_results"):
+def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64, dir_results="classifier_results"):
 	# mapping only once need to edit the condition
 	if not os.path.exists(dir_results):
 		os.makedirs(dir_results)
-	pkl_label_path = "{}{}/generated_labels_{}.pkl".format(dir,dir_results, pkl_fname)
-	pkl_path = "{}{}/generated_training_set_{}.pkl".format(dir, dir_results,pkl_fname)
+	pkl_label_path = "{}{}/generated_labels_{}.pkl".format(dir, dir_results, pkl_fname)
+	pkl_path = "{}{}/generated_training_set_{}.pkl".format(dir, dir_results, pkl_fname)
 	data_X = pickle.load(open(pkl_path, 'rb'))
 	data_y = pickle.load(open(pkl_label_path, 'rb'))
-
+	
 	data_X = np.asarray([y for x in data_X for y in x]).reshape(-1, 28, 28)
-
+	
 	data_y = np.asarray(data_y, dtype=np.float32)
 	data_y_categorical = data_y
 	data_y = one_hot_encoder(data_y)
@@ -344,15 +355,15 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 	# low_confidence_indices = []
 	for i in range(10):
 		mask = (indices[:, 1] == i)
-		limit = min(len(data_X),10000)
+		limit = min(len(data_X), 10000)
 		tmp = data_X[np.where(mask == True)][:limit]
 		dummy_labels = data_y[:limit]  # no meaning for the labels
 		_, confidence, _, arg_max = pretraind.test(tmp.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 		# argwhere = np.argwhere(confidence < CONFIDENCE_THRESHOLD).flatten()
-		confidence_threshold_idx = confidence > min(CONFIDENCE_THRESHOLD,np.max(confidence)-0.05)
-		confidence= confidence[confidence_threshold_idx]
+		confidence_threshold_idx = confidence > min(CONFIDENCE_THRESHOLD, np.max(confidence) - 0.05)
+		confidence = confidence[confidence_threshold_idx]
 		arg_max = arg_max[confidence_threshold_idx]
-		print(str(len(confidence))+" were taken")
+		print(str(len(confidence)) + " were taken")
 		
 		# low_confidence_indices.extend(argwhere)
 		new_label = np.bincount(arg_max).argmax() + 1
@@ -371,7 +382,6 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 	pickle.dump(data_X, open("{}{}/edited_generated_training_set_{}.pkl".format(dir, dir_results, pkl_fname), 'wb'))
 
 
-
 def main():
 	# parse arguments
 	args = parse_args()
@@ -381,12 +391,14 @@ def main():
 	dir = args.dir_name
 	original_dataset_name = args.original
 	do_preprocess = args.preprocess
+	confidence_in_train = args.use_confidence
+	confidence_thresh = args.confidence_thresh
 	if do_preprocess:
 		preprocess_data(dir, fname, original_dataset_name=original_dataset_name)
-
+	
 	else:
 		c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir, original_dataset_name='mnist')
-		c.train()
+		c.train(confidence_in_train,confidence_thresh)
 
 
 if __name__ == '__main__':
