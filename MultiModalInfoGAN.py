@@ -536,7 +536,7 @@ class MultiModalInfoGAN(object):
 	
 	
 	def save(self, checkpoint_dir, step):
-		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
+		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir)
 		
 		if not os.path.exists(checkpoint_dir):
 			os.makedirs(checkpoint_dir)
@@ -547,7 +547,7 @@ class MultiModalInfoGAN(object):
 	def load(self, checkpoint_dir):
 		import re
 		print(" [*] Reading checkpoints...")
-		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
+		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir)
 		
 		ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
 		if ckpt and ckpt.model_checkpoint_path:
