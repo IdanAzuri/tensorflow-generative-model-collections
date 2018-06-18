@@ -261,7 +261,6 @@ class CNNClassifier():
 						self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=0)
 						accuracy, confidence, loss = self.test(batch_images, batch_labels, epoch * i)
 						high_confidence_threshold_indices = confidence >= min(confidence_thresh, np.max(confidence) - 0.01)
-						print(len(batch_images[high_confidence_threshold_indices]))
 						_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images[high_confidence_threshold_indices],
 						                                                self.y_: batch_labels[high_confidence_threshold_indices], self.keep_prob: 1.})
 		
