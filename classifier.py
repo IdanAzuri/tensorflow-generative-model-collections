@@ -24,6 +24,9 @@ https://www.tensorflow.org/get_started/mnist/pros
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+
+import os
+
 import matplotlib
 
 matplotlib.use('Agg')
@@ -324,6 +327,8 @@ def parse_args():
 
 def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64,dir_results="classifier_results"):
 	# mapping only once need to edit the condition
+	if not os.path.exists(dir_results):
+		os.makedirs(dir_results)
 	pkl_label_path = "{}{}/generated_labels_{}.pkl".format(dir,dir_results, pkl_fname)
 	pkl_path = "{}{}/generated_training_set_{}.pkl".format(dir, dir_results,pkl_fname)
 	data_X = pickle.load(open(pkl_path, 'rb'))
