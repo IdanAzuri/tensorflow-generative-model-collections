@@ -359,18 +359,18 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 	# low_confidence_indices = []
 	for current_label in range(10):
 		mask = (indices[:, 1] == current_label)
-		limit = min(len(data_X), 100)
-		confident = False
-		offset = 0
-		while not confident:
-			small_data_X = data_X[np.where(mask == True)][offset:limit+offset]
-			dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
-			_, confidence, _, arg_max = pretraind.test(small_data_X.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
-			# argwhere = np.argwhere(confidence < CONFIDENCE_THRESHOLD).flatten()
-			confidence_threshold_idx = confidence > CONFIDENCE_THRESHOLD #min(CONFIDENCE_THRESHOLD, np.max(confidence) - 0.001)
-			offset+=50
-			if np.count_nonzero(confidence_threshold_idx) > 30:
-				confident=True
+		limit = min(len(data_X), 10000)
+		# confident = False
+		# offset = 0
+		# while not confident:
+		# 	small_data_X = data_X[np.where(mask == True)][offset:limit+offset]
+		dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
+		_, confidence, _, arg_max = pretraind.test(data_X.reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+		argwhere = np.argwhere(confidence < CONFIDENCE_THRESHOLD).flatten()
+		confidence_threshold_idx = confidence > CONFIDENCE_THRESHOLD #min(CONFIDENCE_THRESHOLD, np.max(confidence) - 0.001)
+		# 	offset+=50
+		# 	if np.count_nonzero(confidence_threshold_idx) > 30:
+		# 		confident=True
 		
 		arg_max = arg_max[confidence_threshold_idx]
 		print(str(len(arg_max)) + " were taken")
