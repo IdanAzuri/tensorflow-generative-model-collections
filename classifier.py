@@ -26,6 +26,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import warnings
 
 import matplotlib
 
@@ -38,6 +39,7 @@ import argparse
 import pickle
 
 import numpy as np
+warnings.filterwarnings("ignore",category =RuntimeWarning)
 import tensorflow as tf
 from sklearn.utils import shuffle
 
@@ -48,7 +50,6 @@ FLAGS = None
 
 np.random.seed(517)
 CONFIDENCE_THRESHOLD = 0.95
-np.warnings.filterwarnings("ignore",category =RuntimeWarning)
 
 # losses
 
@@ -366,10 +367,13 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 		
 		confidence = confidence[confidence_threshold_idx]
 		arg_max = arg_max[confidence_threshold_idx]
-		print(str(len(confidence)) + " were taken")
+		print(str(len(arg_max)) + " were taken")
 		
 		# low_confidence_indices.extend(argwhere)
-		new_label = np.bincount(arg_max).argmax() + 1
+		if original_dataset_name =='mnist':
+			new_label = np.bincount(arg_max).argmax() + 1
+		else:
+			new_label = np.bincount(arg_max).argmax()
 		print("Assinging:{}".format(new_label))
 		data_y_categorical[mask] = new_label
 		print(np.bincount(arg_max))
