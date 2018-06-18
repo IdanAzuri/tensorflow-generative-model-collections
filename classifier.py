@@ -376,10 +376,8 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 		print(str(len(arg_max)) + " were taken")
 		
 		# low_confidence_indices.extend(argwhere)
-		if original_dataset_name == 'mnist':
-			new_label = np.bincount(arg_max).argmax() + 1
-		else:
-			new_label = np.bincount(arg_max).argmax()
+		
+		new_label = np.bincount(arg_max).argmax()
 		print("Assinging:{}".format(new_label))
 		data_y_categorical[mask] = new_label
 		print(np.bincount(arg_max))
