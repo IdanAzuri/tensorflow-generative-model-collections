@@ -252,6 +252,7 @@ class CNNClassifier():
 					# self.train_writer.add_summary(summary, i)
 					_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
 					print('epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
+					print('accuracy:{}, mean_confidence:{}, loss:{}'.format(accuracy, np.mean(confidence), loss))
 					self.accuracy_list.append(accuracy)
 				else:
 					if not confidence_in_train:
@@ -283,7 +284,7 @@ class CNNClassifier():
 			accuracy, confidence, loss = self.sess.run([self.accuracy, self.confidence, self.cross_entropy],
 			                                           feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
 			# self.test_writer.add_summary(summary, counter)
-			print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
+			# print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
 			return accuracy, confidence, loss
 	
 	def save_model(self):
