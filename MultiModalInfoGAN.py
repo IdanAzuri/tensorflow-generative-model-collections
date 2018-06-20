@@ -43,7 +43,7 @@ class MultiModalInfoGAN(object):
 	
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2, is_wgan_gp=False,
 	             dataset_creation_order=['czcc', 'czrc', 'rzcc', 'rzrc'], SUPERVISED=True, dir_results="classifier_results"):
-		self.test_size = 20000
+		self.test_size = 10000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
 		self.confidence_list = []
@@ -351,9 +351,9 @@ class MultiModalInfoGAN(object):
 		
 		# z_sample = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
 		samples_for_test = []
-		for i in range(self.test_size // self.batch_size):
-			z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
-			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})  # samples_for_test.append(samples)
+		# for i in range(self.test_size // self.batch_size):
+		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})  # samples_for_test.append(samples)
 		# samples_for_test = np.asarray(samples_for_test)
 		# samples_for_test = samples_for_test.reshape(-1, self.input_width * self.input_height)
 		# _, confidence, _ = self.pretrained_classifier.test(samples_for_test.reshape(-1, self.input_width * self.input_height),
