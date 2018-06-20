@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --mem=30g
+#SBATCH --mem=60g
 #SBATCH -c 20
 #SBATCH --gres=gpu:1
 #SBATCH --time=1-00
