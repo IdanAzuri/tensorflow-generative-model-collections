@@ -530,18 +530,18 @@ class MultiModalInfoGAN(object):
 				print("adding rzrc")
 		
 		####### PREPROCESS ####
-		data_X = np.asarray([y for x in generated_dataset_clean_z_clean_c for y in x]).reshape(-1, 28, 28)
-		data_y = np.asarray(generated_labels_clean_z_clean_c, dtype=np.int32).flatten()
+		data_X_clean_part = np.asarray([y for x in generated_dataset_clean_z_clean_c for y in x]).reshape(-1, 28, 28)
+		data_y_clean_part = np.asarray(generated_labels_clean_z_clean_c, dtype=np.int32).flatten()
 		
 		data_y_all = np.asarray(generated_labels, dtype=np.int32).flatten()
 		
 		data_y_updateable = data_y_all
 		pretraind = CNNClassifier(self.dataset_name)
 		for current_label in range(10):
-			small_mask = data_y == current_label
+			small_mask = data_y_clean_part == current_label
 			mask = data_y_all == current_label
-			limit = min(len(data_X) // 10, 10000)
-			data_X_for_current_label = data_X[np.where(small_mask == True)]
+			limit = min(len(data_X_clean_part) // 10, 10000)
+			data_X_for_current_label = data_X_clean_part[np.where(small_mask == True)]
 			dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
 			_, confidence, _, arg_max = pretraind.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 			print(str(len(arg_max)) + " were taken")
@@ -561,7 +561,7 @@ class MultiModalInfoGAN(object):
 		fname_trainingset_edited = "edited_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		fname_labeles_edited = "edited_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		
-		pickle.dump(data_X, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
+		pickle.dump(np.asarray(generated_dataset), open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
 		pickle.dump(data_y_all, open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb'))
 		
 		fname_trainingset = "generated_training_set_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
@@ -570,7 +570,7 @@ class MultiModalInfoGAN(object):
 		fname_labeles = "generated_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
 		# np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2])
-		pickle.dump(np.asarray(generated_labels).reshape(np.asarray(generated_dataset)),open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
+		pickle.dump(np.asarray(generated_labels),open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
 		
 		return
 	
