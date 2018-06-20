@@ -556,23 +556,21 @@ class MultiModalInfoGAN(object):
 		order_str = '_'.join(self.dataset_creation_order)
 		if not os.path.exists(self.dir_results):
 			os.makedirs(self.dir_results)
-		fname_trainingset_edited = "edited_training_set_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
-		                                                                                self.sampler.sigma, order_str)
-		fname_labeles_edited = "edited_labels_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
-		                                                                      self.sampler.sigma, order_str)
+		params = "mu_{}sigma_{}_{}".format(self.sampler.mu, self.sampler.sigma, order_str)
+		
+		fname_trainingset_edited = "edited_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
+		fname_labeles_edited = "edited_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
+		
 		pickle.dump(data_X, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
 		pickle.dump(data_y_all, open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb'))
 		
-		print("\n\nSAMPLES SIZE={},LABELS={}\n\n".format(len(generated_dataset), len(generated_labels)))
 		fname_trainingset = "generated_training_set_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
 		                                                                            self.sampler.sigma, order_str)
-		print("SAVED TRAINING SET {}".format(fname_trainingset))
-		fname_labeles = "generated_labels_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu, self.sampler.sigma,
-		                                                                  order_str)
+		print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}\n\n".format(len(generated_dataset), len(generated_labels), fname_trainingset))
+		fname_labeles = "generated_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
 		# np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2])
-		pickle.dump(np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2]),
-		            open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
+		pickle.dump(np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2]),open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
 		
 		return
 	

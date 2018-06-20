@@ -121,9 +121,9 @@ class CNNClassifier():
 			# self.test_labels.astype(np.float32, copy=False)
 			self.test_images = self.real_mnist_x.reshape(-1, 784)
 			
-			pkl_label_path = "{}{}/edited_generated_labels_{}.pkl".format(dir, dir_results, pkl_fname)
+			pkl_label_path = "{}{}/edited_labels_{}.pkl".format(dir, dir_results, pkl_fname)
 			self.fname = pkl_fname
-			pkl_path = "{}{}/edited_generated_training_set_{}.pkl".format(dir, dir_results, pkl_fname)
+			pkl_path = "{}{}/edited_training_set_{}.pkl".format(dir, dir_results, pkl_fname)
 			self.set_log_dir("{}_".format(pkl_fname))
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
@@ -394,8 +394,8 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 	# 	data_X = data_X[~mask_not_take]
 	data_y = one_hot_encoder(data_y_categorical)
 	# data_X, data_y = shuffle(data_X, data_y, random_state=0)
-	pickle.dump(data_y, open("{}{}/edited_generated_labels_{}.pkl".format(dir, dir_results, pkl_fname), 'wb'))
-	pickle.dump(data_X, open("{}{}/edited_generated_training_set_{}.pkl".format(dir, dir_results, pkl_fname), 'wb'))
+	pickle.dump(data_y, open("{}{}/edited_labels_{}.pkl".format(dir, dir_results, pkl_fname), 'wb'))
+	pickle.dump(data_X, open("{}{}/edited_training_set_{}.pkl".format(dir, dir_results, pkl_fname), 'wb'))
 
 
 def main():
