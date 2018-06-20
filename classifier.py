@@ -38,10 +38,11 @@ from matplotlib.legend_handler import HandlerLine2D
 import argparse
 import pickle
 
-import numpy as np
-
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
+
+import numpy as np
+
 import tensorflow as tf
 from sklearn.utils import shuffle
 
@@ -87,16 +88,16 @@ def bias_variable(shape):
 
 
 def variable_summaries(var, name):
-	# """Attach a lot of summaries to a Tensor (for TensorBoard visualization)."""
-	# with tf.name_scope(name):
-	# 	mean = tf.reduce_mean(var)
-	# 	tf.summary.scalar('mean', mean)
-	# 	with tf.name_scope('stddev'):
-	# 		stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
-	# 	tf.summary.scalar('stddev', stddev)
-	# 	tf.summary.scalar('max', tf.reduce_max(var))
-	# 	tf.summary.scalar('min', tf.reduce_min(var))
-	# 	tf.summary.histogram('histogram', var)
+	"""Attach a lot of summaries to a Tensor (for TensorBoard visualization)."""
+	with tf.name_scope(name):
+		mean = tf.reduce_mean(var)
+		tf.summary.scalar('mean', mean)
+		with tf.name_scope('stddev'):
+			stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
+		tf.summary.scalar('stddev', stddev)
+		tf.summary.scalar('max', tf.reduce_max(var))
+		tf.summary.scalar('min', tf.reduce_min(var))
+		tf.summary.histogram('histogram', var)
 	pass
 
 
@@ -359,13 +360,13 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 	# indices = np.argwhere(data_y == 1)
 	# low_confidence_indices = []
 	for current_label in range(10):
-		mask = data_y == current_label#(indices[:, 1] == current_label)
-		limit = min(len(data_X)//10, 10000)
+		mask = data_y == current_label  # (indices[:, 1] == current_label)
+		limit = min(len(data_X) // 10, 10000)
 		# confident = False
 		# offset = 0
 		# while not confident:
 		# 	small_data_X = data_X[np.where(mask == True)][offset:limit+offset]
-		data_X_for_current_label= data_X[np.where(mask == True)]
+		data_X_for_current_label = data_X[np.where(mask == True)]
 		dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
 		_, confidence, _, arg_max = pretraind.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 		argwhere = np.argwhere(confidence < CONFIDENCE_THRESHOLD).flatten()
@@ -381,8 +382,8 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 		
 		new_label = np.bincount(arg_max).argmax()
 		print("Assinging:{}".format(new_label))
-		plt.title("old_label="+str(current_label)+"new_label="+str(new_label))
-		plt.imshow(data_X_for_current_label[0].reshape(28,28))
+		plt.title("old_label=" + str(current_label) + "new_label=" + str(new_label))
+		plt.imshow(data_X_for_current_label[0].reshape(28, 28))
 		plt.show()
 		data_y_categorical[mask] = new_label
 		print(np.bincount(arg_max))
