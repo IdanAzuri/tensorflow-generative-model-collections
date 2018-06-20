@@ -43,7 +43,7 @@ class MultiModalInfoGAN(object):
 	
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2, is_wgan_gp=False,
 	             dataset_creation_order=['czcc', 'czrc', 'rzcc', 'rzrc'], SUPERVISED=True, dir_results="classifier_results"):
-		self.test_size = 30000
+		self.test_size = 20000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
 		self.confidence_list = []
@@ -570,7 +570,7 @@ class MultiModalInfoGAN(object):
 		fname_labeles = "generated_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
 		# np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2])
-		pickle.dump(np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2]),open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
+		pickle.dump(np.asarray(generated_labels).reshape(np.asarray(generated_dataset)),open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
 		
 		return
 	

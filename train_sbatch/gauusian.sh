@@ -22,10 +22,10 @@ python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sample
 
 
 
-python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.3 --dataset_order "czcc czrc rzcc rzrc"
-python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.3 --dataset_order "czcc rzcc czrc rzrc"
-python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.3 --dataset_order "rzcc rzrc czcc czrc"
-python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.3 --dataset_order "czrc czcc rzcc rzrc"
+#python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.3 --dataset_order "czcc czrc rzcc rzrc"
+#python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.3 --dataset_order "czcc rzcc czrc rzrc"
+#python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.3 --dataset_order "rzcc rzrc czcc czrc"
+#python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.3 --dataset_order "czrc czcc rzcc rzrc"
 
 
 
