@@ -561,7 +561,7 @@ class MultiModalInfoGAN(object):
 		fname_trainingset_edited = "edited_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		fname_labeles_edited = "edited_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		
-		pickle.dump(np.asarray(generated_dataset).reshape(-1,784), open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
+		pickle.dump(np.asarray(generated_dataset).reshape(-1, 784), open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
 		pickle.dump(data_y_all, open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb'))
 		
 		fname_trainingset = "generated_training_set_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
@@ -570,7 +570,7 @@ class MultiModalInfoGAN(object):
 		fname_labeles = "generated_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
 		# np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2])
-		pickle.dump(np.asarray(generated_labels),open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
+		pickle.dump(np.asarray(generated_labels), open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
 		
 		return
 	
