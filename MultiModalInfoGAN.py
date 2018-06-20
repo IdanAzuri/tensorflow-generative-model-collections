@@ -560,8 +560,8 @@ class MultiModalInfoGAN(object):
 		                                                                                self.sampler.sigma, order_str)
 		fname_labeles_edited = "edited_labels_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
 		                                                                      self.sampler.sigma, order_str)
-		pickle.dump(data_X, open("{}{}/{}.pkl".format(dir, self.dir_results, fname_trainingset_edited), 'wb'))
-		pickle.dump(data_y_all, open("{}{}/{}.pkl".format(dir, self.dir_results, fname_labeles_edited), 'wb'))
+		pickle.dump(data_X, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
+		pickle.dump(data_y_all, open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb'))
 		
 		print("\n\nSAMPLES SIZE={},LABELS={}\n\n".format(len(generated_dataset), len(generated_labels)))
 		fname_trainingset = "generated_training_set_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
