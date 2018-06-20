@@ -6,12 +6,15 @@ from __future__ import print_function
 import glob
 import pickle
 import time
+import warnings
 
+
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 from matplotlib.legend_handler import HandlerLine2D
 
 import utils
 # from cifar10 import *
-from classifier import CNNClassifier, preprocess_data
+from classifier import CNNClassifier, preprocess_data, one_hot_encoder
 from ops import *
 from utils import *
 
@@ -435,18 +438,18 @@ class MultiModalInfoGAN(object):
 		c1 = xv.flatten()
 		c2 = yv.flatten()
 		datasetsize = self.test_size // self.batch_size
+		generated_dataset_clean_z_clean_c = []
+		generated_labels_clean_z_clean_c = []
+		
+		generated_dataset_clean_z_random_c = []
+		generated_labels_clean_z_random_c = []
+		
+		generated_dataset_random_z_clean_c = []
+		generated_labels_random_z_clean_c = []
+		
+		generated_dataset_random_z_random_c = []
+		generated_labels_random_z_random_c = []
 		for label in range(self.len_discrete_code):
-			generated_dataset_clean_z_clean_c = []
-			generated_labels_clean_z_clean_c = []
-			
-			generated_dataset_clean_z_random_c = []
-			generated_labels_clean_z_random_c = []
-			
-			generated_dataset_random_z_clean_c = []
-			generated_labels_random_z_clean_c = []
-			
-			generated_dataset_random_z_random_c = []
-			generated_labels_random_z_random_c = []
 			tmp = check_folder(self.result_dir + '/' + self.model_dir)
 			
 			for i in self.dataset_creation_order:
@@ -458,8 +461,11 @@ class MultiModalInfoGAN(object):
 						y_one_hot = np.zeros((self.batch_size, self.y_dim))
 						y_one_hot[np.arange(self.batch_size), y] = 1
 						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
-						generated_dataset_clean_z_clean_c.append(samples.reshape(-1,28,28))  # storing generated images and label
+						generated_dataset_clean_z_clean_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
 						generated_labels_clean_z_clean_c += [label] * self.batch_size
+						if _ == 1:
+							save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_czcc' + '_label_%d.png' % label)
 				
 				generated_dataset += generated_dataset_clean_z_clean_c
 				generated_labels += generated_labels_clean_z_clean_c
@@ -474,8 +480,11 @@ class MultiModalInfoGAN(object):
 						y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
 						y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
 						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
-						generated_dataset_clean_z_random_c.append(samples.reshape(-1,28,28))  # storing generated images and label
+						generated_dataset_clean_z_random_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
 						generated_labels_clean_z_random_c += [label] * self.batch_size
+						if _ == 1:
+							save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_czrc' + '_label_%d.png' % label)
 				
 				generated_dataset += generated_dataset_clean_z_random_c
 				generated_labels += generated_labels_clean_z_random_c
@@ -488,8 +497,11 @@ class MultiModalInfoGAN(object):
 					y_one_hot = np.zeros((self.batch_size, self.y_dim))
 					y_one_hot[np.arange(self.batch_size), y] = 1
 					samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
-					generated_dataset_random_z_clean_c.append(samples.reshape(-1,28,28))  # storing generated images and label
+					generated_dataset_random_z_clean_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
 					generated_labels_random_z_clean_c += [label] * self.batch_size
+					if _ == 1:
+						save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+						            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzcc' + '_label_%d.png' % label)
 				generated_dataset += generated_dataset_random_z_clean_c
 				generated_labels += generated_labels_random_z_clean_c
 				print("adding rzcc")
@@ -507,22 +519,60 @@ class MultiModalInfoGAN(object):
 					y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
 					samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
 					
-					generated_dataset_random_z_random_c.append(samples.reshape(-1,28,28))  # storing generated images and label
-					generated_labels_random_z_random_c += [
-						                                      label] * self.batch_size  # if _ == 1:  # 	save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],  # 	            "{}/{}/{}_{}_{}".format(self.result_dir, self.model_dir, self.model_name, label, 'rzrc.png'))
+					generated_dataset_random_z_random_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
+					generated_labels_random_z_random_c += [label] * self.batch_size
+					if _ == 1:
+						save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+						            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzrc' + '_label_%d.png' % label)
+				
 				generated_dataset += generated_dataset_random_z_random_c
 				generated_labels += generated_labels_random_z_random_c
 				print("adding rzrc")
 		
-		print("\n\nSAMPLES SIZE={},LABELS={}\n\n".format(len(generated_dataset), len(generated_labels)))
+		####### PREPROCESS ####
+		data_X = np.asarray([y for x in generated_dataset_clean_z_clean_c for y in x]).reshape(-1, 28, 28)
+		data_y = np.asarray(generated_labels_clean_z_clean_c, dtype=np.int32).flatten()
+		
+		data_y_all = np.asarray(generated_labels, dtype=np.int32).flatten()
+		
+		data_y_updateable = data_y_all
+		pretraind = CNNClassifier(self.dataset_name)
+		for current_label in range(10):
+			small_mask = data_y == current_label
+			mask = data_y_all == current_label
+			limit = min(len(data_X) // 10, 10000)
+			data_X_for_current_label = data_X[np.where(small_mask == True)]
+			dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
+			_, confidence, _, arg_max = pretraind.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+			print(str(len(arg_max)) + " were taken")
+			new_label = np.bincount(arg_max).argmax()
+			print("Assinging:{}".format(new_label))
+			plt.title("old_label=" + str(current_label) + "new_label=" + str(new_label))
+			plt.imshow(data_X_for_current_label[0].reshape(28, 28))
+			plt.show()
+			data_y_updateable[mask] = new_label
+			print(np.bincount(arg_max))
+		data_y_all = one_hot_encoder(data_y_updateable)
 		order_str = '_'.join(self.dataset_creation_order)
+		if not os.path.exists(self.dir_results):
+			os.makedirs(self.dir_results)
+		fname_trainingset_edited = "edited_training_set_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
+		                                                                                self.sampler.sigma, order_str)
+		fname_labeles_edited = "edited_labels_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
+		                                                                      self.sampler.sigma, order_str)
+		pickle.dump(data_X, open("{}{}/{}.pkl".format(dir, self.dir_results, fname_trainingset_edited), 'wb'))
+		pickle.dump(data_y_all, open("{}{}/{}.pkl".format(dir, self.dir_results, fname_labeles_edited), 'wb'))
+		
+		print("\n\nSAMPLES SIZE={},LABELS={}\n\n".format(len(generated_dataset), len(generated_labels)))
 		fname_trainingset = "generated_training_set_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu,
 		                                                                            self.sampler.sigma, order_str)
 		print("SAVED TRAINING SET {}".format(fname_trainingset))
 		fname_labeles = "generated_labels_{}_{}_mu_{}_sigma_{}_{}".format(self.dataset_name, type(self.sampler).__name__, self.sampler.mu, self.sampler.sigma,
 		                                                                  order_str)
-		pickle.dump(generated_dataset, open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
-		pickle.dump(generated_labels, open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
+		pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
+		# np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2])
+		pickle.dump(np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2]),
+		            open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
 		
 		return
 	
@@ -580,7 +630,7 @@ class MultiModalInfoGAN(object):
 
 def plot_from_pkl():
 	import numpy as np
-	np.warnings.filterwarnings("ignore", category=RuntimeWarning)
+	
 	import matplotlib.pyplot as plt
 	import pickle
 	plt.Figure(figsize=(15, 15))
