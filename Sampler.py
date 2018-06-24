@@ -46,12 +46,12 @@ class MultivariateGaussianTruncatedSampler(Sampler):
 
 class UniformSample(Sampler):
 	def get_sample(self, batch_size, embedding_dim, n_distributions):
-		return np.random.uniform(-1, 1, size=(batch_size, embedding_dim))
+		return np.random.uniform(-1, 1, size=(batch_size, embedding_dim)).astype(np.float32)
 
 
 class GaussianSample(Sampler):
 	def get_sample(self, batch_size, embedding_dim, n_distributions):
-		return np.random.normal(loc=self.mu, scale=self.sigma, size=(batch_size, embedding_dim))
+		return np.random.normal(loc=self.mu, scale=self.sigma, size=(batch_size, embedding_dim)).astype(np.float32)
 
 class TruncatedGaussianSample(Sampler):
 	def get_sample(self, batch_size, embedding_dim, n_distributions):
