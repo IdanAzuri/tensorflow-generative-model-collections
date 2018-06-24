@@ -20,11 +20,11 @@ python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist 
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.3 --dataset_order "rzcc rzrc czcc czrc"
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.3 --dataset_order "czrc czcc rzcc rzrc"
 
-
-python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSample_mu_0.0_sigma_0.3_czcc_czrc_rzcc_rzrc --preprocess True --original fashion-mnist
-python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSample_mu_0.0_sigma_0.3_czcc_rzcc_czrc_rzrc --preprocess True --original fashion-mnist
-python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSample_mu_0.0_sigma_0.3_rzcc_rzrc_czcc_czrc --preprocess True --original fashion-mnist
-python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSample_mu_0.0_sigma_0.3_czrc_czcc_rzcc_rzrc --preprocess True --original fashion-mnist
+#
+#python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSample_mu_0.0_sigma_0.3_czcc_czrc_rzcc_rzrc --preprocess True --original fashion-mnist
+#python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSample_mu_0.0_sigma_0.3_czcc_rzcc_czrc_rzrc --preprocess True --original fashion-mnist
+#python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSample_mu_0.0_sigma_0.3_rzcc_rzrc_czcc_czrc --preprocess True --original fashion-mnist
+#python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSample_mu_0.0_sigma_0.3_czrc_czcc_rzcc_rzrc --preprocess True --original fashion-mnist
 
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSample_mu_0.0_sigma_0.3_czcc_czrc_rzcc_rzrc --original fashion-mnist
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSample_mu_0.0_sigma_0.3_czcc_rzcc_czrc_rzrc --original fashion-mnist
