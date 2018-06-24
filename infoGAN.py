@@ -17,6 +17,7 @@ class infoGAN(object):
 		self.log_dir = log_dir
 		self.epoch = epoch
 		self.batch_size = batch_size
+		self.sampler = sampler
 
 		if dataset_name == 'mnist' or dataset_name == 'fashion-mnist':
 			# parameters
@@ -180,7 +181,8 @@ class infoGAN(object):
 		tf.global_variables_initializer().run()
 
 		# graph inputs for visualize training results
-		self.sample_z = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
+		
+		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 		self.test_labels = self.data_y[0:self.batch_size]
 		self.test_codes = np.concatenate((self.test_labels, np.zeros([self.batch_size, self.len_continuous_code])), axis=1)
 
@@ -220,8 +222,8 @@ class infoGAN(object):
 
 				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, 2))), axis=1)
 
-				batch_z = np.random.uniform(-1, 1, [self.batch_size, self.z_dim]).astype(np.float32)
-
+				batch_z  = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+				
 				# update D network
 				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss],
 				                                       feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
@@ -270,8 +272,9 @@ class infoGAN(object):
 		y_one_hot = np.zeros((self.batch_size, self.y_dim))
 		y_one_hot[np.arange(self.batch_size), y] = 1
 
-		z_sample = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
-
+		
+		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+		
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
 
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim], check_folder(
