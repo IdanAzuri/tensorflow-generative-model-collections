@@ -237,7 +237,7 @@ class CNNClassifier():
 	# self.train_writer.add_graph(self.sess.graph)
 	# self.test_writer.add_graph(self.sess.graph)
 	
-	def train(self, confidence_in_train=True, confidence_thresh=0.6):
+	def train(self, confidence_in_train=False, confidence_thresh=0.6):
 		start_batch_id = 0  # int(1000 / self.batch_size)
 		self.num_batches = len(self.data_X) // self.batch_size
 		for epoch in range(self.num_epochs):
