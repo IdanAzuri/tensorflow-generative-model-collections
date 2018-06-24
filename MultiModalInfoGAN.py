@@ -489,45 +489,45 @@ class MultiModalInfoGAN(object):
 				generated_dataset += generated_dataset_clean_z_random_c
 				generated_labels += generated_labels_clean_z_random_c
 				print("adding czrc")
-			if i == 'rzcc':
-				for _ in range(datasetsize // len(self.dataset_creation_order)):
-					# z random c-clean - rzcc
-					z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
-					y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
-					y_one_hot = np.zeros((self.batch_size, self.y_dim))
-					y_one_hot[np.arange(self.batch_size), y] = 1
-					samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
-					generated_dataset_random_z_clean_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
-					generated_labels_random_z_clean_c += [label] * self.batch_size
-					if _ == 1:
-						save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-						            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzcc' + '_label_%d.png' % label)
-				generated_dataset += generated_dataset_random_z_clean_c
-				generated_labels += generated_labels_random_z_clean_c
-				print("adding rzcc")
-			if i == 'rzrc':
-				for _ in range(datasetsize // len(self.dataset_creation_order)):
-					# rzrc
-					z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
-					y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
-					y_one_hot = np.zeros((self.batch_size, self.y_dim))
-					y_one_hot[np.arange(self.batch_size), y] = 1
+				if i == 'rzcc':
+					for _ in range(datasetsize // len(self.dataset_creation_order)):
+						# z random c-clean - rzcc
+						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
+						y_one_hot = np.zeros((self.batch_size, self.y_dim))
+						y_one_hot[np.arange(self.batch_size), y] = 1
+						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
+						generated_dataset_random_z_clean_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
+						generated_labels_random_z_clean_c += [label] * self.batch_size
+						if _ == 1:
+							save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzcc' + '_label_%d.png' % label)
+					generated_dataset += generated_dataset_random_z_clean_c
+					generated_labels += generated_labels_random_z_clean_c
+					print("adding rzcc")
+				if i == 'rzrc':
+					for _ in range(datasetsize // len(self.dataset_creation_order)):
+						# rzrc
+						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
+						y_one_hot = np.zeros((self.batch_size, self.y_dim))
+						y_one_hot[np.arange(self.batch_size), y] = 1
+						
+						y_one_hot = np.zeros((self.batch_size, self.y_dim))
+						y_one_hot[np.arange(self.batch_size), y] = 1
+						y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
+						y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
+						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
+						
+						generated_dataset_random_z_random_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
+						generated_labels_random_z_random_c += [label] * self.batch_size
+						if _ == 1:
+							save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzrc' + '_label_%d.png' % label)
 					
-					y_one_hot = np.zeros((self.batch_size, self.y_dim))
-					y_one_hot[np.arange(self.batch_size), y] = 1
-					y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
-					y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
-					samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
-					
-					generated_dataset_random_z_random_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
-					generated_labels_random_z_random_c += [label] * self.batch_size
-					if _ == 1:
-						save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-						            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzrc' + '_label_%d.png' % label)
-				
-				generated_dataset += generated_dataset_random_z_random_c
-				generated_labels += generated_labels_random_z_random_c
-				print("adding rzrc")
+					generated_dataset += generated_dataset_random_z_random_c
+					generated_labels += generated_labels_random_z_random_c
+					print("adding rzrc")
 		
 		####### PREPROCESS ####
 		data_X_clean_part = np.asarray([y for x in generated_dataset_clean_z_clean_c for y in x]).reshape(-1, 28, 28)
