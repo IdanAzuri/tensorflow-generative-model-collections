@@ -533,8 +533,8 @@ class MultiModalInfoGAN(object):
 		data_y_clean_part = np.asarray(generated_labels_clean_z_clean_c, dtype=np.int32).flatten()
 		
 		data_y_all = np.asarray(generated_labels, dtype=np.int32).flatten()
-		
-		data_y_updateable = data_y_all
+		import copy
+		data_y_updateable = copy.deepcopy(data_y_all)
 		pretraind = CNNClassifier(self.dataset_name)
 		for current_label in range(10):
 			small_mask = data_y_clean_part == current_label
