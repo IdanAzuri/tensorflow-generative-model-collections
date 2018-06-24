@@ -9,7 +9,7 @@ from utils import *
 class infoGAN(object):
 	model_name = "infoGAN"  # name for checkpoint
 
-	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir,sampler=None, SUPERVISED=False):
+	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir,sampler=None, is_wgan_gp=False,dataset_creation_order=None,SUPERVISED=False):
 		self.sess = sess
 		self.dataset_name = dataset_name
 		self.checkpoint_dir = checkpoint_dir
