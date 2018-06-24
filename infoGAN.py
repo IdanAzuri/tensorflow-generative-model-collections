@@ -132,7 +132,7 @@ class infoGAN(object):
 		# discrete code : categorical
 		disc_code_est = code_logit_fake[:, :self.len_discrete_code]
 		disc_code_tg = self.y[:, :self.len_discrete_code]
-		q_disc_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=disc_code_est, labels=disc_code_tg))
+		q_disc_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=disc_code_est, labels=disc_code_tg))
 
 		# continuous code : gaussian
 		cont_code_est = code_logit_fake[:, self.len_discrete_code:]
