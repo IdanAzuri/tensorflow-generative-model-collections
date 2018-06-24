@@ -371,7 +371,6 @@ class MultiModalInfoGAN(object):
 		si = np.random.choice(self.batch_size, n_styles)
 		
 		for l in range(self.len_discrete_code):
-			z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 			y = np.zeros(self.batch_size, dtype=np.int64) + l
 			y_one_hot = np.zeros((self.batch_size, self.y_dim))
 			y_one_hot[np.arange(self.batch_size), y] = 1
