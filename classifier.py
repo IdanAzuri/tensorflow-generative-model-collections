@@ -26,6 +26,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import time
 import warnings
 
 import matplotlib
@@ -241,12 +242,12 @@ class CNNClassifier():
 		self.num_batches = min(len(self.data_X) // self.batch_size, 1500)
 		print("START TRAINING:{}".format(self.fname))
 		for epoch in range(self.num_epochs):
+			start_time = time.time()
 			for i in range(start_batch_id, self.num_batches):
 				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 				# plt.title(batch_labels[0])
 				# plt.imshow(batch_images[0].reshape(28, 28))
-				print(i)
 				# plt.show()
 				if i % 500 == 0:
 					self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=0)
@@ -255,7 +256,7 @@ class CNNClassifier():
 					#                            feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
 					# self.train_writer.add_summary(summary, i)
 					_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
-					print('epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
+					print('epoch{}: time{}, step{}/{}'.format(epoch, time.time() - start_time,i, self.num_batches))
 					print('accuracy:{}, mean_confidence:{}, loss:{}'.format(accuracy, np.mean(confidence), loss))
 					self.accuracy_list.append(accuracy)
 				else:
