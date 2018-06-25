@@ -239,13 +239,15 @@ class CNNClassifier():
 	
 	def train(self, confidence_in_train=False, confidence_thresh=0.9):
 		start_batch_id = 0  # int(1000 / self.batch_size)
-		self.num_batches = min(len(self.data_X) // self.batch_size,1500)
+		self.num_batches = min(len(self.data_X) // self.batch_size, 1500)
 		for epoch in range(self.num_epochs):
 			for i in range(start_batch_id, self.num_batches):
 				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
-				
-				if i % 300 == 0:
+				# plt.title(batch_labels[0])
+				# plt.imshow(batch_images[0].reshape(28, 28))
+				# plt.show()
+				if i % 500 == 0:
 					self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=0)
 					accuracy, confidence, loss = self.test(self.test_images[:1000].reshape(-1, 784), self.test_labels[:1000].reshape(-1, 10), epoch * i)
 					# summary, _ = self.sess.run([self.merged, self.train_step],
