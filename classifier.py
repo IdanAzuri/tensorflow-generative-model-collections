@@ -30,8 +30,7 @@ import warnings
 
 import matplotlib
 
-
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 from matplotlib.legend_handler import HandlerLine2D
@@ -247,6 +246,7 @@ class CNNClassifier():
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
 				# plt.title(batch_labels[0])
 				# plt.imshow(batch_images[0].reshape(28, 28))
+				print(i)
 				# plt.show()
 				if i % 500 == 0:
 					self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=0)
