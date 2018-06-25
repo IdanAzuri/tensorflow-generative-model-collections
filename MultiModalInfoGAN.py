@@ -545,10 +545,11 @@ class MultiModalInfoGAN(object):
 		for current_label in range(10):
 			small_mask = data_y_clean_part == current_label
 			mask = data_y_all == current_label
-			limit = min(len(data_X_clean_part) // 10, 10000)
+			limit = len(data_X_clean_part)#min(len(data_X_clean_part) // 10, 10000)
 			data_X_for_current_label = data_X_clean_part[np.where(small_mask == True)]
 			dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
-			_, confidence, _, arg_max = pretraind.test(data_X_for_current_label.reshape(-1, 784)[limit:], dummy_labels.reshape(-1, 10), is_arg_max=True)
+			
+			_, confidence, _, arg_max = pretraind.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 			print(str(len(arg_max)) + " were taken")
 			new_label = np.bincount(arg_max).argmax()
 			print("Assinging:{}".format(new_label))
