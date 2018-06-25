@@ -237,7 +237,7 @@ class CNNClassifier():
 	# self.train_writer.add_graph(self.sess.graph)
 	# self.test_writer.add_graph(self.sess.graph)
 	
-	def train(self, confidence_in_train=True, confidence_thresh=0.9):
+	def train(self, confidence_in_train=False, confidence_thresh=0.9):
 		start_batch_id = 0  # int(1000 / self.batch_size)
 		self.num_batches = len(self.data_X) // self.batch_size
 		for epoch in range(self.num_epochs):
@@ -308,7 +308,7 @@ class CNNClassifier():
 		self.b_fc2 = tf.Variable(tf.constant(model[7]))
 		print("model has been loaded from {}".format(self.save_to))
 	
-	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P", dir="classifier_results_with_conf/"):
+	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P", dir="classifier_results/"):
 		plt.Figure()
 		plt.title('{} {} score'.format(self.fname, name_of_measure), fontsize=18)
 		x_range = np.linspace(1, len(array) - 1, len(array))
@@ -341,7 +341,7 @@ def parse_args():
 	return parser.parse_args()
 
 
-def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64, dir_results="classifier_results_with_conf"):
+def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64, dir_results="classifier_results"):
 	# mapping only once need to edit the condition
 	if not os.path.exists(dir_results):
 		os.makedirs(dir_results)
