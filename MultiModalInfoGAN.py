@@ -529,8 +529,14 @@ class MultiModalInfoGAN(object):
 					print("adding rzrc")
 		
 		####### PREPROCESS ####
-		data_X_clean_part = np.asarray([y for x in generated_dataset_clean_z_clean_c for y in x]).reshape(-1, 28, 28)
-		data_y_clean_part = np.asarray(generated_labels_clean_z_clean_c, dtype=np.int32).flatten()
+		if len(generated_dataset_clean_z_clean_c)>0:
+			clean_dataset = generated_dataset_clean_z_clean_c
+			clean_labels=generated_labels_clean_z_clean_c
+		else:
+			clean_dataset=generated_dataset
+			clean_labels=generated_labels
+		data_X_clean_part = np.asarray([y for x in clean_dataset for y in x]).reshape(-1, 28, 28)
+		data_y_clean_part = np.asarray(clean_labels, dtype=np.int32).flatten()
 		
 		data_y_all = np.asarray(generated_labels, dtype=np.int32).flatten()
 		import copy
