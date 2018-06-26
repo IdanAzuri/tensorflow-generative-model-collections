@@ -264,11 +264,13 @@ class CNNClassifier():
 					if not confidence_in_train:
 						self.train_step.run(session=self.sess, feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
 					else:
-						self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=0)
 						accuracy, confidence, loss = self.test(batch_images, batch_labels, epoch * i)
-						high_confidence_threshold_indices = confidence >= min(confidence_thresh, np.max(confidence) - 0.01)
-						_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images[high_confidence_threshold_indices],
-						                                                self.y_: batch_labels[high_confidence_threshold_indices], self.keep_prob: 1.})
+						high_confidence_threshold_indices = confidence >= confidence_thresh
+						if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
+							_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images[high_confidence_threshold_indices],
+							                                                self.y_: batch_labels[high_confidence_threshold_indices], self.keep_prob: 1.})
+						else:
+							print("skipping confidence low max_confidence ={}".format(np.max(confidence)))
 		
 		if not self.classifier_name == "custom":
 			self.save_model()
@@ -341,7 +343,7 @@ def parse_args():
 	parser.add_argument('--fname', type=str, default='fashion-mnist_MultivariateGaussianSampler')
 	parser.add_argument('--original', type=str, default="mnist")
 	parser.add_argument('--use_confidence', type=bool, default="False")
-	parser.add_argument('--confidence_thresh', type=float, default=0.95)
+	parser.add_argument('--confidence_thresh', type=float, default=0.9)
 	
 	return parser.parse_args()
 
