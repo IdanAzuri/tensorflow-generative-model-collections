@@ -258,7 +258,7 @@ class CNNClassifier():
 					# self.train_writer.add_summary(summary, i)
 					_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
 					print('epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
-					print("time: %4.4f", time.time() - start_time)
+					print("time: %4.4f" %(time.time() - start_time))
 					print('accuracy:{}, mean_confidence:{}, loss:{}'.format(accuracy, np.mean(confidence), loss))
 					self.accuracy_list.append(accuracy)
 				else:
