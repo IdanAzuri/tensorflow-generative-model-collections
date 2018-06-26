@@ -128,7 +128,7 @@ class CNNClassifier():
 			self.set_log_dir("{}_".format(pkl_fname))
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
-			# self.data_X, self.data_y = shuffle(self.data_X, self.data_y, random_state=0)
+			self.data_X, self.data_y = shuffle(self.data_X, self.data_y, random_state=0)
 		
 		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
 			# mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
