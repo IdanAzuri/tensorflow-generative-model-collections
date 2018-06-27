@@ -566,8 +566,9 @@ class MultiModalInfoGAN(object):
 		
 		fname_trainingset_edited = "edited_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		fname_labeles_edited = "edited_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
+		generated_dataset=np.asarray(generated_dataset).reshape(-1, 784)
 		generated_dataset, data_y_all = shuffle(generated_dataset, data_y_all, random_state=0)
-		pickle.dump(np.asarray(generated_dataset).reshape(-1, 784), open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
+		pickle.dump(generated_dataset, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
 		pickle.dump(data_y_all, open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb'))
 		
 		fname_trainingset = "generated_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
