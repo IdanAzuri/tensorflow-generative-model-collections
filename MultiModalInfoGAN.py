@@ -60,7 +60,7 @@ class MultiModalInfoGAN(object):
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 		self.dir_results = dir_results
 		# train
-		self.learning_rate = 0.00005
+		self.learning_rate = 0.0002
 		self.beta1 = 0.5
 		
 		# test
@@ -304,7 +304,7 @@ class MultiModalInfoGAN(object):
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 				
 				# update D network
-				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss, ],
+				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss],
 				                                       feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
 				self.writer.add_summary(summary_str, counter)
 				
@@ -509,8 +509,6 @@ class MultiModalInfoGAN(object):
 						# rzrc
 						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
-						y_one_hot = np.zeros((self.batch_size, self.y_dim))
-						y_one_hot[np.arange(self.batch_size), y] = 1
 						
 						y_one_hot = np.zeros((self.batch_size, self.y_dim))
 						y_one_hot[np.arange(self.batch_size), y] = 1
