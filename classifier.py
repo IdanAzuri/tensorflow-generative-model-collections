@@ -31,6 +31,9 @@ import warnings
 
 import matplotlib
 
+
+LEARNING_RATE = 1e-5
+
 matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
@@ -103,7 +106,7 @@ def variable_summaries(var, name):
 
 class CNNClassifier():
 	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None, dir=None, original_dataset_name='mnist', dir_results='classifier_results'):
-		self.num_epochs = 100
+		self.num_epochs = 300
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
@@ -213,7 +216,7 @@ class CNNClassifier():
 		cross_entropy += self.l2_regularization
 		# tf.summary.scalar('cross_entropy', cross_entropy)
 		
-		self.train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+		self.train_step = tf.train.AdamOptimizer(LEARNING_RATE).minimize(cross_entropy)
 		
 		correct_prediction = tf.equal(tf.argmax(self.y_conv, 1), tf.argmax(self.y_, 1))
 		correct_prediction = tf.cast(correct_prediction, tf.float32)
@@ -240,7 +243,7 @@ class CNNClassifier():
 	
 	def train(self, confidence_in_train=False, confidence_thresh=0.9):
 		start_batch_id = 0  # int(1000 / self.batch_size)
-		self.num_batches = min(len(self.data_X) // self.batch_size, 1500)
+		self.num_batches = min(len(self.data_X) // self.batch_size, 4000)
 		print("START TRAINING:{}".format(self.fname))
 		for epoch in range(self.num_epochs):
 			start_time = time.time()
