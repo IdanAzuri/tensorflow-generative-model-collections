@@ -468,6 +468,8 @@ class MultiModalInfoGAN(object):
 							save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_czcc' + '_label_%d.png' % label)
 				
+				generated_dataset += generated_dataset_clean_z_clean_c
+				generated_labels += generated_labels_clean_z_clean_c
 				print("adding czcc")
 				if i == 'czrc':
 					for _ in range(datasetsize // len(self.dataset_creation_order)):
@@ -485,6 +487,8 @@ class MultiModalInfoGAN(object):
 							save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_czrc' + '_label_%d.png' % label)
 				
+				generated_dataset += generated_dataset_clean_z_random_c
+				generated_labels += generated_labels_clean_z_random_c
 				print("adding czrc")
 				if i == 'rzcc':
 					for _ in range(datasetsize // len(self.dataset_creation_order)):
@@ -499,6 +503,8 @@ class MultiModalInfoGAN(object):
 						if _ == 1:
 							save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzcc' + '_label_%d.png' % label)
+					generated_dataset += generated_dataset_random_z_clean_c
+					generated_labels += generated_labels_random_z_clean_c
 					print("adding rzcc")
 				if i == 'rzrc':
 					for _ in range(datasetsize // len(self.dataset_creation_order)):
@@ -518,24 +524,17 @@ class MultiModalInfoGAN(object):
 							save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzrc' + '_label_%d.png' % label)
 					
+					generated_dataset += generated_dataset_random_z_random_c
+					generated_labels += generated_labels_random_z_random_c
 					print("adding rzrc")
-		generated_dataset += generated_dataset_clean_z_clean_c
-		generated_labels += generated_labels_clean_z_clean_c
-		generated_dataset += generated_dataset_clean_z_random_c
-		generated_labels += generated_labels_clean_z_random_c
-		generated_dataset += generated_dataset_random_z_clean_c
-		generated_labels += generated_labels_random_z_clean_c
-		generated_dataset += generated_dataset_random_z_random_c
-		generated_labels += generated_labels_random_z_random_c
-		generated_dataset, generated_labels = shuffle(generated_dataset, generated_labels, random_state=0)
 		
 		####### PREPROCESS ####
-		if len(generated_dataset_clean_z_clean_c) > 0:
+		if len(generated_dataset_clean_z_clean_c)>0:
 			clean_dataset = generated_dataset_clean_z_clean_c
-			clean_labels = generated_labels_clean_z_clean_c
+			clean_labels=generated_labels_clean_z_clean_c
 		else:
-			clean_dataset = generated_dataset
-			clean_labels = generated_labels
+			clean_dataset=generated_dataset
+			clean_labels=generated_labels
 		data_X_clean_part = np.asarray([y for x in clean_dataset for y in x]).reshape(-1, 28, 28)
 		data_y_clean_part = np.asarray(clean_labels, dtype=np.int32).flatten()
 		
@@ -567,7 +566,7 @@ class MultiModalInfoGAN(object):
 		
 		fname_trainingset_edited = "edited_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		fname_labeles_edited = "edited_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-		
+		generated_dataset, data_y_all = shuffle(generated_dataset, data_y_all, random_state=0)
 		pickle.dump(np.asarray(generated_dataset).reshape(-1, 784), open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
 		pickle.dump(data_y_all, open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb'))
 		
