@@ -350,19 +350,9 @@ class MultiModalInfoGAN(object):
 		y = np.random.choice(self.len_discrete_code, self.batch_size)
 		y_one_hot = np.zeros((self.batch_size, self.y_dim))
 		y_one_hot[np.arange(self.batch_size), y] = 1
-		
-		# z_sample = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
-		samples_for_test = []
-		# for i in range(self.test_size // self.batch_size):
 		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})  # samples_for_test.append(samples)
-		# samples_for_test = np.asarray(samples_for_test)
-		# samples_for_test = samples_for_test.reshape(-1, self.input_width * self.input_height)
-		# _, confidence, _ = self.pretrained_classifier.test(samples_for_test.reshape(-1, self.input_width * self.input_height),
-		#                                                    np.ones((len(samples_for_test), self.len_discrete_code)), epoch)
-		# if self.dataset_name != "celebA":
-		# 	self.confidence_list.append(confidence)
-		# self.loss_list.append(loss)
+		
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 		            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
 		
