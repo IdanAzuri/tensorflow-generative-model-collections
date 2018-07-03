@@ -205,6 +205,13 @@ class MultiModalInfoGAN(object):
 		# get loss for generator
 		self.g_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_fake_logits, labels=tf.ones_like(D_fake)))
 		if self.wgan_gp:
+			d_loss_real = - tf.reduce_mean(D_real_logits)
+			d_loss_fake = tf.reduce_mean(D_fake_logits)
+			
+			self.d_loss = d_loss_real + d_loss_fake
+			
+			# get loss for generator
+			self.g_loss = - d_loss_fake
 			wd = tf.reduce_mean(D_real_logits) - tf.reduce_mean(D_fake_logits)
 			gp = gradient_penalty(self.x, self.x_, self.discriminator)
 			self.d_loss = -wd + gp * 10.0
