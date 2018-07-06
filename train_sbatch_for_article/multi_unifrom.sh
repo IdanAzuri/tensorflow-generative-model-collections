@@ -14,5 +14,5 @@ cd $dir
 source /cs/labs/daphna/idan.azuri/venv_64/bin/activate
 
 python3 main.py --gan_type MultiModalInfoGAN --epoch 60 --dataset mnist --sampler multi-uniform --batch_size 64 --dataset_order "czcc czrc rzcc rzrc"
-python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_MultiModalUniformSample_mu_0_sigma_0.15_czcc_czrc_rzcc_rzrc --original mnist
+python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_MultiModalUniformSample --original mnist
 
