@@ -525,6 +525,7 @@ class MultiModalInfoGAN(object):
 					generated_labels += generated_labels_random_z_random_c
 					print("adding rzrc")
 		
+		generated_dataset, generated_labels = shuffle(generated_dataset, generated_labels, random_state=0)
 		####### PREPROCESS ####
 		if len(generated_dataset_clean_z_clean_c)>0:
 			clean_dataset = generated_dataset_clean_z_clean_c
@@ -560,11 +561,12 @@ class MultiModalInfoGAN(object):
 		if not os.path.exists(self.dir_results):
 			os.makedirs(self.dir_results)
 		params = "mu_{}_sigma_{}_{}".format(self.sampler.mu, self.sampler.sigma, order_str)
+		params=""
 		
 		fname_trainingset_edited = "edited_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		fname_labeles_edited = "edited_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		generated_dataset=np.asarray(generated_dataset).reshape(-1, 784)
-		generated_dataset, data_y_all = shuffle(generated_dataset, data_y_all, random_state=0)
+		# generated_dataset, data_y_all = shuffle(generated_dataset, data_y_all, random_state=0)
 		pickle.dump(generated_dataset, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
 		pickle.dump(data_y_all, open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb'))
 		
