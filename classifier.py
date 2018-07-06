@@ -32,7 +32,7 @@ import warnings
 import matplotlib
 
 
-LEARNING_RATE = 1e-5
+LEARNING_RATE = 1e-6
 
 matplotlib.use('Agg')
 
@@ -253,7 +253,7 @@ class CNNClassifier():
 				# plt.title(batch_labels[0])
 				# plt.imshow(batch_images[0].reshape(28, 28))
 				# plt.show()
-				if i % 500 == 0:
+				if i % 300 == 0:
 					self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=0)
 					accuracy, confidence, loss = self.test(self.test_images[:1000].reshape(-1, 784), self.test_labels[:1000].reshape(-1, 10), epoch * i)
 					# summary, _ = self.sess.run([self.merged, self.train_step],
