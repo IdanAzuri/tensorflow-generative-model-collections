@@ -106,7 +106,7 @@ def variable_summaries(var, name):
 
 class CNNClassifier():
 	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None, dir=None, original_dataset_name='mnist', dir_results='classifier_results'):
-		self.num_epochs = 300
+		self.num_epochs = 100
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
