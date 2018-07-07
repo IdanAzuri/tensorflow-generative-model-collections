@@ -164,8 +164,8 @@ class MultiModalInfoGAN(object):
 			
 			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
 			net = lrelu(bn(linear(net, 128 * self.input_height / 4 * self.input_width / 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
-			net = tf.reshape(net, [self.batch_size, int(self.input_height / 4), int(self.input_width / 4), 128])
-			net = lrelu(bn(deconv2d(net, [self.batch_size, int(self.input_height / 2), int(self.input_width / 2), 64], 4, 4, 2, 2, name='g_dc3'),
+			net = tf.reshape(net, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
+			net = lrelu(bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3'),
 			               is_training=is_training, scope='g_bn3'))
 			
 			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
@@ -198,7 +198,6 @@ class MultiModalInfoGAN(object):
 		D_fake, D_fake_logits, input4classifier_fake = self.discriminator(self.x_, is_training=True, reuse=True)
 		
 		# get loss for discriminator
-		
 		d_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_real_logits, labels=tf.ones_like(D_real)))
 		d_loss_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_fake_logits, labels=tf.zeros_like(D_fake)))
 		self.d_loss = d_loss_real + d_loss_fake
@@ -221,7 +220,6 @@ class MultiModalInfoGAN(object):
 		code_fake, code_logit_fake = self.classifier(input4classifier_fake, is_training=True, reuse=False)
 		# discrete code : categorical
 		disc_code_est = code_logit_fake[:, :self.len_discrete_code]
-		
 		disc_code_tg = self.y[:, :self.len_discrete_code]
 		q_disc_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=disc_code_est, labels=disc_code_tg))
 		

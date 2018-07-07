@@ -32,7 +32,7 @@ import warnings
 import matplotlib
 
 
-LEARNING_RATE = 1e-5
+LEARNING_RATE = 1e-4
 
 matplotlib.use('Agg')
 
@@ -55,7 +55,7 @@ from utils import load_mnist
 FLAGS = None
 
 np.random.seed(517)
-CONFIDENCE_THRESHOLD = 0.98
+CONFIDENCE_THRESHOLD = 0.9
 
 
 # losses
