@@ -57,7 +57,7 @@ class MultiModalInfoGAN(object):
 		self.epoch = epoch
 		self.batch_size = batch_size
 		self.sampler = sampler
-		self.pretrained_classifier = CNNClassifier(self.dataset_name)
+		self.pretrained_classifier = CNNClassifier(self.dataset_name,original_dataset_name=self.dataset_name)
 		self.dataset_creation_order = dataset_creation_order
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 		self.dir_results = dir_results
