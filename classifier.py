@@ -367,7 +367,7 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 	
 	data_y_categorical = data_y
 	# data_y = one_hot_encoder(data_y)
-	pretraind = CNNClassifier(original_dataset_name)
+	pretraind = CNNClassifier(original_dataset_name,original_dataset_name=original_dataset_name)
 	# indices = np.argwhere(data_y == 1)
 	# low_confidence_indices = []
 	for current_label in range(10):
