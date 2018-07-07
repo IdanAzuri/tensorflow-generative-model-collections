@@ -13,23 +13,23 @@ dir=/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections
 cd $dir
 source /cs/labs/daphna/idan.azuri/venv_64/bin/activate
 
-python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler uniform --batch_size 64 --dataset_order "czcc czrc rzcc rzrc" --result_dir results_with_confidence_27_6
+python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler uniform --batch_size 64 --dataset_order "czcc czrc rzcc rzrc" --result_dir results_with_confidence --original fashion-mnist
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_czcc_czrc_rzcc_rzrc --original mnist --use_confidence True
-#python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_czcc_czrc_rzcc_rzrc --preprocess True --original mnist
-
-python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler uniform --batch_size 64 --dataset_order "czrc czrc rzcc rzcc" --result_dir results_with_confidence_27_6
-python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_czcc_czcc_rzcc_rzcc --original mnist --use_confidence True
-
-python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler uniform --batch_size 64 --dataset_order "czcc rzcc czrc rzrc" --result_dir results_with_confidence_27_6
-#python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_czcc_rzcc_czrc_rzrc --preprocess True --original mnist
-python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_czcc_rzcc_czrc_rzrc --original mnist --use_confidence True
-
-python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler uniform --batch_size 64 --dataset_order "rzcc rzrc czcc czrc" --result_dir results_with_confidence_27_6
-#python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_rzcc_rzrc_czcc_czrc --preprocess True --original mnist
-python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_rzcc_rzrc_czcc_czrc --original mnist --use_confidence True
-
-
-python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler uniform --batch_size 64 --dataset_order "czrc czcc rzcc rzrc" --result_dir results_with_confidence_27_6
-#python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_czrc_czcc_rzcc_rzrc --preprocess True --original mnist
-python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_czrc_czcc_rzcc_rzrc --original mnist --use_confidence True
-
+##python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_czcc_czrc_rzcc_rzrc --preprocess True --original mnist
+#
+#python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler uniform --batch_size 64 --dataset_order "czrc czrc rzcc rzcc" --result_dir results_with_confidence_27_6
+#python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_czcc_czcc_rzcc_rzcc --original mnist --use_confidence True
+#
+#python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler uniform --batch_size 64 --dataset_order "czcc rzcc czrc rzrc" --result_dir results_with_confidence_27_6
+##python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_czcc_rzcc_czrc_rzrc --preprocess True --original mnist
+#python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_czcc_rzcc_czrc_rzrc --original mnist --use_confidence True
+#
+#python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler uniform --batch_size 64 --dataset_order "rzcc rzrc czcc czrc" --result_dir results_with_confidence_27_6
+##python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_rzcc_rzrc_czcc_czrc --preprocess True --original mnist
+#python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_rzcc_rzrc_czcc_czrc --original mnist --use_confidence True
+#
+#
+#python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler uniform --batch_size 64 --dataset_order "czrc czcc rzcc rzrc" --result_dir results_with_confidence_27_6
+##python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_czrc_czcc_rzcc_rzrc --preprocess True --original mnist
+#python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_UniformSample_mu_0_sigma_0.15_czrc_czcc_rzcc_rzrc --original mnist --use_confidence True
+#
