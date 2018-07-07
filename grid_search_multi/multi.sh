@@ -19,9 +19,9 @@ source /cs/labs/daphna/idan.azuri/venv_64/bin/activate
 
 
 
-python3 main.py --gan_type MultiModalInfoGAN --epoch 60 --dataset mnist --sampler multi-gaussian --batch_size 64 --mu 0.1 --sigma 0.1
-python3 main.py --gan_type MultiModalInfoGAN --epoch 60 --dataset mnist --sampler multi-gaussian --batch_size 64 --mu 0.1 --sigma 0.15
+python3 main.py --gan_type MultiModalInfoGAN --epoch 60 --dataset mnist --sampler multi-gaussian --batch_size 64 --mu 0.1 --sigma 0.1 --dataset_order "czcc czrc rzcc rzrc"
+python3 main.py --gan_type MultiModalInfoGAN --epoch 60 --dataset mnist --sampler multi-gaussian --batch_size 64 --mu 0.1 --sigma 0.15 --dataset_order "czcc czrc rzcc rzrc"
 
 
-python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15 --original mnist
-python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1 --original mnist
+python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc --original mnist
+python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc --original mnist
