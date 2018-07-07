@@ -105,7 +105,7 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-	def __init__(self, classifier_name, load_from_pkl=False, pkl_fname=None, dir=None, original_dataset_name='mnist', dir_results='classifier_results'):
+	def __init__(self, classifier_name, original_dataset_name,load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results'):
 		self.num_epochs = 100
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
@@ -425,7 +425,7 @@ def main():
 		preprocess_data(dir, fname, original_dataset_name=original_dataset_name)
 	
 	else:
-		c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir, original_dataset_name='mnist')
+		c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir, original_dataset_name=original_dataset_name)
 		c.train(confidence_in_train, confidence_thresh)
 
 
