@@ -108,6 +108,7 @@ class MultiModalInfoGAN(object):
 			img_paths = glob.glob('/Users/idan.a/data/celeba/*.jpg')
 			self.data_pool = utils.DiskImageData(img_paths, batch_size, shape=[218, 178, 3], preprocess_fn=preprocess_fn)
 			self.num_batches = len(self.data_pool) // (batch_size)
+			
 			# real_ipt = data_pool.batch()
 			# parameters
 			self.input_height = 64
