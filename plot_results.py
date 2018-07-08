@@ -811,9 +811,9 @@ def fashion_MM_plot_from_pkl():
 	plt.Figure(figsize=(15, 15))
 	
 	plt.title('MMinfoGAN_fashion-mnist_MultivariateGaussianSampler', fontsize=12)
-	e = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[2:50]
-	f = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[2:50]
-	g = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0_sigma_0.15_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[2:50]
+	e = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[2:100]
+	f = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[2:100]
+	g = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0_sigma_0.15_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[2:100]
 	# h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_UniformSample_mu_0_sigma_0.15_czrc_czcc_rzrc_rzrc_accuracy.pkl", "rb"))[2:]
 	e_range = np.arange(len(e))
 	f_range = np.arange(len(f))
