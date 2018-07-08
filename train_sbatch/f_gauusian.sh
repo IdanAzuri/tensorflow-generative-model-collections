@@ -15,7 +15,7 @@ source /cs/labs/daphna/idan.azuri/venv_64/bin/activate
 
 
 
-python3 main.py --gan_type MultiModalInfoGAN --epoch 60 --dataset fashion-mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.2 --dataset_order "czcc czrc rzcc rzrc" 0.2
+python3 main.py --gan_type MultiModalInfoGAN --epoch 60 --dataset fashion-mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.2 --dataset_order "czcc czrc rzcc rzrc"
 #python3 main.py --gan_type MultiModalInfoGAN --epoch 60 --dataset fashion-mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.3 --dataset_order "czcc rzcc czrc rzrc"
 #python3 main.py --gan_type MultiModalInfoGAN --epoch 60 --dataset fashion-mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.3 --dataset_order "rzcc rzrc czcc czrc"
 #python3 main.py --gan_type MultiModalInfoGAN --epoch 60 --dataset fashion-mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.3 --dataset_order "czrc czcc rzcc rzrc"
