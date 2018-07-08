@@ -30,13 +30,13 @@ import time
 import warnings
 
 import matplotlib
-
+matplotlib.use('Agg')
 from MultiModalInfoGAN import SEED
 
 
 LEARNING_RATE = 1e-4
 
-matplotlib.use('Agg')
+
 
 import matplotlib.pyplot as plt
 from matplotlib.legend_handler import HandlerLine2D
@@ -395,9 +395,9 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 		
 		new_label = np.bincount(arg_max).argmax()
 		print("Assinging:{}".format(new_label))
-		plt.title("old_label=" + str(current_label) + "new_label=" + str(new_label))
-		plt.imshow(data_X_for_current_label[0].reshape(28, 28))
-		plt.show()
+		# plt.title("old_label=" + str(current_label) + "new_label=" + str(new_label))
+		# plt.imshow(data_X_for_current_label[0].reshape(28, 28))
+		# plt.show()
 		data_y_categorical[mask] = new_label
 		print(np.bincount(arg_max))
 	# if len(low_confidence_indices) > 0:
