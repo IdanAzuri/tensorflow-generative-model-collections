@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 
 class Sampler(object):
-	def __init__(self,mu=0,sigma=0.15):
+	def __init__(self,mu=0.,sigma=0.15):
 		self.sigma = sigma
 		self.mu = mu
 
@@ -18,6 +18,8 @@ class MultivariateGaussianSampler(Sampler):
 	def get_sample(self, batch_size, embedding_dim, n_distributions):
 		current_dist_states_indices = np.random.randint(0, n_distributions - 1, batch_size)
 		mean_vec = np.linspace(-self.mu,self.mu,n_distributions)
+		print("MEAN VEC:")
+		print(mean_vec)
 		cov_mat = np.eye(n_distributions) * self.sigma  # np.random.randint(1, 5, n_distributions)  # this is diagonal beacuse we want iid
 
 		result_vec = np.zeros((batch_size, embedding_dim))
@@ -89,9 +91,9 @@ class MultimodelGaussianTF(Sampler):
 if __name__ == '__main__':
 	bimix_gauss = MultimodelGaussianTF()
 	import tensorflow as tf
-	g= TruncatedGaussianSample(sigma=1)
+	g= MultivariateGaussianSampler(mu=0.1,sigma=0.12)
 
-	gg = g.get_sample(1000,1,1)
+	gg = g.get_sample(1000,10,10)
 	print(np.max(gg))
 	print(np.min(gg))
 	print(np.mean(gg))
