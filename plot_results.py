@@ -8,7 +8,7 @@ import pickle
 dir = 'from_server/'
 def plot_from_pkl():
 	plt.Figure(figsize=(15, 15))
-
+	
 	plt.title('MMInfoGAN Accuracy by Sampling Method', fontsize=12)
 	a = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.3_accuracy.pkl", "rb"))[10:100]
 	b = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_GaussianSample_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))[10:100]
@@ -32,12 +32,12 @@ def plot_from_pkl():
 	# dd = plt.plot(d_range, d, color='y', marker="o", label="MM Uniform Sample", linewidth=0.5)
 	# ee = plt.plot(e_range, e, color='c', marker="*", label="Truncated Normal Sample", linewidth=0.5)
 	mean_line = plt.plot(a_range, np.ones_like(a_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -90,12 +90,12 @@ def truncated__zoom_plot_from_pkl():
 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	# kk, = plt.plot(k_range, k, color='k', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -148,12 +148,12 @@ def truncated_plot_from_pkl():
 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -206,12 +206,12 @@ def gaussian_zoom_plot_from_pkl():
 	ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
 	jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -264,12 +264,12 @@ def gaussian_plot_from_pkl():
 	ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(e_range, np.ones_like(e_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -322,12 +322,12 @@ def MM_zoom_plot_from_pkl():
 	# ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -380,12 +380,12 @@ def MM_plot_from_pkl():
 	ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(e_range, np.ones_like(e_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -436,12 +436,12 @@ def MM_mu_1_zoom_plot_from_pkl():
 	# ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
 	jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -494,12 +494,12 @@ def MM_mu_1plot_from_pkl():
 	# ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(e_range, np.ones_like(e_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -555,12 +555,12 @@ def truncated_fashion__zoom_plot_from_pkl():
 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	# kk, = plt.plot(k_range, k, color='k', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -613,12 +613,12 @@ def fashion_truncated_plot_from_pkl():
 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	# kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -671,12 +671,12 @@ def fashion_gaussian_zoom_plot_from_pkl():
 	ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
 	jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -729,12 +729,12 @@ def fashion_gaussian_plot_from_pkl():
 	ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(e_range, np.ones_like(e_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -787,12 +787,12 @@ def fashion_MM_zoom_plot_from_pkl():
 	# ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -811,36 +811,28 @@ def fashion_MM_plot_from_pkl():
 	plt.Figure(figsize=(15, 15))
 	
 	plt.title('MMinfoGAN_fashion-mnist_MultivariateGaussianSampler', fontsize=12)
-	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_UniformSample_mu_0_sigma_0.15_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[2:50]
-	# f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_UniformSample_mu_0_sigma_0.15_czcc_rzcc_czrc_rzrc_accuracy.pkl", "rb"))[2:50]
-	# g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_UniformSample_mu_0_sigma_0.15_czrc_czcc_rzcc_rzrc_accuracy.pkl", "rb"))[2:50]
+	e = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[2:50]
+	f = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[2:50]
+	g = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0_sigma_0.15_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[2:50]
 	# h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_UniformSample_mu_0_sigma_0.15_czrc_czcc_rzrc_rzrc_accuracy.pkl", "rb"))[2:]
-	# i = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_UniformSample_mu_0_sigma_0.15_czrc_czrc_rzcc_rzcc_accuracy.pkl", "rb"))[2:]
-	j = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_UniformSample_mu_0_sigma_0.15_rzcc_rzrc_czcc_czrc_accuracy.pkl", "rb"))[2:50]
-	# a_range = np.arange(len(a))
-	# b_range = np.arange(len(b))
-	# c_range = np.arange(len(c))
-	# d_range = np.arange(len(d))
 	e_range = np.arange(len(e))
-	# f_range = np.arange(len(f))
-	# g_range = np.arange(len(g))
+	f_range = np.arange(len(f))
+	g_range = np.arange(len(g))
 	# h_range = np.arange(len(h))
 	# i_range = np.arange(len(i))
-	j_range = np.arange(len(j))
-	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
-	# ff, = plt.plot(f_range, f, color='b', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
-	# gg, = plt.plot(g_range, g, color='r', marker='d', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
+	# j_range = np.arange(len(j))
+	ee, = plt.plot(e_range, e, color='k', marker="P", label="Gaussian($\sigma=0.2,\mu=0$)", linewidth=0.5)
+	ff, = plt.plot(f_range, f, color='b', marker='.', label="Multimodal Gaussian($\sigma=0.2,\mu=0.1$)", linewidth=0.5)
+	gg, = plt.plot(g_range, g, color='r', marker='d', label="Uniform", linewidth=0.5)
 	# hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
-	jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
+	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
 	# ii, = plt.plot(i_range, i, color='y', marker="^", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
-	mean_line = plt.plot(e_range, np.ones_like(e_range) * 0.98, label='Benchmark', linestyle='--')
-
+	# mean_line = plt.plot(e_range, np.ones_like(e_range) * 0.92, label='Benchmark', linestyle='--')
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
-	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
-	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
-	#                         dd: HandlerLine2D(numpoints=1)
-
-	# }, loc='middle right')
+	# plt.legend([ee, ff, gg], ["Gaussian", "Multimodal Gaussian", "Uniform"],
+	#            handler_map={ee: HandlerLine2D(numpoints=1), ff: HandlerLine2D(numpoints=1), gg: HandlerLine2D(numpoints=1)
+	# 	 }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
 	plt.ylabel("Accuracy Score")
@@ -881,12 +873,12 @@ def plot_from_pkl_confidence():
 	dd, = plt.plot(d_range, d, color='y', marker="o", label="MM Uniform Sample", linewidth=0.5)
 	ee, = plt.plot(e_range, e, color='c', marker="*", label="Truncated Normal Sample", linewidth=0.5)
 	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best',fancybox=True)
 	plt.xlabel("Epoch")
@@ -939,12 +931,12 @@ def truncated__zoom_plot_from_pkl_confidence():
 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	# kk, = plt.plot(k_range, k, color='k', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -997,12 +989,12 @@ def truncated_plot_from_pkl_confidence():
 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -1055,12 +1047,12 @@ def gaussian_zoom_plot_from_pkl_confidence():
 	ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
 	jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -1113,12 +1105,12 @@ def gaussian_plot_from_pkl_confidence():
 	ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(e_range, np.ones_like(e_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -1171,12 +1163,12 @@ def MM_zoom_plot_from_pkl_confidence():
 	# ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -1229,12 +1221,12 @@ def MM_plot_from_pkl_confidence():
 	ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(e_range, np.ones_like(e_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -1287,12 +1279,12 @@ def truncated__zoom_plot_from_pkl():
 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	# kk, = plt.plot(k_range, k, color='k', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -1345,12 +1337,12 @@ def truncated_plot_from_pkl():
 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -1403,12 +1395,12 @@ def gaussian_zoom_plot_from_pkl():
 	ii, = plt.plot(i_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
 	jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -1461,12 +1453,12 @@ def gaussian_plot_from_pkl():
 	ii, = plt.plot(i_range, i, color='y', marker="^", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(e_range, np.ones_like(e_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -1519,12 +1511,12 @@ def MM_zoom_plot_from_pkl():
 	# ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -1577,12 +1569,12 @@ def MM_plot_from_pkl():
 	ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
 	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	mean_line = plt.plot(e_range, np.ones_like(e_range) * 0.98, label='Benchmark', linestyle='--')
-
+	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
 	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
 	#                         dd: HandlerLine2D(numpoints=1)
-
+	
 	# }, loc='middle right')
 	plt.legend(loc='best')
 	plt.xlabel("Epoch")
@@ -1601,7 +1593,7 @@ if __name__ == '__main__':
 	# truncated_plot_from_pkl_confidence()
 	# MM_plot_from_pkl_confidence()
 	# MM_zoom_plot_from_pkl_confidence()
-
+	
 	# fashion_gaussian_plot_from_pkl()
 	# fashion_gaussian_zoom_plot_from_pkl()
 	# fashion_MM_plot_from_pkl()
