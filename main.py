@@ -122,7 +122,7 @@ def main():
 				order_str = '_'.join(dataset_creation_order)
 				print("CHEKPOINT DIR: {}".format(sampler))
 				gan = model(sess, epoch=args.epoch, batch_size=args.batch_size, z_dim=args.z_dim, dataset_name=args.dataset,
-				            checkpoint_dir=args.checkpoint_dir + '/' + sampler, result_dir=args.result_dir + '/' + sampler,
+				            checkpoint_dir=args.checkpoint_dir + '/' + sampler +'/' + SEED, result_dir=args.result_dir + '/' + sampler+'/' + SEED,
 				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method, is_wgan_gp=is_wgan_gp,
 				            dataset_creation_order=dataset_creation_order)
 		if gan is None:
