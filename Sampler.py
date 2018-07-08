@@ -18,8 +18,6 @@ class MultivariateGaussianSampler(Sampler):
 	def get_sample(self, batch_size, embedding_dim, n_distributions):
 		current_dist_states_indices = np.random.randint(0, n_distributions - 1, batch_size)
 		mean_vec = np.linspace(-self.mu,self.mu,n_distributions)
-		print("MEAN VEC:")
-		print(mean_vec)
 		cov_mat = np.eye(n_distributions) * self.sigma  # np.random.randint(1, 5, n_distributions)  # this is diagonal beacuse we want iid
 
 		result_vec = np.zeros((batch_size, embedding_dim))
