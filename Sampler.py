@@ -1,6 +1,10 @@
 import numpy as np
 import matplotlib
-np.random.seed(543)
+
+from MultiModalInfoGAN import SEED
+
+
+np.random.seed(SEED)
 
 import matplotlib.pyplot as plt
 
