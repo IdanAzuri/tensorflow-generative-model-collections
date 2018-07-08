@@ -11,7 +11,7 @@ import warnings
 from sklearn.utils import shuffle
 
 
-SEED = 27
+SEED = 12
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 from matplotlib.legend_handler import HandlerLine2D
@@ -49,7 +49,7 @@ class MultiModalInfoGAN(object):
 	model_name = "MultiModalInfoGAN"  # name for checkpoint
 	
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2, is_wgan_gp=False,
-	             dataset_creation_order=['czcc', 'czrc', 'rzcc', 'rzrc'], SUPERVISED=True, dir_results="classifier_results_seed_27"):
+	             dataset_creation_order=['czcc', 'czrc', 'rzcc', 'rzrc'], SUPERVISED=True, dir_results="classifier_results_seed_{}".format(SEED)):
 		self.test_size = 5000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []

@@ -31,6 +31,8 @@ import warnings
 
 import matplotlib
 
+from MultiModalInfoGAN import SEED
+
 
 LEARNING_RATE = 1e-4
 
@@ -105,7 +107,7 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-	def __init__(self, classifier_name, original_dataset_name,load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results_seed_27'):
+	def __init__(self, classifier_name, original_dataset_name,load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results_seed_{}'.format(SEED)):
 		self.num_epochs = 100
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
@@ -319,7 +321,7 @@ class CNNClassifier():
 		self.b_fc2 = tf.Variable(tf.constant(model[7]))
 		print("model has been loaded from {}".format(self.save_to))
 	
-	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P", dir="classifier_results_seed_27/"):
+	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P", dir="classifier_results_seed_{}/".format(SEED)):
 		plt.Figure()
 		plt.title('{} {} score'.format(self.fname, name_of_measure), fontsize=18)
 		x_range = np.linspace(1, len(array) - 1, len(array))
@@ -352,7 +354,7 @@ def parse_args():
 	return parser.parse_args()
 
 
-def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64, dir_results="classifier_results_seed_27"):
+def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64, dir_results="classifier_results_seed_{}".format(SEED)):
 	# mapping only once need to edit the condition
 	if not os.path.exists(dir_results):
 		os.makedirs(dir_results)
