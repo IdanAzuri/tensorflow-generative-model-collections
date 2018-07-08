@@ -56,19 +56,20 @@ def fashion_MM_plot_from_pkl():
 	plt.Figure(figsize=(15, 15))
 	
 	plt.title('MMinfoGAN Fashion-Mnist Different Priros Accuracy', fontsize=12)
-	e = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[1:50]
-	f = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[1:50]
-	g = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0_sigma_0.15_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[1:50]
-	# h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_UniformSample_mu_0_sigma_0.15_czrc_czcc_rzrc_rzrc_accuracy.pkl", "rb"))[2:]
+	e = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[start:50]
+	f = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[start:50]
+	g = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0_sigma_0.15_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[start:50]
+	h = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0_sigma_0.15_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[start:50]
 	e_range = np.arange(len(e))
 	f_range = np.arange(len(f))
 	g_range = np.arange(len(g))
-	# h_range = np.arange(len(h))
+	h_range = np.arange(len(h))
 	# i_range = np.arange(len(i))
 	# j_range = np.arange(len(j))
-	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\mathbb{N}(\sigma=0.2,\mu=0$)", linewidth=0.5)
-	ff, = plt.plot(f_range, f, color='b', marker='.', label="$\mathbb{N}(\Sigma=0.2,\mu=0.1$)", linewidth=0.5)
+	ee, = plt.plot(e_range, e, color='k', marker="P", label="Multi-modal uniform", linewidth=0.5)
+	ff, = plt.plot(f_range, f, color='b', marker='.', label="$\mathbb{N}(\sigma=0.2,\mu=0$)", linewidth=0.5)
 	gg, = plt.plot(g_range, g, color='r', marker='d', label="Uniform", linewidth=0.5)
+	hh, = plt.plot(h_range, h, color='c', marker=".", label="$\mathbb{N}(\Sigma=0.2,\mu=0.1$)", linewidth=0.5)
 	# hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
 	# ii, = plt.plot(i_range, i, color='y', marker="^", label="$\sigma=0.15,\mu=0$", linewidth=0.5)

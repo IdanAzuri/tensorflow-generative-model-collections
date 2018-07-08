@@ -11,6 +11,8 @@ import warnings
 from sklearn.utils import shuffle
 
 
+SEED = 11
+
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 from matplotlib.legend_handler import HandlerLine2D
 
@@ -19,6 +21,9 @@ import utils
 from classifier import CNNClassifier, preprocess_data, one_hot_encoder
 from ops import *
 from utils import *
+
+
+np.random.seed(SEED)
 
 
 def gradient_penalty(real, fake, f):
@@ -57,7 +62,7 @@ class MultiModalInfoGAN(object):
 		self.epoch = epoch
 		self.batch_size = batch_size
 		self.sampler = sampler
-		self.pretrained_classifier = CNNClassifier(self.dataset_name,original_dataset_name=self.dataset_name)
+		self.pretrained_classifier = CNNClassifier(self.dataset_name, original_dataset_name=self.dataset_name)
 		self.dataset_creation_order = dataset_creation_order
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
 		self.dir_results = dir_results
@@ -102,33 +107,33 @@ class MultiModalInfoGAN(object):
 		# 	# self.data_X, self.data_y, self.test_x, self.test_labels = get_train_test_data()
 		# 	# get number of batches for a single epoch
 		# 	self.num_batches = len(self.data_X) // self.batch_size
-		elif dataset_name == 'celebA':
-			from data_load import preprocess_fn
-			print("in celeba")
-			img_paths = glob.glob('/Users/idan.a/data/celeba/*.jpg')
-			self.data_pool = utils.DiskImageData(img_paths, batch_size, shape=[218, 178, 3], preprocess_fn=preprocess_fn)
-			self.num_batches = len(self.data_pool) // (batch_size)
-			
-			# real_ipt = data_pool.batch()
-			# parameters
-			self.input_height = 64
-			self.input_width = 64
-			self.output_height = 32
-			self.output_width = 32
-			
-			self.z_dim = 128  # dimension of noise-vector
-			self.c_dim = 3
-			self.len_discrete_code = 100  # categorical distribution (i.e. label)
-			self.len_continuous_code = 0  # gaussian distribution (e.g. rotation, thickness)
-			self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
-			sess = utils.session()
-			
-			# iteration counter
-			it_cnt, update_cnt = utils.counter()
-			
-			sess.run(tf.global_variables_initializer())
-			sess.run(it_cnt)
-			sess.run(update_cnt)  # get number of batches for a single epoch
+		# elif dataset_name == 'celebA':
+		# 	from data_load import preprocess_fn
+		# 	print("in celeba")
+		# 	img_paths = glob.glob('/Users/idan.a/data/celeba/*.jpg')
+		# 	self.data_pool = utils.DiskImageData(img_paths, batch_size, shape=[218, 178, 3], preprocess_fn=preprocess_fn)
+		# 	self.num_batches = len(self.data_pool) // (batch_size)
+		#
+		# 	# real_ipt = data_pool.batch()
+		# 	# parameters
+		# 	self.input_height = 64
+		# 	self.input_width = 64
+		# 	self.output_height = 32
+		# 	self.output_width = 32
+		#
+		# 	self.z_dim = 128  # dimension of noise-vector
+		# 	self.c_dim = 3
+		# 	self.len_discrete_code = 100  # categorical distribution (i.e. label)
+		# 	self.len_continuous_code = 0  # gaussian distribution (e.g. rotation, thickness)
+		# 	self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
+		# 	sess = utils.session()
+		#
+		# 	# iteration counter
+		# 	it_cnt, update_cnt = utils.counter()
+		#
+		# 	sess.run(tf.global_variables_initializer())
+		# 	sess.run(it_cnt)
+		# 	sess.run(update_cnt)  # get number of batches for a single epoch
 		self.model_dir = self.get_model_dir()
 	
 	def classifier(self, x, is_training=True, reuse=False):
@@ -365,7 +370,6 @@ class MultiModalInfoGAN(object):
 		""" specified condition, random noise """
 		n_styles = 10  # must be less than or equal to self.batch_size
 		
-		np.random.seed()
 		si = np.random.choice(self.batch_size, n_styles)
 		
 		for l in range(self.len_discrete_code):
@@ -525,19 +529,19 @@ class MultiModalInfoGAN(object):
 					print("adding rzrc")
 		
 		####### PREPROCESS ####
-		if len(generated_dataset_clean_z_clean_c)>0:
+		if len(generated_dataset_clean_z_clean_c) > 0:
 			clean_dataset = generated_dataset_clean_z_clean_c
-			clean_labels=generated_labels_clean_z_clean_c
+			clean_labels = generated_labels_clean_z_clean_c
 		else:
-			clean_dataset=generated_dataset
-			clean_labels=generated_labels
+			clean_dataset = generated_dataset
+			clean_labels = generated_labels
 		data_X_clean_part = np.asarray([y for x in clean_dataset for y in x]).reshape(-1, 28, 28)
 		data_y_clean_part = np.asarray(clean_labels, dtype=np.int32).flatten()
 		
 		data_y_all = np.asarray(generated_labels, dtype=np.int32).flatten()
 		import copy
 		data_y_updateable = copy.deepcopy(data_y_all)
-		pretraind = CNNClassifier(self.dataset_name,original_dataset_name=self.dataset_name)
+		pretraind = CNNClassifier(self.dataset_name, original_dataset_name=self.dataset_name)
 		for current_label in range(10):
 			small_mask = data_y_clean_part == current_label
 			mask = data_y_all == current_label
@@ -562,7 +566,7 @@ class MultiModalInfoGAN(object):
 		
 		fname_trainingset_edited = "edited_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		fname_labeles_edited = "edited_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-		generated_dataset=np.asarray(generated_dataset).reshape(-1, 784)
+		generated_dataset = np.asarray(generated_dataset).reshape(-1, 784)
 		generated_dataset, data_y_all = shuffle(generated_dataset, data_y_all, random_state=0)
 		pickle.dump(generated_dataset, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
 		pickle.dump(data_y_all, open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb'))
