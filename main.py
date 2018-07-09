@@ -108,13 +108,13 @@ def main():
 		sampler_method = MultiModalUniformSample()
 	elif sampler == 'multi-gaussian':
 		sampler = "{}/mu_{}_sigma{}_n_distributions{}".format(sampler, mu, sigma,n_distributions)
-		sampler_method = MultivariateGaussianSampler(mu=mu, sigma=sigma)
+		sampler_method = MultivariateGaussianSampler(mu=mu, sigma=sigma,n_distributions=n_distributions)
 	elif sampler == 'gaussian':
 		sampler = "{}/mu_{}_sigma{}_n_distributions".format(sampler, mu, sigma,n_distributions)
-		sampler_method = GaussianSample(mu=mu, sigma=sigma)
+		sampler_method = GaussianSample(mu=mu, sigma=sigma,n_distributions=n_distributions)
 	elif sampler == 'truncated':
 		sampler = "{}/mu_{}_sigma{}".format(sampler, mu, sigma)
-		sampler_method = TruncatedGaussianSample(mu=mu, sigma=sigma)
+		sampler_method = TruncatedGaussianSample(mu=mu, sigma=sigma,n_distributions=n_distributions)
 	is_wgan_gp = args.wgan
 	with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
 		
