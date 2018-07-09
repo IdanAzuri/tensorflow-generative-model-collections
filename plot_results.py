@@ -60,19 +60,19 @@ def fashion_MM_plot_from_pkl():
 	f = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[start:50]
 	g = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0_sigma_0.15_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[start:50]
 	h = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0_sigma_0.15_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[start:50]
+	i = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[start:50]
 	e_range = np.arange(len(e))
 	f_range = np.arange(len(f))
 	g_range = np.arange(len(g))
 	h_range = np.arange(len(h))
-	# i_range = np.arange(len(i))
+	i_range = np.arange(len(i))
 	# j_range = np.arange(len(j))
-	ee, = plt.plot(e_range, e, color='k', marker="P", label="Multi-modal uniform", linewidth=0.5)
-	ff, = plt.plot(f_range, f, color='b', marker='.', label="$\mathbb{N}(\sigma=0.2,\mu=0$)", linewidth=0.5)
+	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\mathbb{N}(\sigma=0.2,\mu=0.1$)", linewidth=0.5)
+	# ff, = plt.plot(f_range, f, color='b', marker='.', label="$\mathbb{N}(\Sigma=0.2,\mu=0$)", linewidth=0.5)
 	gg, = plt.plot(g_range, g, color='r', marker='d', label="Uniform", linewidth=0.5)
-	hh, = plt.plot(h_range, h, color='c', marker=".", label="$\mathbb{N}(\Sigma=0.2,\mu=0.1$)", linewidth=0.5)
-	# hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
+	hh, = plt.plot(h_range, h, color='c', marker=".", label="Multi-modal uniform", linewidth=0.5)
 	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
-	# ii, = plt.plot(i_range, i, color='y', marker="^", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
+	ii, = plt.plot(i_range, i, color='y', marker="^", label="$\mathbb{N}(\Sigma=0.17,\mu=0$)", linewidth=0.5)
 	# mean_line = plt.plot(e_range, np.ones_like(e_range) * 0.92, label='Benchmark', linestyle='--')
 	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
