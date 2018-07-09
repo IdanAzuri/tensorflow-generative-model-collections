@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --mem=60g
-#SBATCH -c 30
+#SBATCH --mem=6g
+#SBATCH -c 8
 #SBATCH --gres=gpu:1
 #SBATCH --time=0-20
 #SBATCH --mail-user=idan.azuri@mail.huji.ac.il
