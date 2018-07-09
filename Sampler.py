@@ -10,9 +10,10 @@ import matplotlib.pyplot as plt
 
 
 class Sampler(object):
-	def __init__(self,mu=0.,sigma=0.15):
+	def __init__(self,mu=0.,sigma=0.15,n_distributions=10):
 		self.sigma = sigma
 		self.mu = mu
+		self.n_distributions=n_distributions
 
 	def get_sample(self, dimension, batch_size, n_distributions):
 		pass

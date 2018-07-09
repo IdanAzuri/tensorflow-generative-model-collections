@@ -14,7 +14,7 @@ cd $dir
 source /cs/labs/daphna/idan.azuri/venv_64/bin/activate
 
 
-
+python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc --original fashion-mnist
 
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSampler_mu_0.0_sigma_0.13_czcc_czrc_rzcc_rzrc --original fashion-mnist
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSampler_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc --original fashion-mnist
