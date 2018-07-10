@@ -470,7 +470,7 @@ class MultiModalInfoGAN(object):
 				
 				generated_dataset += generated_dataset_clean_z_clean_c
 				generated_labels += generated_labels_clean_z_clean_c
-				print("adding czcc")
+				# print("adding czcc")
 				if i == 'czrc':
 					for _ in range(datasetsize // len(self.dataset_creation_order)):
 						# z fixed -czrc
@@ -489,7 +489,7 @@ class MultiModalInfoGAN(object):
 				
 				generated_dataset += generated_dataset_clean_z_random_c
 				generated_labels += generated_labels_clean_z_random_c
-				print("adding czrc")
+				# print("adding czrc")
 				if i == 'rzcc':
 					for _ in range(datasetsize // len(self.dataset_creation_order)):
 						# z random c-clean - rzcc
@@ -505,7 +505,7 @@ class MultiModalInfoGAN(object):
 							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzcc' + '_label_%d.png' % label)
 					generated_dataset += generated_dataset_random_z_clean_c
 					generated_labels += generated_labels_random_z_clean_c
-					print("adding rzcc")
+					# print("adding rzcc")
 				if i == 'rzrc':
 					for _ in range(datasetsize // len(self.dataset_creation_order)):
 						# rzrc
@@ -526,7 +526,7 @@ class MultiModalInfoGAN(object):
 					
 					generated_dataset += generated_dataset_random_z_random_c
 					generated_labels += generated_labels_random_z_random_c
-					print("adding rzrc")
+					# print("adding rzrc")
 		
 		####### PREPROCESS ####
 		if len(generated_dataset_clean_z_clean_c) > 0:
@@ -551,7 +551,7 @@ class MultiModalInfoGAN(object):
 			print(dummy_labels.shape)
 			_, confidence, _, arg_max = pretraind.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 			if is_confidence:
-				print("confidence:"+confidence)
+				print("confidence:{}".format(confidence))
 				high_confidence_threshold_indices = confidence >= CONFIDENCE_THRESHOLD
 				if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
 					arg_max= arg_max[high_confidence_threshold_indices]
