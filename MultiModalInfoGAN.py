@@ -551,6 +551,7 @@ class MultiModalInfoGAN(object):
 			print(dummy_labels.shape)
 			_, confidence, _, arg_max = pretraind.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 			if is_confidence:
+				print("confidence:"+confidence)
 				high_confidence_threshold_indices = confidence >= CONFIDENCE_THRESHOLD
 				if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
 					arg_max= arg_max[high_confidence_threshold_indices]
