@@ -18,7 +18,7 @@ from matplotlib.legend_handler import HandlerLine2D
 
 import utils
 # from cifar10 import *
-from classifier import CNNClassifier, preprocess_data, one_hot_encoder
+from classifier import CNNClassifier, preprocess_data, one_hot_encoder, CONFIDENCE_THRESHOLD
 from ops import *
 from utils import *
 
@@ -424,7 +424,7 @@ class MultiModalInfoGAN(object):
 			save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 			            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2_%d.png' % l)
 	
-	def create_dataset_from_GAN(self):
+	def create_dataset_from_GAN(self, is_confidence=True):
 		
 		generated_dataset = []
 		generated_labels = []
@@ -550,6 +550,10 @@ class MultiModalInfoGAN(object):
 			dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
 			print(dummy_labels.shape)
 			_, confidence, _, arg_max = pretraind.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+			if is_confidence:
+				high_confidence_threshold_indices = confidence >= CONFIDENCE_THRESHOLD
+				if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
+					arg_max= arg_max[arg_max]
 			print(str(len(arg_max)) + " were taken")
 			new_label = np.bincount(arg_max).argmax()
 			print("Assinging:{}".format(new_label))
