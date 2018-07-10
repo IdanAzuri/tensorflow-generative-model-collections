@@ -553,7 +553,7 @@ class MultiModalInfoGAN(object):
 			if is_confidence:
 				high_confidence_threshold_indices = confidence >= CONFIDENCE_THRESHOLD
 				if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
-					arg_max= arg_max[arg_max]
+					arg_max= arg_max[high_confidence_threshold_indices]
 			print(str(len(arg_max)) + " were taken")
 			new_label = np.bincount(arg_max).argmax()
 			print("Assinging:{}".format(new_label))
