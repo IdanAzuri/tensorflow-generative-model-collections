@@ -57,7 +57,7 @@ from utils import load_mnist
 FLAGS = None
 
 np.random.seed(517)
-CONFIDENCE_THRESHOLD = 0.95
+CONFIDENCE_THRESHOLD = 0.98
 
 
 # losses
