@@ -529,12 +529,12 @@ class MultiModalInfoGAN(object):
 					# print("adding rzrc")
 		
 		####### PREPROCESS ####
-		if len(generated_dataset_clean_z_clean_c) > 0:
-			clean_dataset = generated_dataset_clean_z_clean_c
-			clean_labels = generated_labels_clean_z_clean_c
-		else:
-			clean_dataset = generated_dataset
-			clean_labels = generated_labels
+		# if len(generated_dataset_clean_z_clean_c) > 0:
+		# 	clean_dataset = generated_dataset_clean_z_clean_c
+		# 	clean_labels = generated_labels_clean_z_clean_c
+		# else:
+		clean_dataset = generated_dataset
+		clean_labels = generated_labels
 		data_X_clean_part = np.asarray([y for x in clean_dataset for y in x]).reshape(-1, 28, 28)
 		data_y_clean_part = np.asarray(clean_labels, dtype=np.int32).flatten()
 		
@@ -545,8 +545,9 @@ class MultiModalInfoGAN(object):
 		for current_label in range(10):
 			small_mask = data_y_clean_part == current_label
 			mask = data_y_all == current_label
-			data_X_for_current_label = data_X_clean_part[np.where(small_mask == True)]
-			limit = min(len(data_y_updateable[mask]) // 10, 10000)
+			data_X_for_current_label = np.asarray(data_X_clean_part[np.where(small_mask == True)]).reshape(-1,784)
+			
+			limit = min(len(data_X_for_current_label) // 10, 10000)
 			dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
 			print(dummy_labels.shape)
 			_, confidence, _, arg_max = pretraind.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
