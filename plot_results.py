@@ -10,8 +10,10 @@ import pickle
 from matplotlib.legend_handler import HandlerLine2D
 
 
-dir = 'classifier_results_09_07/'
-start=0
+dir = 'classifier_results_seed_12/'
+dir2 = 'classifier_results_seed_88/'
+start = 0
+
 
 def plot_from_pkl():
 	plt.Figure(figsize=(15, 15))
@@ -57,10 +59,12 @@ def fashion_MM_plot_from_pkl():
 	
 	plt.title('MMinfoGAN Fashion-Mnist Different Priros Accuracy', fontsize=12)
 	e = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[start:50]
-	f = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[start:50]
+	f = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[
+	    start:50]
 	g = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0_sigma_0.15_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[start:50]
 	h = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0_sigma_0.15_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[start:50]
-	i = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[start:50]
+	i = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[
+	    start:50]
 	e_range = np.arange(len(e))
 	f_range = np.arange(len(f))
 	g_range = np.arange(len(g))
@@ -438,47 +442,56 @@ def MM_plot_from_pkl():
 	plt.close()
 
 
-def MM_mu_1_zoom_plot_from_pkl():
+def MM_mu_05_07_08_zoom_plot_from_pkl():
 	import numpy as np
 	import matplotlib.pyplot as plt
 	import pickle
 	plt.Figure(figsize=(15, 15))
 	
-	plt.title('Zoom_MMinfoGAN_mnist_MultivariateGaussianSampler $\mu=0.1$', fontsize=12)
-	# a= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.1_sigma_10.0_accuracy.pkl", "rb"))[2:]
-	# b= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.1_sigma_5.0_accuracy.pkl", "rb"))[2:]
-	# c= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.1_sigma_3.0_accuracy.pkl", "rb"))[2:]
-	# d= pickle.load(open(dir+"classifier_MMinfoGAN_mnist_MultivariateMultivariateGaussianSampler_mu_0.1_sigma_2.0_accuracy.pkl", "rb"))[2:]
-	e = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.5_accuracy.pkl", "rb"))[2:]
-	# f = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.4_accuracy.pkl", "rb"))[2:]
-	# g = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.3_accuracy.pkl", "rb"))[2:]
-	h = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_accuracy.pkl", "rb"))[2:]
-	# i = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_accuracy.pkl", "rb"))[2:]
-	j = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_accuracy.pkl", "rb"))[2:]
-	k = pickle.load(open(dir + "classifier_MMinfoGAN_mnist_MultivariateGaussianSampler_mu_0.1_sigma_1.0_accuracy.pkl", "rb"))[2:]
-	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
-	# a_range = np.arange(2,len(a)+2)
-	# b_range = np.arange(2,len(b)+2)
-	# c_range = np.arange(2,len(c)+2)
-	# d_range = np.arange(2,len(d)+2)
-	e_range = np.arange(2, len(e) + 2)
-	# f_range = np.arange(2, len(f) + 2)
-	# g_range = np.arange(2, len(g) + 2)
-	h_range = np.arange(2, len(h) + 2)
+	title = '1_MMinfoGAN_Fsion-Mnist_multi-modal Gaussian Sampler 10 modals'
+	plt.title(title, fontsize=10)
+	START = 2
+	a = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	b = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	c = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	d = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	e = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	f = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	g = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	a_mean = np.mean([a, b], axis=0)
+	a_range = np.arange(START, len(a) + START)
+	b_range = np.arange(START, len(b) + START)
+	c_range = np.arange(START, len(c) + START)
+	d_range = np.arange(START, len(d) + START)
+	e_range = np.arange(START, len(e) + START)
+	f_range = np.arange(START, len(f) + START)
+	g_range = np.arange(START, len(g) + START)
+	# h_range = np.arange(2, len(h) + 2)
 	# i_range = np.arange(len(i))
-	j_range = np.arange(len(j))
-	k_range = np.arange(len(k))
-	# aa, = plt.plot(a_range, a, color='b', marker="P", label="$\sigma=10,\mu=0$", linewidth=0.5)
-	# bb, = plt.plot(b_range, b, color='g', marker='d', label="$\sigma=5,\mu=0$", linewidth=0.5)
-	# # cc, = plt.plot(c_range, c, color='r', marker='^', label="$\sigma=3,\mu=0$", linewidth=0.5)
-	# dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=2,\mu=0$", linewidth=0.5)
-	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\sigma=0.5,\mu=0$", linewidth=0.5)
-	# ff, = plt.plot(f_range, f, color='b', marker='.', label="$\sigma=0.4,\mu=0$", linewidth=0.5)
-	# gg, = plt.plot(g_range, g, color='r', marker='d', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
-	hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
-	# ii, = plt.plot(j_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
-	jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
-	kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
+	# j_range = np.arange(len(j))
+	# k_range = np.arange(len(k))
+	stderr = np.std([a, b], axis=0) / np.sqrt(len(a))
+	print(stderr)
+	plt.errorbar(a_range, a_mean, yerr=stderr, color='red', ls='--', marker='o', capsize=5, capthick=1, ecolor='black')
+	
+	# aa, = plt.plot(a_range, a, color='b', marker="P", label="$\Sigma=0.17,\mu=0.5$", linewidth=0.5)
+	bb, = plt.plot(b_range, b, color='g', marker='d', label="$\Sigma=0.15,\mu=0.7$", linewidth=0.5)
+	cc, = plt.plot(c_range, c, color='c', marker='^', label="$\Sigma=0.25,\mu=0.7$", linewidth=0.5)
+	dd, = plt.plot(d_range, d, color='y', marker=".", label="$\Sigma=0.3,\mu=0.7$", linewidth=0.5)
+	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\Sigma=0.15,\mu=0.8$", linewidth=0.5)
+	# ff, = plt.plot(f_range, f, color='b', marker='+', label="$\Sigma=0.2,\mu=0.8$", linewidth=0.5)
+	gg, = plt.plot(g_range, g, color='r', marker='d', label="$\Sigma=0.3,\mu=08$", linewidth=0.5)
+	# hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.8,\mu=0.8$", linewidth=0.5)
+	# ii, = plt.plot(i_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
+	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
+	# kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
 	
 	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
 	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
@@ -492,7 +505,134 @@ def MM_mu_1_zoom_plot_from_pkl():
 	# plt.axis("auto")
 	plt.grid(True)
 	plt.show()
-	plt.savefig("Zoom_MMinfoGAN_mnist_MultivariateGaussianSampler $\mu=0.1$.png")
+	plt.savefig(title + ".png")
+	plt.close()
+
+
+def MM_mu_01_zoom_plot_from_pkl():
+	import matplotlib.pyplot as plt
+	import pickle
+	plt.Figure(figsize=(15, 15))
+	
+	title = '2_MMinfoGAN_Fsion-Mnist_multi-modal Gaussian Sampler 10 modals'
+	plt.title(title, fontsize=10)
+	a = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	b = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	c = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	d = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	e = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	f = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	# g = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	# h = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	# i = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	# j = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	# k = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	# plt.plot(a, np.arange(len(a)), 'r--', b, np.arange(len(b)), 'b--', c, np.arange(len(c)), 'g^', d, np.arange(len(d)), "y--")
+	a_range = np.arange(2, len(a) + 2)
+	b_range = np.arange(2, len(b) + 2)
+	c_range = np.arange(2, len(c) + 2)
+	d_range = np.arange(2, len(d) + 2)
+	e_range = np.arange(2, len(e) + 2)
+	f_range = np.arange(2, len(f) + 2)
+	# g_range = np.arange(2, len(g) + 2)
+	# h_range = np.arange(2, len(h) + 2)
+	# i_range = np.arange(len(i))
+	# j_range = np.arange(len(j))
+	# k_range = np.arange(len(k))
+	aa, = plt.plot(a_range, a, color='b', marker="P", label="$\Sigma=0.1,\mu=0.1$", linewidth=0.5)
+	bb, = plt.plot(b_range, b, color='g', marker='d', label="$\Sigma=0.13,\mu=0.1$", linewidth=0.5)
+	cc, = plt.plot(c_range, c, color='r', marker='^', label="$\Sigma=0.15,\mu=0.1$", linewidth=0.5)
+	dd, = plt.plot(d_range, d, color='y', marker="+", label="$\Sigma=0.17,\mu=0.1$", linewidth=0.5)
+	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\Sigma=0.2,\mu=0.1$", linewidth=0.5)
+	ff, = plt.plot(f_range, f, color='c', marker='.', label="$\Sigma=0.25,\mu=0.1$", linewidth=0.5)
+	# gg, = plt.plot(g_range, g, color='r', marker='d', label="$\sigma=0.3,\mu=0$", linewidth=0.5)
+	# hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=0$", linewidth=0.5)
+	# ii, = plt.plot(i_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
+	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
+	# kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
+	
+	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
+	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
+	#                         dd: HandlerLine2D(numpoints=1)
+	
+	# }, loc='middle right')
+	plt.legend(loc='best')
+	plt.xlabel("Epoch")
+	plt.ylabel("Accuracy Score")
+	# plt.axis("auto")
+	plt.grid(True)
+	plt.show()
+	plt.savefig(title + ".png")
+	plt.close()
+
+
+def MM_mu_1_zoom_plot_from_pkl():
+	import matplotlib.pyplot as plt
+	import pickle
+	plt.Figure(figsize=(15, 15))
+	
+	title = '3_MMinfoGAN_Fsion-Mnist_multi-modal Gaussian Sampler 10 modals'
+	plt.title(title, fontsize=10)
+	a = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	b = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	# c = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	# d = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	e = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	f = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	g = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	# h = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	# i = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	# j = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	# k = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[2:50]
+	# plt.plot(a, np.arange(len(a)), 'r--', b, np.arange(len(b)), 'b--', c, np.arange(len(c)), 'g^', d, np.arange(len(d)), "y--")
+	a_range = np.arange(2, len(a) + 2)
+	b_range = np.arange(2, len(b) + 2)
+	# c_range = np.arange(2, len(c) + 2)
+	# d_range = np.arange(2, len(d) + 2)
+	e_range = np.arange(2, len(e) + 2)
+	f_range = np.arange(2, len(f) + 2)
+	g_range = np.arange(2, len(g) + 2)
+	# h_range = np.arange(2, len(h) + 2)
+	# i_range = np.arange(len(i))
+	# j_range = np.arange(len(j))
+	# k_range = np.arange(len(k))
+	aa, = plt.plot(a_range, a, color='b', marker="P", label="$\Sigma=0.15,\mu=1.0$", linewidth=0.5)
+	bb, = plt.plot(b_range, b, color='g', marker='d', label="$\Sigma=0.2,\mu=1.0$", linewidth=0.5)
+	# cc, = plt.plot(c_range, c, color='r', marker='^', label="$\sigma=0.22,\mu=1.0$", linewidth=0.5)
+	# dd, = plt.plot(d_range, d, color='y', marker=".", label="$\sigma=0.25,\mu=1.0$", linewidth=0.5)
+	ee, = plt.plot(e_range, e, color='k', marker="P", label="$\Sigma=0.3,\mu=1.0$", linewidth=0.5)
+	ff, = plt.plot(f_range, f, color='y', marker='^', label="$\Sigma=0.4,\mu=1.0$", linewidth=0.5)
+	gg, = plt.plot(g_range, g, color='r', marker='d', label="$\Sigma=0.5,\mu=1.0$", linewidth=0.5)
+	# hh, = plt.plot(h_range, h, color='c', marker=".", label="$\sigma=0.2,\mu=1.0$", linewidth=0.5)
+	# ii, = plt.plot(i_range, i, color='y', marker="^", label="$\sigma=0.1,\mu=0$", linewidth=0.5)
+	# jj, = plt.plot(j_range, j, color='m', marker=".", label="$\sigma=0.15,\mu=0$", linewidth=0.5)
+	# kk, = plt.plot(k_range, k, color='g', marker="*", label="$\sigma=1.0,\mu=0$", linewidth=0.5)
+	
+	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
+	# plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
+	#            handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1),
+	#                         dd: HandlerLine2D(numpoints=1)
+	
+	# }, loc='middle right')
+	plt.legend(loc='best')
+	plt.xlabel("Epoch")
+	plt.ylabel("Accuracy Score")
+	# plt.axis("auto")
+	plt.grid(True)
+	plt.show()
+	plt.savefig(title + ".png")
 	plt.close()
 
 
@@ -565,7 +705,7 @@ def truncated_fashion__zoom_plot_from_pkl():
 	a = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_TruncatedGaussianSample_mu_0.0_sigma_10.0_accuracy.pkl", "rb"))[2:]
 	b = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_TruncatedGaussianSample_mu_0.0_sigma_5.0_accuracy.pkl", "rb"))[2:]
 	c = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_TruncatedGaussianSample_mu_0.0_sigma_3.0_accuracy.pkl", "rb"))[2:]
-	d = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_TruncatedGaussianSample_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))[2:]
+	d = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_TruncatedGaussianSample_mu_0.0_sigma_2.0_accuracy.pkl", "rb"))[2:50]
 	# e = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_TruncatedGaussianSample_mu_0.0_sigma_0.5_accuracy.pkl", "rb"))[2:]
 	# f = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_TruncatedGaussianSample_mu_0.0_sigma_0.4_accuracy.pkl", "rb"))[2:]
 	# g = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_TruncatedGaussianSample_mu_0.0_sigma_0.3_accuracy.pkl", "rb"))[2:]
@@ -1236,29 +1376,8 @@ def MM_plot_from_pkl_confidence():
 
 
 if __name__ == '__main__':
-	# gaussian_plot_from_pkl_confidence()
-	# gaussian_zoom_plot_from_pkl_confidence()
-	# plot_from_pkl_confidence()
-	# plot_from_pkl_confidence()
-	# truncated__zoom_plot_from_pkl_confidence()
-	# truncated_plot_from_pkl_confidence()
-	# MM_plot_from_pkl_confidence()
-	# MM_zoom_plot_from_pkl_confidence()
-	
-	# fashion_gaussian_plot_from_pkl()
-	# fashion_gaussian_zoom_plot_from_pkl()
 	# fashion_MM_plot_from_pkl()
-	# fashion_MM_zoom_plot_from_pkl()
-	# fashion_truncated_plot_from_pkl()
-	# truncated_fashion__zoom_plot_from_pkl()
-	#
-	# truncated__zoom_plot_from_pkl()
-	# truncated_plot_from_pkl()
-	# gaussian_zoom_plot_from_pkl()
-	# gaussian_plot_from_pkl()
-	# # MM_zoom_plot_from_pkl()
-	# # MM_plot_from_pkl()
-	# MM_mu_1plot_from_pkl()
-	# MM_mu_1_zoom_plot_from_pkl()
-	fashion_MM_plot_from_pkl()
-	plot_from_pkl()
+	# plot_from_pkl()
+	MM_mu_1_zoom_plot_from_pkl()
+	MM_mu_05_07_08_zoom_plot_from_pkl()
+	MM_mu_01_zoom_plot_from_pkl()
