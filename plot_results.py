@@ -12,6 +12,7 @@ from matplotlib.legend_handler import HandlerLine2D
 
 dir = 'classifier_results_seed_12/'
 dir2 = 'classifier_results_seed_88/'
+dir3 = 'classifier_results_seed_125/'
 start = 0
 
 
@@ -465,7 +466,37 @@ def MM_mu_05_07_08_zoom_plot_from_pkl():
 		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
 	g = pickle.load(
 		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
-	a_mean = np.mean([a, b], axis=0)
+	#DIR 2
+	a2 = pickle.load(
+			open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	b2 = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	c2 = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	d2 = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	e2 = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	f2 = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	g2 = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+
+	#DIR 3
+	a3 = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	b3 = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	c3 = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	d3 = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	e3 = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	f3 = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
+	g3 = pickle.load(
+		open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
 	a_range = np.arange(START, len(a) + START)
 	b_range = np.arange(START, len(b) + START)
 	c_range = np.arange(START, len(c) + START)
@@ -477,9 +508,21 @@ def MM_mu_05_07_08_zoom_plot_from_pkl():
 	# i_range = np.arange(len(i))
 	# j_range = np.arange(len(j))
 	# k_range = np.arange(len(k))
-	stderr = np.std([a, b], axis=0) / np.sqrt(len(a))
-	print(stderr)
-	plt.errorbar(a_range, a_mean, yerr=stderr, color='red', ls='--', marker='o', capsize=5, capthick=1, ecolor='black')
+	
+	#CALC MEAN AND STDERR
+	a_mean = np.mean([a, a2, a3], axis=0)
+	a_stderr = np.std([a, a2, a3], axis=0) / np.sqrt(len(a))
+	b_mean = np.mean([a, a2, a3], axis=0)
+	b_stderr = np.std([a, a2, a3], axis=0) / np.sqrt(len(a))
+	c_mean = np.mean([a, a2, a3], axis=0)
+	c_stderr = np.std([a, a2, a3], axis=0) / np.sqrt(len(a))
+	d_mean = np.mean([a, a2, a3], axis=0)
+	d_stderr = np.std([a, a2, a3], axis=0) / np.sqrt(len(a))
+	e_mean = np.mean([a, a2, a3], axis=0)
+	e_stderr = np.std([a, a2, a3], axis=0) / np.sqrt(len(a))
+	f_mean = np.mean([a, a2, a3], axis=0)
+	f_stderr = np.std([a, a2, a3], axis=0) / np.sqrt(len(a))
+	plt.errorbar(a_range, a_mean, yerr=a_stderr, color='red', ls='--', marker='o', capsize=5, capthick=1, ecolor='black')
 	
 	# aa, = plt.plot(a_range, a, color='b', marker="P", label="$\Sigma=0.17,\mu=0.5$", linewidth=0.5)
 	bb, = plt.plot(b_range, b, color='g', marker='d', label="$\Sigma=0.15,\mu=0.7$", linewidth=0.5)
