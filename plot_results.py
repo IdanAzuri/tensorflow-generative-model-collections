@@ -14,7 +14,7 @@ dir = 'classifier_results_seed_12/'
 dir2 = 'classifier_results_seed_88/'
 dir3 = 'classifier_results_seed_125/'
 START = 0
-
+start=START
 
 def plot_from_pkl():
 	plt.Figure(figsize=(15, 15))
@@ -59,24 +59,24 @@ def fashion_MM_plot_from_pkl():
 	plt.Figure(figsize=(15, 15))
 	
 	plt.title('MMinfoGAN Fashion-Mnist Different Priros Accuracy', fontsize=12)
-	# a = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[START:50]
+	a = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[START:50]
 	b = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:50]
 	c = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
 	d = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
 	
-	# a = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[START:50]
+	a2 = pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[START:50]
 	b2 = pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:50]
 	c2 = pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
 	d2 = pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
 	
 	# DIR 3
-	# a = pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[START:50]
+	a3 = pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[START:50]
 	b3 = pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:50]
 	c3 = pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
 	d3 = pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:50]
 	
 	
-	# a_range = np.arange(START, len(a) + START)
+	a_range = np.arange(START, len(a) + START)
 	b_range = np.arange(START, len(b) + START)
 	c_range = np.arange(START, len(c) + START)
 	d_range = np.arange(START, len(d) + START)
@@ -85,8 +85,8 @@ def fashion_MM_plot_from_pkl():
 	# g_range = np.arange(START, len(g) + START)
 	
 	# CALC MEAN AND STDERR
-	# a_mean = np.mean([a, a2, a3], axis=0)
-	# a_stderr = np.std([a, a2, a3], axis=0) / np.sqrt(len(a))
+	a_mean = np.mean([a, a2, a3], axis=0)
+	a_stderr = np.std([a, a2, a3], axis=0) / np.sqrt(len(a))
 	b_mean = np.mean([b, b2, b3], axis=0)
 	b_stderr = np.std([b, b2, b3], axis=0) / np.sqrt(len(b))
 	c_mean = np.mean([c, c2, c3], axis=0)
@@ -99,7 +99,7 @@ def fashion_MM_plot_from_pkl():
 	# f_stderr = np.std([f, f2, f3], axis=0) / np.sqrt(len(f))
 	# g_mean = np.mean([g, g2, g3], axis=0)
 	# g_stderr = np.std([g, g2, g3], axis=0) / np.sqrt(len(g))
-	# plt.errorbar(a_range, a_mean, yerr=a_stderr, color='red', ls='--', marker='o', capsize=5, capthick=1, ecolor='black')
+	plt.errorbar(a_range, a_mean, yerr=a_stderr, color='m', ls='--', marker='o', capsize=5, capthick=1, ecolor='k')
 	plt.errorbar(b_range, b_mean, yerr=b_stderr, color='y', marker='+', label="$\Sigma=0.3,\mu=0.7$", ls='--', capsize=5, capthick=1, ecolor='k')
 	plt.errorbar(c_range, c_mean, yerr=c_stderr, color='g', marker='d', label="uniform", ls='--', capsize=5, capthick=1, ecolor='k')
 	plt.errorbar(d_range, d_mean, yerr=d_stderr, color='c', marker='^', label="multi-modal unifrom", ls='--', capsize=5, capthick=1, ecolor='k')
