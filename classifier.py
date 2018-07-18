@@ -223,7 +223,7 @@ class CNNClassifier():
 		# cross_entropy = tf.reduce_mean(cross_entropy)
 		# self.cross_entropy = cross_entropy
 		# cross_entropy += self.l2_regularization
-		# tf.summary.scalar('cross_entropy', cross_entropy)
+		tf.summary.scalar('cross_entropy', cross_entropy)
 		
 		self.train_step = tf.train.AdamOptimizer(LEARNING_RATE).minimize(cross_entropy)
 		
