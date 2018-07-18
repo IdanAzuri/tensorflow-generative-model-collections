@@ -112,7 +112,7 @@ class CNNClassifier():
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
-		self.dropout_prob = 0.9
+		self.dropout_prob = 0.7
 		self.save_to = classifier_name + "_classifier.pkl"
 		self.lamb = 1e-3
 		self.c_dim = 1
@@ -274,7 +274,7 @@ class CNNClassifier():
 						high_confidence_threshold_indices = confidence >= confidence_thresh
 						if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
 							_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images[high_confidence_threshold_indices],
-							                                                self.y_: batch_labels[high_confidence_threshold_indices], self.keep_prob: 1.})
+							                                                self.y_: batch_labels[high_confidence_threshold_indices], self.keep_prob: self.dropout_prob})
 						else:
 							print("skipping confidence low max_confidence ={}".format(np.max(confidence)))
 		
