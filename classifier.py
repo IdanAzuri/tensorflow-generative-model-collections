@@ -112,13 +112,13 @@ def variable_summaries(var, name):
 
 class CNNClassifier():
 	def __init__(self, classifier_name, original_dataset_name,load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results_seed_{}'.format(SEED)):
-		self.num_epochs = 100
+		self.num_epochs = 30
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
-		self.dropout_prob = 0.85
+		self.dropout_prob = 0.8
 		self.save_to = classifier_name + "_classifier.pkl"
-		self.lamb = 1e-4
+		self.lamb = 1e-6
 		self.c_dim = 1
 		self.accuracy_list = []
 		self.loss_list = []
@@ -163,11 +163,11 @@ class CNNClassifier():
 			self.b_conv1 = bias_variable([32])
 			self.W_conv2 = weight_variable([5, 5, 32, 64])
 			self.b_conv2 = bias_variable([64])
-			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64, 1024])
-			self.b_fc1 = bias_variable([1024])
-			self.W_fc2 = weight_variable([1024, 512])
-			self.b_fc2 = bias_variable([512])
-			self.W_fc3 = weight_variable([512, 10])
+			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64, 256])
+			self.b_fc1 = bias_variable([256])
+			self.W_fc2 = weight_variable([256, 64])
+			self.b_fc2 = bias_variable([64])
+			self.W_fc3 = weight_variable([64, 10])
 			self.b_fc3 = bias_variable([10])
 		
 		self._create_model()
@@ -218,12 +218,12 @@ class CNNClassifier():
 		
 		# loss
 		cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y_, logits=self.y_conv)
-		# self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
-		# 	self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)
-		# cross_entropy = tf.reduce_mean(cross_entropy)
-		# self.cross_entropy = cross_entropy
-		# cross_entropy += self.l2_regularization
-		tf.summary.scalar('cross_entropy', cross_entropy)
+		self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
+			self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)
+		cross_entropy = tf.reduce_mean(cross_entropy)
+		self.cross_entropy = cross_entropy
+		cross_entropy += self.l2_regularization
+		# tf.summary.scalar('cross_entropy', cross_entropy)
 		
 		self.train_step = tf.train.AdamOptimizer(LEARNING_RATE).minimize(cross_entropy)
 		
