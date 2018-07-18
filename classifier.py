@@ -38,7 +38,7 @@ matplotlib.use('Agg')
 from MultiModalInfoGAN import SEED
 
 
-LEARNING_RATE = 1e-4
+LEARNING_RATE = 1e-6
 
 
 
@@ -116,7 +116,7 @@ class CNNClassifier():
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
-		self.dropout_prob = 0.9
+		self.dropout_prob = 0.7
 		self.save_to = classifier_name + "_classifier.pkl"
 		self.lamb = 1e-3
 		self.c_dim = 1
@@ -137,7 +137,7 @@ class CNNClassifier():
 			self.set_log_dir("{}_".format(pkl_fname))
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
-			# self.data_X, self.data_y = shuffle(self.data_X, self.data_y, random_state=0)
+		# self.data_X, self.data_y = shuffle(self.data_X, self.data_y, random_state=0)
 		
 		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
 			# mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
@@ -165,8 +165,10 @@ class CNNClassifier():
 			self.b_conv2 = bias_variable([64])
 			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64, 1024])
 			self.b_fc1 = bias_variable([1024])
-			self.W_fc2 = weight_variable([1024, 10])
-			self.b_fc2 = bias_variable([10])
+			self.W_fc2 = weight_variable([1024, 512])
+			self.b_fc2 = bias_variable([512])
+			self.W_fc3 = weight_variable([512, 10])
+			self.b_fc3 = bias_variable([10])
 		
 		self._create_model()
 	
@@ -279,7 +281,7 @@ class CNNClassifier():
 						high_confidence_threshold_indices = confidence >= confidence_thresh
 						if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
 							_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images[high_confidence_threshold_indices],
-							                                                self.y_: batch_labels[high_confidence_threshold_indices], self.keep_prob: 1.})
+							                                                self.y_: batch_labels[high_confidence_threshold_indices], self.keep_prob: self.dropout_prob})
 						else:
 							print("skipping confidence low max_confidence ={}".format(np.max(confidence)))
 		
