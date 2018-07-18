@@ -3,7 +3,7 @@ import sys
 import matplotlib
 
 
-# matplotlib.use('Agg')
+matplotlib.use('Agg')
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
@@ -43,29 +43,32 @@ def fashion_MM_plot_from_pkl():
 	c3 = pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END]
 	d3 = pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END]
 	
-	a_range = np.arange(START, len(a) + START)
-	b_range = np.arange(START, len(b) + START)
-	c_range = np.arange(START, len(c) + START)
-	d_range = np.arange(START, len(d) + START)
-	# e_range = np.arange(START, len(e) + START)
-	# f_range = np.arange(START, len(f) + START)
-	# g_range = np.arange(START, len(g) + START)
 	
 	# CALC MEAN AND STDERR
-	a_mean = np.mean([a, a2, a3], axis=0)
-	a_stderr = np.std([a, a2, a3], axis=0) / np.sqrt(len(a))
-	b_mean = np.mean([b, b2, b3], axis=0)
-	b_stderr = np.std([b, b2, b3], axis=0) / np.sqrt(len(b))
-	c_mean = np.mean([c, c2, c3], axis=0)
-	c_stderr = np.std([c, c2, c3], axis=0) / np.sqrt(len(c))
-	d_mean = np.mean([d, d2, d3], axis=0)
-	d_stderr = np.std([d, d2, d3], axis=0) / np.sqrt(len(d))
+	step = 2
+	a_mean = np.mean([a, a2, a3], axis=0)[0::step]
+	a_stderr = np.asarray(np.std([a, a2, a3], axis=0) / np.sqrt(len(a)))[0::step]
+	b_mean = np.mean([b, b2, b3], axis=0)[0::step]
+	b_stderr = np.asarray(np.std([b, b2, b3], axis=0) / np.sqrt(len(b)))[0::step]
+	c_mean = np.mean([c, c2, c3], axis=0)[0::step]
+	c_stderr = np.asarray(np.std([c, c2, c3], axis=0) / np.sqrt(len(c)))[0::step]
+	d_mean = np.mean([d, d2, d3], axis=0)[0::step]
+	d_stderr = np.asarray(np.std([d, d2, d3], axis=0) / np.sqrt(len(d)))[0::step]
 	# e_mean = np.mean([e, e2, e3], axis=0)
 	# e_stderr = np.std([e, e2, e3], axis=0) / np.sqrt(len(e))
 	# f_mean = np.mean([f, f2, f3], axis=0)
 	# f_stderr = np.std([f, f2, f3], axis=0) / np.sqrt(len(f))
 	# g_mean = np.mean([g, g2, g3], axis=0)
+	
+	a_range = np.arange(START, len(a_mean) + START)
+	b_range = np.arange(START, len(b_mean) + START)
+	c_range = np.arange(START, len(c_mean) + START)
+	d_range = np.arange(START, len(d_mean) + START)
+	# e_range = np.arange(START, len(e) + START)
+	# f_range = np.arange(START, len(f) + START)
+	# g_range = np.arange(START, len(g) + START)
 	# g_stderr = np.std([g, g2, g3], axis=0) / np.sqrt(len(g))
+	
 	plt.errorbar(b_range, b_mean, yerr=b_stderr, color='r', marker='+', label="Gaussian multi-modal", ls='--', capsize=5, capthick=1, ecolor='k')
 	plt.errorbar(a_range, a_mean, yerr=a_stderr, color='b', ls='--', label="Gaussian 1d", marker='.', capsize=5, capthick=1, ecolor='k')
 	plt.errorbar(c_range, c_mean, yerr=c_stderr, color='g', marker='*', label="Uniform", ls='--', capsize=5, capthick=1, ecolor='k')
@@ -677,7 +680,7 @@ def MM_mu_05_07_08_zoom_plot_from_pkl3modals():
 	# b2 = pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END]
 	c2 = pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END]
 	d2 = pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END]
-	e2 = pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END]
+	# e2 = pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END]
 	f2 = pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END]
 	g2 = pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END]
 	
@@ -707,10 +710,10 @@ def MM_mu_05_07_08_zoom_plot_from_pkl3modals():
 	# b_stderr = np.std([b, b2], axis=0) / np.sqrt(len(a))
 	c_mean = np.mean([c, c2, c3], axis=0)
 	c_stderr = np.std([c, c2, c3], axis=0) / np.sqrt(len(c))
-	d_mean = np.mean([d, d2, d3], axis=0)
-	d_stderr = np.std([d, d2, d3], axis=0) / np.sqrt(len(d))
-	e_mean = np.mean([e, e2], axis=0)
-	e_stderr = np.std([e, e2], axis=0) / np.sqrt(len(e))
+	# d_mean = np.mean([d, d2, d3], axis=0)
+	# d_stderr = np.std([d, d2, d3], axis=0) / np.sqrt(len(d))
+	# e_mean = np.mean([e, e2], axis=0)
+	# e_stderr = np.std([e, e2], axis=0) / np.sqrt(len(e))
 	f_mean = np.mean([f, f2, f3], axis=0)
 	f_stderr = np.std([f, f2, f3], axis=0) / np.sqrt(len(f))
 	g_mean = np.mean([g, g2, g3], axis=0)
@@ -934,14 +937,14 @@ def MM_mu_1_zoom_plot_from_pkl3modals():
 	plt.savefig(title + ".png")
 	plt.close()
 if __name__ == '__main__':
-	# fashion_MM_plot_from_pkl()
+	fashion_MM_plot_from_pkl()
 	# plot_from_pkl()
 	# MM_mu_1_zoom_plot_from_pkl()
 	# MM_mu_01_zoom_plot_from_pkl()
 	# MM_mu_05_07_08_zoom_plot_from_pkl()
-	# MM_mu_05_07_08_zoom_plot_from_pkl_5_modals()
-	# MM_mu_1_zoom_plot_from_pkl_5modals()
-	# MM_mu_01_zoom_plot_from_pkl_5modals()
-	# MM_mu_1_zoom_plot_from_pkl3modals()
-	# MM_mu_01_zoom_plot_from_pkl3modals()
+	MM_mu_05_07_08_zoom_plot_from_pkl_5_modals()
+	MM_mu_1_zoom_plot_from_pkl_5modals()
+	MM_mu_01_zoom_plot_from_pkl_5modals()
+	MM_mu_1_zoom_plot_from_pkl3modals()
+	MM_mu_01_zoom_plot_from_pkl3modals()
 	MM_mu_05_07_08_zoom_plot_from_pkl3modals()
