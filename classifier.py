@@ -38,7 +38,7 @@ matplotlib.use('Agg')
 from MultiModalInfoGAN import SEED
 
 
-LEARNING_RATE = 1e-6
+LEARNING_RATE = 1e-5
 
 
 
@@ -116,7 +116,7 @@ class CNNClassifier():
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
-		self.dropout_prob = 0.7
+		self.dropout_prob = 0.85
 		self.save_to = classifier_name + "_classifier.pkl"
 		self.lamb = 1e-3
 		self.c_dim = 1
