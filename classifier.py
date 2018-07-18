@@ -185,7 +185,7 @@ class CNNClassifier():
 	def _deepcnn(self, x, keep_prob):
 		with tf.name_scope('reshape'):
 			x_image = tf.reshape(x, [-1, self.IMAGE_WIDTH, self.IMAGE_HEIGHT, self.c_dim])
-		h_conv1 = tf.nn.leaky_relu(bn(conv2d(x_image, self.W_conv1) + self.b_conv1))
+		h_conv1 = tf.nn.leaky_relu(bn(conv2d(x_image, self.W_conv1) + self.b_conv1,is_training=True,scope="cnn_1"))
 		h_pool1 = max_pool_2x2(h_conv1)
 		
 		h_conv2 = tf.nn.leaky_relu(bn(conv2d(h_pool1, self.W_conv2) + self.b_conv2, is_training=True, scope='cnn_d_bn1'))
