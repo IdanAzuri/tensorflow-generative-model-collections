@@ -253,7 +253,7 @@ class CNNClassifier():
 	def train(self, confidence_in_train=False, confidence_thresh=0.9):
 		start_batch_id = 100  # int(1000 / self.batch_size)
 		self.num_batches = min(len(self.data_X) // self.batch_size, 4000)
-		print("START TRAINING:{}".format(self.fname))
+		# print("START TRAINING:{}".format(self.fname))
 		for epoch in range(self.num_epochs):
 			start_time = time.time()
 			for i in range(start_batch_id, self.num_batches):
