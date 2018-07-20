@@ -251,7 +251,7 @@ class CNNClassifier():
 	# self.test_writer.add_graph(self.sess.graph)
 	
 	def train(self, confidence_in_train=False, confidence_thresh=0.9):
-		start_batch_id = 0  # int(1000 / self.batch_size)
+		start_batch_id = 100  # int(1000 / self.batch_size)
 		self.num_batches = min(len(self.data_X) // self.batch_size, 4000)
 		print("START TRAINING:{}".format(self.fname))
 		for epoch in range(self.num_epochs):
@@ -439,4 +439,7 @@ def main():
 
 
 if __name__ == '__main__':
-	main()  # c = CNNClassifier("fashion-mnist")  # c.test(c.data_X[10000].reshape(-1,784),c.data_y[10000].reshape(-1,10))
+	# main()
+	c = CNNClassifier("fashion-mnist")
+	c.train()
+	c.test(c.data_X[:6400].reshape(-1,784),c.data_y[:6400].reshape(-1,10))
