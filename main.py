@@ -48,7 +48,7 @@ def parse_args():
 	parser.add_argument('--log_dir', type=str, default='logs', help='Directory name to save training logs')
 	parser.add_argument('--sampler', type=str, default='uniform',
 	                    choices=['uniform', 'multi-uniform', 'multi-gaussian', 'multi-gaussianTF', 'gaussian', 'truncated'])
-	parser.add_argument('--dataset_order', '-do', type=str, default="czcc,czrc,rzcc,rzrc", help="czcc,czrc,rzcc,rzrc")
+	# parser.add_argument('--dataset_order', '-do', type=str, default="czcc,czrc,rzcc,rzrc", help="czcc,czrc,rzcc,rzrc")
 	
 	parser.add_argument('--gpus', type=str, default='0')
 	parser.add_argument('--len_continuous_code', type=int, default=2)
@@ -97,7 +97,7 @@ def main():
 	os.environ['CUDA_VISIBLE_DEVICES'] = args.gpus
 	# open session
 	models = [GAN, CGAN, infoGAN, ACGAN, EBGAN, WGAN, WGAN_GP, DRAGAN, LSGAN, BEGAN, VAE, CVAE, MultiModalInfoGAN, infoGAN, AEMultiModalInfoGAN]
-	dataset_creation_order = args.dataset_order.split()
+	# dataset_creation_order = args.dataset_order.split()
 	len_continuous_code = args.len_continuous_code
 	sampler = args.sampler
 	mu = args.mu
@@ -121,12 +121,11 @@ def main():
 		gan = None
 		for model in models:
 			if args.gan_type == model.model_name:
-				order_str = '_'.join(dataset_creation_order)
+				# order_str = '_'.join(dataset_creation_order)
 				print("CHEKPOINT DIR: {}".format(sampler))
 				gan = model(sess, epoch=args.epoch, batch_size=args.batch_size, z_dim=args.z_dim, dataset_name=args.dataset,
 				            checkpoint_dir=args.checkpoint_dir + '/' + sampler +'/' + str(SEED), result_dir=args.result_dir + '/' + sampler+'/' + str(SEED),
-				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method, is_wgan_gp=is_wgan_gp,
-				            dataset_creation_order=dataset_creation_order)
+				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method, is_wgan_gp=is_wgan_gp)
 		if gan is None:
 			raise Exception("[!] There is no option for " + args.gan_type)
 		

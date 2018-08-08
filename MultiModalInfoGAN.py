@@ -90,7 +90,13 @@ class MultiModalInfoGAN(object):
 			
 			# load mnist
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
-			
+			#REMOVING 1 DIGIT
+			indiceis_of_7 = np.where(np.argmax(self.data_y, 1) == 7)
+			self.data_y_only7=self.data_y[indiceis_of_7]
+			self.data_X_only7=self.data_X[indiceis_of_7]
+			indiceis_to_remove = np.where(np.argmax(self.data_y, 1) != 7)
+			self.data_y=self.data_y[indiceis_to_remove]
+			self.data_X=self.data_X[indiceis_to_remove]
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
 		# elif dataset_name == 'cifar10':
@@ -274,7 +280,7 @@ class MultiModalInfoGAN(object):
 		tf.global_variables_initializer().run()
 		
 		# graph inputs for visualize training results
-		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)  # np.random.uniform(-1, 1,
+		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)  # np.random.uniform(-1, 1,
 		# size=(self.batch_size, self.z_dim))
 		self.test_labels = np.ones([self.batch_size, self.y_dim])
 		if self.dataset_name != "celebA":
@@ -314,7 +320,7 @@ class MultiModalInfoGAN(object):
 				batch_labels = np.random.multinomial(1, self.len_discrete_code * [float(1.0 / self.len_discrete_code)], size=[self.batch_size])
 				
 				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
-				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
 				
 				# update D network
 				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss],
@@ -361,7 +367,7 @@ class MultiModalInfoGAN(object):
 		y = np.random.choice(self.len_discrete_code, self.batch_size)
 		y_one_hot = np.zeros((self.batch_size, self.y_dim))
 		y_one_hot[np.arange(self.batch_size), y] = 1
-		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})  # samples_for_test.append(samples)
 		
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
@@ -493,7 +499,7 @@ class MultiModalInfoGAN(object):
 				if i == 'rzcc':
 					for _ in range(datasetsize // len(self.dataset_creation_order)):
 						# z random c-clean - rzcc
-						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
 						y_one_hot = np.zeros((self.batch_size, self.y_dim))
 						y_one_hot[np.arange(self.batch_size), y] = 1
@@ -509,7 +515,7 @@ class MultiModalInfoGAN(object):
 				if i == 'rzrc':
 					for _ in range(datasetsize // len(self.dataset_creation_order)):
 						# rzrc
-						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
 						
 						y_one_hot = np.zeros((self.batch_size, self.y_dim))
@@ -542,15 +548,15 @@ class MultiModalInfoGAN(object):
 		import copy
 		data_y_updateable = copy.deepcopy(data_y_all)
 		pretraind = CNNClassifier(self.dataset_name, original_dataset_name=self.dataset_name)
-		for current_label in range(10):
+		for current_label in range(self.len_discrete_code):
 			small_mask = data_y_clean_part == current_label
 			mask = data_y_all == current_label
 			data_X_for_current_label = np.asarray(data_X_clean_part[np.where(small_mask == True)]).reshape(-1,784)
 			
-			limit = min(len(data_X_for_current_label) // 10, 10000)
-			dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
+			limit = min(len(data_X_for_current_label) // self.len_discrete_code, 10000)
+			dummy_labels = one_hot_encoder(np.random.randint(0, self.len_discrete_code, size=(limit)))  # no meaning for the labels
 			print(dummy_labels.shape)
-			_, confidence, _, arg_max = pretraind.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+			_, confidence, _, arg_max = pretraind.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, self.len_discrete_code), is_arg_max=True)
 			if is_confidence:
 				print("confidence:{}".format(confidence))
 				high_confidence_threshold_indices = confidence >= CONFIDENCE_THRESHOLD
