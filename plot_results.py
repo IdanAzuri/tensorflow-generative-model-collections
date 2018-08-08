@@ -13,9 +13,9 @@ from matplotlib.legend_handler import HandlerLine2D
 dir = 'classifier_results_seed_12/'
 dir2 = 'classifier_results_seed_88/'
 dir3 = 'classifier_results_seed_125/'
-START = 1
+START = 3
 start = START
-END = -1
+END = 50
 
 
 # 10 modalities
@@ -25,21 +25,21 @@ def fashion_MM_plot_from_pkl():
 	import pickle
 	# plt.Figure(figsize=(15, 15))
 	
-	a = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb")))
-	b = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
+	a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[START:END])
+	b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
 	
-	a2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	b2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	c2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	d2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
+	a2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	c2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	d2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
 	
 	# DIR 3
-	a3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	b3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	c3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	d3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
+	a3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	b3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	c3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	d3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
 	
 	# CALC MEAN AND STDERR
 	a_mean = np.mean([a, a2, a3], axis=0)
@@ -76,33 +76,33 @@ def MM_mu_05_07_08_zoom_plot_from_pkl():
 	
 	# title = 'MMinfoGAN_Fsion-Mnist_multi-modal Gaussian Sampler 10 modals'
 	# plt.title(title, fontsize=10)
-	a = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	b = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	e = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	f = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	g = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
+	a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	f = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	g = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
 	# DIR 2
-	a2 = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	b2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	c2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	d2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	e2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	f2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	g2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
+	a2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	c2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	d2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	e2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	f2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	g2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
 	
 	# DIR 3
-	# a3 = np.max(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	# b3 = np.max(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	c3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	d3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	# e3 = np.max(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	f3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	g3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
+	# a3 = np.mean(pickle.load(
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# b3 = np.mean(pickle.load(
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	c3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	d3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# e3 = np.mean(pickle.load(
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	f3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	g3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
 	
 	# CALC MEAN AND STDERR
 	a_mean = np.mean([a, a2], axis=0)
@@ -146,26 +146,26 @@ def MM_mu_01_zoom_plot_from_pkl():
 	import matplotlib.pyplot as plt
 	import pickle
 	
-	a = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	b = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	# e = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	f = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
+	a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	f = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
 	
-	a2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	b2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	c2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	d2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	# e2 = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	f2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
+	a2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	c2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	d2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# e2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	f2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
 	
-	a3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	# b3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	# c3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	d3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	# e3 = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	f3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
+	a3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# b3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# c3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	d3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# e3 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	f3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
 	## CALC MEAN AND STDERR
 	a_mean = np.mean([a, a2], axis=0)
 	a_stderr = np.std([a, a2], axis=0) / np.sqrt(3)
@@ -209,30 +209,30 @@ def MM_mu_1_zoom_plot_from_pkl():
 	import pickle
 	plt.Figure(figsize=(15, 15))
 	
-	# a = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	b = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	# c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	# d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	e = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	f = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	g = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
+	# a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	f = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	g = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
 	
-	# a2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	b2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	# c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	# d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	e2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	f2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	g2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
+	# a2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	e2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	f2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	g2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
 	#
 	
-	# a3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	b3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	# c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	# d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	e3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	f3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	g3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
+	# a3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	b3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	e3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	f3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	g3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
 	## CALC MEAN AND STDERR
 	# a_mean = np.mean([a, a2], axis=0)
 	# a_stderr = np.std([a, a2], axis=0) / np.sqrt(3)
@@ -280,33 +280,33 @@ def MM_mu_05_07_08_zoom_plot_from_pkl_5_modals():
 	import pickle
 	plt.Figure(figsize=(15, 15))
 	
-	# a = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# b = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# e = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	f = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	g = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
+	# a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	f = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	g = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
 	# DIR 2
-	# a2 = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# b2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	c2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	d2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# e2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	f2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	g2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
+	# a2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	c2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	d2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# e2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	f2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	g2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
 	
 	# DIR 3
-	# a3 = np.max(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# b3 = np.max(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	c3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	d3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# e3 = np.max(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	f3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	g3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
+	# a3 = np.mean(pickle.load(
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# b3 = np.mean(pickle.load(
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	c3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	d3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# e3 = np.mean(pickle.load(
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	f3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	g3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
 	## CALC MEAN AND STDERR
 	# a_mean = np.mean([a, a2], axis=0)
 	# a_stderr = np.std([a, a2], axis=0) / np.sqrt(3)
@@ -350,26 +350,26 @@ def MM_mu_01_zoom_plot_from_pkl_5modals():
 	import matplotlib.pyplot as plt
 	import pickle
 	
-	a = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# b = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# e = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	f = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
+	a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	f = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
 	
-	a2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# b2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# c2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	d2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# e2 = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	f2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
+	a2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# c2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	d2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# e2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	f2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
 	
-	a3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# b3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# c3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	d3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# e3 = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	f3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
+	a3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# b3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# c3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	d3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# e3 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	f3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
 	
 	## CALC MEAN AND STDERR
 	a_mean = np.mean([a, a2], axis=0)
@@ -413,30 +413,30 @@ def MM_mu_01_zoom_plot_from_pkl_5modals():
 def MM_mu_1_zoom_plot_from_pkl_5modals():
 	import matplotlib.pyplot as plt
 	import pickle
-	# a = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	b = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	e = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	f = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	g = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
+	# a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	f = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	g = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
 	
-	# a2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	b2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	e2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	f2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	g2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
+	# a2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	e2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	f2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	g2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
 	#
 	
-	# a3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	b3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	# d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	e3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	f3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
-	g3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb")))
+	# a3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	b3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	e3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	f3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	g3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
 	#
 	## CALC MEAN AND STDERR
 	# a_mean = np.mean([a, a2, a3], axis=0)
@@ -485,33 +485,33 @@ def MM_mu_05_07_08_zoom_plot_from_pkl3modals():
 	import matplotlib.pyplot as plt
 	import pickle
 	
-	# a = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# b = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# e = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	f = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	g = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
+	# a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	f = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	g = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
 	# DIR 2
-	# a2 = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# b2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	c2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	d2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# e2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	f2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	g2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
+	# a2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	c2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	d2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# e2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	f2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	g2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
 	
 	# DIR 3
-	# a3 = np.max(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# b3 = np.max(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	c3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	d3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# e3 = np.max(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	f3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	g3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
+	# a3 = np.mean(pickle.load(
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# b3 = np.mean(pickle.load(
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	c3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	d3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# e3 = np.mean(pickle.load(
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	f3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	g3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
 	
 	
 	## CALC MEAN AND STDERR
@@ -557,26 +557,26 @@ def MM_mu_01_zoom_plot_from_pkl3modals():
 	import matplotlib.pyplot as plt
 	import pickle
 	
-	a = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# b = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# e = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	f = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
+	a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	f = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
 	
-	a2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# b2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# c2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	d2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# e2 = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	f2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
+	a2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# c2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	d2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# e2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	f2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
 	
-	a3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# b3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# c3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	d3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# e3 = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	f3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
+	a3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# b3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# c3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	d3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# e3 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	f3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
 	
 	## CALC MEAN AND STDERR
 	a_mean = np.mean([a, a2, a3], axis=0)
@@ -619,30 +619,30 @@ def MM_mu_01_zoom_plot_from_pkl3modals():
 def MM_mu_1_zoom_plot_from_pkl3modals():
 	import matplotlib.pyplot as plt
 	import pickle
-	# a = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb")))
-	b = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	e = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# f = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	g = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
+	# a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# f = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	g = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
 	
-	# a2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	b2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	e2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	f2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	g2 = np.max(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
+	# a2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	e2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	f2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	g2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
 	#
 	
-	# a3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	b3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# c = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	# d = np.max(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	e3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	f3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
-	g3 = np.max(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb")))
+	# a3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	b3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	e3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	f3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	g3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
 	#
 	## CALC MEAN AND STDERR
 	# a_mean = np.mean([a, a2], axis=0)
