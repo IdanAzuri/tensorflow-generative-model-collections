@@ -185,15 +185,15 @@ class CNNClassifier():
 	def _deepcnn(self, x, keep_prob):
 		with tf.name_scope('reshape'):
 			x_image = tf.reshape(x, [-1, self.IMAGE_WIDTH, self.IMAGE_HEIGHT, self.c_dim])
-		h_conv1 = tf.nn.leaky_relu(bn(conv2d(x_image, self.W_conv1) + self.b_conv1,is_training=True,scope="classifier_bn1"))
+		h_conv1 = tf.nn.leaky_relu(conv2d(x_image, self.W_conv1) + self.b_conv1)
 		h_pool1 = max_pool_2x2(h_conv1)
 		
-		h_conv2 = tf.nn.leaky_relu(bn(conv2d(h_pool1, self.W_conv2) + self.b_conv2, is_training=True, scope='classifier_bn2'))
+		h_conv2 = tf.nn.leaky_relu(conv2d(h_pool1, self.W_conv2) + self.b_conv2)
 		h_pool2 = max_pool_2x2(h_conv2)
 		h_pool2_flat = tf.reshape(h_pool2, [-1, int(self.IMAGE_HEIGHT // 4) * int(self.IMAGE_HEIGHT // 4) * 64])
 		
-		h_fc1 = tf.nn.leaky_relu(bn(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1, is_training=True, scope='classifier_bn3'))
-		h_fc2 = tf.nn.leaky_relu(bn(tf.matmul(h_fc1, self.W_fc2) + self.b_fc2, is_training=True, scope='classifier_bn4'))
+		h_fc1 = tf.nn.leaky_relu(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1)
+		h_fc2 = tf.nn.leaky_relu(tf.matmul(h_fc1, self.W_fc2) + self.b_fc2)
 		
 		h_fc2_drop = tf.nn.dropout(h_fc2, keep_prob)
 		y_conv = tf.matmul(h_fc2_drop, self.W_fc3) + self.b_fc3
