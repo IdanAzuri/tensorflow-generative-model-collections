@@ -56,6 +56,7 @@ def parse_args():
 	parser.add_argument('--mu', type=float, default=0.1)
 	parser.add_argument('--sigma', type=float, default=0.15)
 	parser.add_argument('--ndist', type=int, default=10)
+	parser.add_argument('--pref', type=str, default="",help="prefix experiment title")
 	
 	return check_args(parser.parse_args())
 
@@ -96,6 +97,7 @@ def main():
 	
 	os.environ['CUDA_VISIBLE_DEVICES'] = args.gpus
 	# open session
+	title_prefix = args.pref
 	models = [GAN, CGAN, infoGAN, ACGAN, EBGAN, WGAN, WGAN_GP, DRAGAN, LSGAN, BEGAN, VAE, CVAE, MultiModalInfoGAN, infoGAN, AEMultiModalInfoGAN]
 	# dataset_creation_order = args.dataset_order.split()
 	len_continuous_code = args.len_continuous_code
@@ -107,10 +109,10 @@ def main():
 	if sampler == 'multi-uniform':
 		sampler_method = MultiModalUniformSample()
 	elif sampler == 'multi-gaussian':
-		sampler = "{}/mu_{}_sigma{}_n_distributions{}".format(sampler, mu, sigma,n_distributions)
+		sampler = "{}_{}/mu_{}_sigma{}_n_distributions{}".format(title_prefix,sampler, mu, sigma,n_distributions)
 		sampler_method = MultivariateGaussianSampler(mu=mu, sigma=sigma,n_distributions=n_distributions)
 	elif sampler == 'gaussian':
-		sampler = "{}/mu_{}_sigma{}_n_distributions".format(sampler, mu, sigma,n_distributions)
+		sampler = "{}_{}/mu_{}_sigma{}_n_distributions".format(title_prefix,sampler, mu, sigma,n_distributions)
 		sampler_method = GaussianSample(mu=mu, sigma=sigma,n_distributions=n_distributions)
 	elif sampler == 'truncated':
 		sampler = "{}/mu_{}_sigma{}".format(sampler, mu, sigma)
