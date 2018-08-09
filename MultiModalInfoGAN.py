@@ -91,14 +91,14 @@ class MultiModalInfoGAN(object):
 			# load mnist
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
 			# REMOVING 1 DIGIT
-			indiceis_of_7 = np.where(np.argmax(self.data_y, 1) == 7)
-			self.data_y_only7 = self.data_y[indiceis_of_7]
-			self.data_X_only7 = self.data_X[indiceis_of_7]
-			indiceis_to_remove = np.where(np.argmax(self.data_y, 1) != 7)
-			self.data_y = self.data_y[indiceis_to_remove]
-			self.data_X = self.data_X[indiceis_to_remove]
-			self.data_y += self.data_y_only7[0]
-			self.data_X += self.data_X_only7[0]
+			# indiceis_of_7 = np.where(np.argmax(self.data_y, 1) == 7)
+			# self.data_y_only7 = self.data_y[indiceis_of_7]
+			# self.data_X_only7 = self.data_X[indiceis_of_7]
+			# indiceis_to_remove = np.where(np.argmax(self.data_y, 1) != 7)
+			# self.data_y = self.data_y[indiceis_to_remove]
+			# self.data_X = self.data_X[indiceis_to_remove]
+			# self.data_y += self.data_y_only7[0]
+			# self.data_X += self.data_X_only7[0]
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
 		# elif dataset_name == 'cifar10':
