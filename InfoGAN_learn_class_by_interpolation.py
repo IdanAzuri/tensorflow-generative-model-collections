@@ -45,7 +45,7 @@ def gradient_penalty(real, fake, f):
 	return gp
 
 
-class MultiModalInfoGAN(object):
+class InfoGANLearnPhase2(object):
 	model_name = "MultiModalInfoGAN"  # name for checkpoint
 	
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2, is_wgan_gp=False,
@@ -74,7 +74,7 @@ class MultiModalInfoGAN(object):
 		self.sample_num = 64  # number of generated images to be saved
 		
 		# code
-		self.len_discrete_code = 10  # the 10th class will be represnted by the others
+		self.len_discrete_code = 9  # categorical distribution (i.e. label)
 		self.len_continuous_code = len_continuous_code  # gaussian distribution (e.g. rotation, thickness)
 		
 		if dataset_name == 'mnist' or dataset_name == 'fashion-mnist':
@@ -90,65 +90,20 @@ class MultiModalInfoGAN(object):
 			
 			# load mnist
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
-			# REMOVING 1 DIGIT
+			#REMOVING 1 DIGIT
 			indiceis_of_7 = np.where(np.argmax(self.data_y, 1) == 7)
-			self.data_y_only7 = self.data_y[indiceis_of_7]
-			self.data_X_only7 = self.data_X[indiceis_of_7]
+			self.data_y_only7=self.data_y[indiceis_of_7]
+			self.data_X_only7=self.data_X[indiceis_of_7]
+			
 			indiceis_to_remove = np.where(np.argmax(self.data_y, 1) != 7)
-			self.data_y = self.data_y[indiceis_to_remove]
-			self.data_X = self.data_X[indiceis_to_remove]
-			self.data_y += self.data_y_only7[0]
-			self.data_X += self.data_X_only7[0]
+			self.data_y=self.data_y[indiceis_to_remove]
+			self.data_X=self.data_X[indiceis_to_remove]
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
-		# elif dataset_name == 'cifar10':
-		# 	print("IN CIFAR")
-		# 	# parameters
-		# 	self.input_height = 32
-		# 	self.input_width = 32
-		# 	self.output_height = 32
-		# 	self.output_width = 32
-		#
-		# 	self.z_dim = z_dim  # dimension of noise-vector
-		# 	self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
-		# 	self.c_dim = 3
-		# 	# self.data_X, self.data_y, self.test_x, self.test_labels = get_train_test_data()
-		# 	# get number of batches for a single epoch
-		# 	self.num_batches = len(self.data_X) // self.batch_size
-		# elif dataset_name == 'celebA':
-		# 	from data_load import preprocess_fn
-		# 	print("in celeba")
-		# 	img_paths = glob.glob('/Users/idan.a/data/celeba/*.jpg')
-		# 	self.data_pool = utils.DiskImageData(img_paths, batch_size, shape=[218, 178, 3], preprocess_fn=preprocess_fn)
-		# 	self.num_batches = len(self.data_pool) // (batch_size)
-		#
-		# 	# real_ipt = data_pool.batch()
-		# 	# parameters
-		# 	self.input_height = 64
-		# 	self.input_width = 64
-		# 	self.output_height = 32
-		# 	self.output_width = 32
-		#
-		# 	self.z_dim = 128  # dimension of noise-vector
-		# 	self.c_dim = 3
-		# 	self.len_discrete_code = 100  # categorical distribution (i.e. label)
-		# 	self.len_continuous_code = 0  # gaussian distribution (e.g. rotation, thickness)
-		# 	self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
-		# 	sess = utils.session()
-		#
-		# 	# iteration counter
-		# 	it_cnt, update_cnt = utils.counter()
-		#
-		# 	sess.run(tf.global_variables_initializer())
-		# 	sess.run(it_cnt)
-		# 	sess.run(update_cnt)  # get number of batches for a single epoch
+		
 		self.model_dir = self.get_model_dir()
 	
 	def classifier(self, x, is_training=True, reuse=False):
-		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
-		# Architecture : (64)5c2s-(128)5c2s_BL-FC1024_BL-FC128_BL-FC12S’
-		# All layers except the last two layers are shared by discriminator
-		# Number of nodes in the last layer is reduced by half. It gives better results.
 		with tf.variable_scope("classifier", reuse=reuse):
 			net = lrelu(bn(linear(x, 64, scope='c_fc1'), is_training=is_training, scope='c_bn1'))
 			out_logit = linear(net, self.y_dim, scope='c_fc2')
@@ -157,8 +112,6 @@ class MultiModalInfoGAN(object):
 			return out, out_logit
 	
 	def discriminator(self, x, is_training=True, reuse=True):
-		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
-		# Architecture : (64)4c2s-(128)4c2s_BL-FC1024_BL-FC1_S
 		with tf.variable_scope("discriminator", reuse=reuse):
 			net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
 			net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
@@ -170,8 +123,6 @@ class MultiModalInfoGAN(object):
 			return out, out_logit, net
 	
 	def generator(self, z, y, is_training=True, reuse=False):
-		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
-		# Architecture : FC1024_BR-FC7x7x128_BR-(64)4dc2s_BR-(1)4dc2s_S
 		with tf.variable_scope("generator", reuse=reuse):
 			# merge noise and code
 			z = concat([z, y], 1)
@@ -179,11 +130,10 @@ class MultiModalInfoGAN(object):
 			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
 			net = lrelu(bn(linear(net, 128 * self.input_height / 4 * self.input_width / 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
 			net = tf.reshape(net, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
-			net = lrelu(
-				bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training, scope='g_bn3'))
+			net = lrelu(bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3'),
+			               is_training=is_training, scope='g_bn3'))
 			
 			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
-			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
 			
 			return out
 	
@@ -201,6 +151,7 @@ class MultiModalInfoGAN(object):
 		
 		# noises
 		self.z = tf.placeholder(tf.float32, [bs, self.z_dim], name='z')
+		self.latent_code = tf.placeholder(tf.float32, [bs, self.len_discrete_code +self.len_continuous_code], name='z')
 		
 		""" Loss Function """
 		## 1. GAN Loss
@@ -325,18 +276,21 @@ class MultiModalInfoGAN(object):
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
 				
 				# update D network
-				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss], feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
+				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss],
+				                                       feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
 				self.writer.add_summary(summary_str, counter)
 				
 				# update G and Q network
-				_, summary_str_g, g_loss, _, summary_str_q, q_loss = self.sess.run([self.g_optim, self.g_sum, self.g_loss, self.q_optim, self.q_sum, self.q_loss],
+				_, summary_str_g, g_loss, _, summary_str_q, q_loss = self.sess.run(
+					[self.g_optim, self.g_sum, self.g_loss, self.q_optim, self.q_sum, self.q_loss],
 					feed_dict={self.x: batch_images, self.z: batch_z, self.y: batch_codes})
 				self.writer.add_summary(summary_str_g, counter)
 				self.writer.add_summary(summary_str_q, counter)
 				
 				# display training status
 				counter += 1
-				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss,))
+				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (
+					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss,))
 			
 			# After an epoch, start_batch_id is set to zero
 			# non-zero value is only for the first epoch after loading pre-trained model
@@ -399,8 +353,8 @@ class MultiModalInfoGAN(object):
 			for c in range(self.len_discrete_code):
 				canvas[s * self.len_discrete_code + c, :, :, :] = all_samples[c * n_styles + s, :, :, :]
 		
-		save_images(canvas, [n_styles, self.len_discrete_code],
-		            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes_style_by_style.png')
+		save_images(canvas, [n_styles, self.len_discrete_code], check_folder(
+			self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes_style_by_style.png')
 		
 		""" fixed noise """
 		assert self.len_continuous_code == 2
@@ -509,7 +463,8 @@ class MultiModalInfoGAN(object):
 							save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzcc' + '_label_%d.png' % label)
 					generated_dataset += generated_dataset_random_z_clean_c
-					generated_labels += generated_labels_random_z_clean_c  # print("adding rzcc")
+					generated_labels += generated_labels_random_z_clean_c
+					# print("adding rzcc")
 				if i == 'rzrc':
 					for _ in range(datasetsize // len(self.dataset_creation_order)):
 						# rzrc
@@ -529,7 +484,8 @@ class MultiModalInfoGAN(object):
 							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzrc' + '_label_%d.png' % label)
 					
 					generated_dataset += generated_dataset_random_z_random_c
-					generated_labels += generated_labels_random_z_random_c  # print("adding rzrc")
+					generated_labels += generated_labels_random_z_random_c
+					# print("adding rzrc")
 		
 		####### PREPROCESS ####
 		# if len(generated_dataset_clean_z_clean_c) > 0:
@@ -548,7 +504,7 @@ class MultiModalInfoGAN(object):
 		for current_label in range(self.len_discrete_code):
 			small_mask = data_y_clean_part == current_label
 			mask = data_y_all == current_label
-			data_X_for_current_label = np.asarray(data_X_clean_part[np.where(small_mask == True)]).reshape(-1, 784)
+			data_X_for_current_label = np.asarray(data_X_clean_part[np.where(small_mask == True)]).reshape(-1,784)
 			
 			limit = min(len(data_X_for_current_label) // self.len_discrete_code, 10000)
 			dummy_labels = one_hot_encoder(np.random.randint(0, self.len_discrete_code, size=(limit)))  # no meaning for the labels
@@ -558,7 +514,7 @@ class MultiModalInfoGAN(object):
 				print("confidence:{}".format(confidence))
 				high_confidence_threshold_indices = confidence >= CONFIDENCE_THRESHOLD
 				if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
-					arg_max = arg_max[high_confidence_threshold_indices]
+					arg_max= arg_max[high_confidence_threshold_indices]
 					print("The length of high confidence:")
 					print(len(high_confidence_threshold_indices[high_confidence_threshold_indices]))
 			print(str(len(arg_max)) + " were taken")
@@ -573,7 +529,7 @@ class MultiModalInfoGAN(object):
 		order_str = '_'.join(self.dataset_creation_order)
 		if not os.path.exists(self.dir_results):
 			os.makedirs(self.dir_results)
-		params = "mu_{}_sigma_{}_{}_ndist_{}".format(self.sampler.mu, self.sampler.sigma, order_str, self.sampler.n_distributions)
+		params = "mu_{}_sigma_{}_{}_ndist_{}".format(self.sampler.mu, self.sampler.sigma, order_str,self.sampler.n_distributions)
 		
 		fname_trainingset_edited = "edited_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		fname_labeles_edited = "edited_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
