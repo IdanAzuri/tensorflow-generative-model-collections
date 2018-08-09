@@ -11,7 +11,7 @@ import warnings
 from sklearn.utils import shuffle
 
 
-SEED = 125
+SEED = 88
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 from matplotlib.legend_handler import HandlerLine2D

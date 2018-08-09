@@ -30,11 +30,15 @@ import time
 import warnings
 
 import matplotlib
+
+from ops import bn
+
+
 matplotlib.use('Agg')
 from MultiModalInfoGAN import SEED
 
 
-LEARNING_RATE = 1e-4
+LEARNING_RATE = 1e-5
 
 
 
@@ -108,13 +112,13 @@ def variable_summaries(var, name):
 
 class CNNClassifier():
 	def __init__(self, classifier_name, original_dataset_name,load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results_seed_{}'.format(SEED)):
-		self.num_epochs = 100
+		self.num_epochs = 30
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
-		self.dropout_prob = 0.9
+		self.dropout_prob = 0.8
 		self.save_to = classifier_name + "_classifier.pkl"
-		self.lamb = 1e-3
+		self.lamb = 1e-6
 		self.c_dim = 1
 		self.accuracy_list = []
 		self.loss_list = []
@@ -133,7 +137,7 @@ class CNNClassifier():
 			self.set_log_dir("{}_".format(pkl_fname))
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
-			# self.data_X, self.data_y = shuffle(self.data_X, self.data_y, random_state=0)
+		# self.data_X, self.data_y = shuffle(self.data_X, self.data_y, random_state=0)
 		
 		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
 			# mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
@@ -159,10 +163,12 @@ class CNNClassifier():
 			self.b_conv1 = bias_variable([32])
 			self.W_conv2 = weight_variable([5, 5, 32, 64])
 			self.b_conv2 = bias_variable([64])
-			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64, 1024])
-			self.b_fc1 = bias_variable([1024])
-			self.W_fc2 = weight_variable([1024, 10])
-			self.b_fc2 = bias_variable([10])
+			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64, 256])
+			self.b_fc1 = bias_variable([256])
+			self.W_fc2 = weight_variable([256, 64])
+			self.b_fc2 = bias_variable([64])
+			self.W_fc3 = weight_variable([64, 10])
+			self.b_fc3 = bias_variable([10])
 		
 		self._create_model()
 	
@@ -179,17 +185,18 @@ class CNNClassifier():
 	def _deepcnn(self, x, keep_prob):
 		with tf.name_scope('reshape'):
 			x_image = tf.reshape(x, [-1, self.IMAGE_WIDTH, self.IMAGE_HEIGHT, self.c_dim])
-		h_conv1 = tf.nn.relu(conv2d(x_image, self.W_conv1) + self.b_conv1)
+		h_conv1 = tf.nn.leaky_relu(bn(conv2d(x_image, self.W_conv1) + self.b_conv1,is_training=True,scope="cnn_1"))
 		h_pool1 = max_pool_2x2(h_conv1)
 		
-		h_conv2 = tf.nn.relu(conv2d(h_pool1, self.W_conv2) + self.b_conv2)
+		h_conv2 = tf.nn.leaky_relu(bn(conv2d(h_pool1, self.W_conv2) + self.b_conv2, is_training=True, scope='cnn_d_bn1'))
 		h_pool2 = max_pool_2x2(h_conv2)
-		h_pool2_flat = tf.reshape(h_pool2, [-1, int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64])
+		h_pool2_flat = tf.reshape(h_pool2, [-1, int(self.IMAGE_HEIGHT // 4) * int(self.IMAGE_HEIGHT // 4) * 64])
 		
-		h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1)
+		h_fc1 = tf.nn.leaky_relu(bn(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1, is_training=True, scope='cnn_d_fc1'))
+		h_fc2 = tf.nn.leaky_relu(bn(tf.matmul(h_fc1, self.W_fc2) + self.b_fc2, is_training=True, scope='cnn_d_fc2'))
 		
-		h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
-		y_conv = tf.matmul(h_fc1_drop, self.W_fc2) + self.b_fc2
+		h_fc2_drop = tf.nn.dropout(h_fc2, keep_prob)
+		y_conv = tf.matmul(h_fc2_drop, self.W_fc3) + self.b_fc3
 		
 		# summary
 		# variable_summaries(self.W_conv1, 'W_conv1')
@@ -244,9 +251,9 @@ class CNNClassifier():
 	# self.test_writer.add_graph(self.sess.graph)
 	
 	def train(self, confidence_in_train=False, confidence_thresh=0.9):
-		start_batch_id = 0  # int(1000 / self.batch_size)
+		start_batch_id = 100  # int(1000 / self.batch_size)
 		self.num_batches = min(len(self.data_X) // self.batch_size, 4000)
-		print("START TRAINING:{}".format(self.fname))
+		# print("START TRAINING:{}".format(self.fname))
 		for epoch in range(self.num_epochs):
 			start_time = time.time()
 			for i in range(start_batch_id, self.num_batches):
@@ -274,7 +281,7 @@ class CNNClassifier():
 						high_confidence_threshold_indices = confidence >= confidence_thresh
 						if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
 							_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images[high_confidence_threshold_indices],
-							                                                self.y_: batch_labels[high_confidence_threshold_indices], self.keep_prob: 1.})
+							                                                self.y_: batch_labels[high_confidence_threshold_indices], self.keep_prob: self.dropout_prob})
 						else:
 							print("skipping confidence low max_confidence ={}".format(np.max(confidence)))
 		
@@ -432,4 +439,7 @@ def main():
 
 
 if __name__ == '__main__':
-	main()  # c = CNNClassifier("fashion-mnist")  # c.test(c.data_X[10000].reshape(-1,784),c.data_y[10000].reshape(-1,10))
+	# main()
+	c = CNNClassifier("fashion-mnist",original_dataset_name="fashion-mnist")
+	c.train()
+	c.test(c.data_X[:6400].reshape(-1,784),c.data_y[:6400].reshape(-1,10))
