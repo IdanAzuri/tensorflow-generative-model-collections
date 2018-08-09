@@ -38,7 +38,7 @@ matplotlib.use('Agg')
 from MultiModalInfoGAN import SEED
 
 
-LEARNING_RATE = 1e-5
+LEARNING_RATE = 1e-4
 
 
 
@@ -112,13 +112,13 @@ def variable_summaries(var, name):
 
 class CNNClassifier():
 	def __init__(self, classifier_name, original_dataset_name,load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results_seed_{}'.format(SEED)):
-		self.num_epochs = 30
+		self.num_epochs = 100
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
-		self.dropout_prob = 0.8
+		self.dropout_prob = 0.7
 		self.save_to = classifier_name + "_classifier.pkl"
-		self.lamb = 1e-6
+		self.lamb = 1e-3
 		self.c_dim = 1
 		self.accuracy_list = []
 		self.loss_list = []
@@ -137,7 +137,7 @@ class CNNClassifier():
 			self.set_log_dir("{}_".format(pkl_fname))
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
-		# self.data_X, self.data_y = shuffle(self.data_X, self.data_y, random_state=0)
+			# self.data_X, self.data_y = shuffle(self.data_X, self.data_y, random_state=0)
 		
 		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
 			# mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
@@ -163,11 +163,11 @@ class CNNClassifier():
 			self.b_conv1 = bias_variable([32])
 			self.W_conv2 = weight_variable([5, 5, 32, 64])
 			self.b_conv2 = bias_variable([64])
-			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64, 256])
-			self.b_fc1 = bias_variable([256])
-			self.W_fc2 = weight_variable([256, 64])
-			self.b_fc2 = bias_variable([64])
-			self.W_fc3 = weight_variable([64, 10])
+			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64, 1024])
+			self.b_fc1 = bias_variable([1024])
+			self.W_fc2 = weight_variable([1024, 512])
+			self.b_fc2 = bias_variable([512])
+			self.W_fc3 = weight_variable([512, 10])
 			self.b_fc3 = bias_variable([10])
 		
 		self._create_model()
@@ -439,7 +439,7 @@ def main():
 
 
 if __name__ == '__main__':
-	# main()
-	c = CNNClassifier("fashion-mnist",original_dataset_name="fashion-mnist")
-	c.train()
-	c.test(c.data_X[:6400].reshape(-1,784),c.data_y[:6400].reshape(-1,10))
+	main()
+	# c = CNNClassifier("fashion-mnist",original_dataset_name="fashion-mnist")
+	# c.train()
+	# c.test(c.data_X[:6400].reshape(-1,784),c.data_y[:6400].reshape(-1,10))
