@@ -330,7 +330,7 @@ class MultiModalInfoGAN(object):
 				
 				# update G and Q network
 				_, summary_str_g, g_loss, _, summary_str_q, q_loss = self.sess.run([self.g_optim, self.g_sum, self.g_loss, self.q_optim, self.q_sum, self.q_loss],
-					feed_dict={self.x: batch_images, self.z: batch_z, self.y: batch_codes})
+				                                                                   feed_dict={self.x: batch_images, self.z: batch_z, self.y: batch_codes})
 				self.writer.add_summary(summary_str_g, counter)
 				self.writer.add_summary(summary_str_q, counter)
 				
