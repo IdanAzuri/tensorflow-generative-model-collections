@@ -190,7 +190,7 @@ class CNNClassifier():
 		h_pool2 = max_pool_2x2(h_conv2)
 		h_pool2_flat = tf.reshape(h_pool2, [-1, int(self.IMAGE_HEIGHT // 4) * int(self.IMAGE_HEIGHT // 4) * 64])
 		
-		h_fc1 = tf.nn.leaky_relu(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1, is_training=True, scope='cnn_d_fc1')
+		h_fc1 = tf.nn.leaky_relu(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1)
 		
 		h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 		y_conv = tf.matmul(h_fc1_drop, self.W_fc2) + self.b_fc2
