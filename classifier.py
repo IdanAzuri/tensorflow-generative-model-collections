@@ -436,8 +436,23 @@ def main():
 	c.train(confidence_in_train, confidence_thresh)
 
 
-if __name__ == '__main__':
-	# main()
-	c = CNNClassifier("fashion-mnist",original_dataset_name="fashion-mnist")
+def main_to_train_classifier():
+	# parse arguments
+	args = parse_args()
+	if args is None:
+		exit()
+	fname = args.fname
+	dir = args.dir_name
+	original_dataset_name = args.original
+	do_preprocess = args.preprocess
+	confidence_in_train = args.use_confidence
+	confidence_thresh = args.confidence_thresh
+	c = CNNClassifier(original_dataset_name,original_dataset_name=original_dataset_name)
 	c.train()
 	c.test(c.data_X[:6400].reshape(-1,784),c.data_y[:6400].reshape(-1,10))
+
+
+if __name__ == '__main__':
+	# main()
+	main_to_train_classifier()
+
