@@ -437,6 +437,6 @@ def main():
 
 if __name__ == '__main__':
 	# main()
-	c = CNNClassifier("fashion-mnist",original_dataset_name="fashion-mnist")
+	c = CNNClassifier("fashion-mnist",original_dataset_name="fashion-mnist",load_from_pkl=True)
 	c.train()
 	c.test(c.data_X[:6400].reshape(-1,784),c.data_y[:6400].reshape(-1,10))
