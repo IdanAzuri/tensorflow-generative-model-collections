@@ -164,7 +164,9 @@ class CNNClassifier():
 			self.b_conv2 = bias_variable([64])
 			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64, 1024])
 			self.b_fc1 = bias_variable([1024])
-			self.W_fc2 = weight_variable([1024, 10])
+			self.W_fc2 = weight_variable([1024, 512])
+			self.b_fc2 = bias_variable([512])
+			self.W_fc3 = weight_variable([512, 10])
 			self.b_fc2 = bias_variable([10])
 		
 		self._create_model()
@@ -179,39 +181,21 @@ class CNNClassifier():
 		self.test_images = self.data_X.reshape(-1, 784)
 		self.test_labels = self.data_y  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
 	
-	def _deepcnn(self, x, keep_prob):
+	def _deepcnn(self, x, keep_prob, is_training=True):
 		with tf.name_scope('reshape'):
 			x_image = tf.reshape(x, [-1, self.IMAGE_WIDTH, self.IMAGE_HEIGHT, self.c_dim])
-		h_conv1 = tf.nn.relu(conv2d(x_image, self.W_conv1) + self.b_conv1)
+		h_conv1 = tf.nn.leaky_relu(bn(conv2d(x_image, self.W_conv1) + self.b_conv1, is_training=is_training, scope="cnn_1"))
 		h_pool1 = max_pool_2x2(h_conv1)
 		
-		h_conv2 = tf.nn.relu(conv2d(h_pool1, self.W_conv2) + self.b_conv2)
+		h_conv2 = tf.nn.leaky_relu(bn(conv2d(h_pool1, self.W_conv2) + self.b_conv2, is_training=is_training, scope='cnn_d_bn1'))
 		h_pool2 = max_pool_2x2(h_conv2)
-		h_pool2_flat = tf.reshape(h_pool2, [-1, int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64])
+		h_pool2_flat = tf.reshape(h_pool2, [-1, int(self.IMAGE_HEIGHT // 4) * int(self.IMAGE_HEIGHT // 4) * 64])
 		
-		h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1)
+		h_fc1 = tf.nn.leaky_relu(bn(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1, is_training=is_training, scope='cnn_d_fc1'))
 		
 		h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 		y_conv = tf.matmul(h_fc1_drop, self.W_fc2) + self.b_fc2
-		
-		# summary
-		# variable_summaries(self.W_conv1, 'W_conv1')
-		# variable_summaries(self.W_conv2, 'W_conv2')
-		# variable_summaries(self.b_conv1, 'b_conv1')
-		# variable_summaries(self.b_conv2, 'b_conv2')
-		# variable_summaries(self.W_fc1, 'W_fc1')
-		# variable_summaries(self.W_fc2, 'W_fc2')
-		# variable_summaries(self.b_fc1, 'b_fc1')
-		# variable_summaries(self.b_fc2, 'b_fc2')
-		return y_conv
-	
-	def _create_model(self):
-		self.x = tf.placeholder(tf.float32, [None, self.IMAGE_HEIGHT * self.IMAGE_WIDTH], name="data")
-		self.y_ = tf.placeholder(tf.float32, [None, 10], name="labels")
-		self.keep_prob = tf.placeholder(tf.float32, name="dropout")
-		# Build the graph for the deep net
-		self.y_conv = self._deepcnn(self.x, self.keep_prob)
-		
+		self.y_conv=y_conv
 		# loss
 		cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y_, logits=self.y_conv)
 		self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
@@ -233,6 +217,26 @@ class CNNClassifier():
 		# tf.summary.scalar('confidence', self.confidence)
 		
 		self.argmax = tf.argmax(self.y_conv, 1)
+		
+		# summary
+		# variable_summaries(self.W_conv1, 'W_conv1')
+		# variable_summaries(self.W_conv2, 'W_conv2')
+		# variable_summaries(self.b_conv1, 'b_conv1')
+		# variable_summaries(self.b_conv2, 'b_conv2')
+		# variable_summaries(self.W_fc1, 'W_fc1')
+		# variable_summaries(self.W_fc2, 'W_fc2')
+		# variable_summaries(self.b_fc1, 'b_fc1')
+		# variable_summaries(self.b_fc2, 'b_fc2')
+		return self.accuracy, self.confidence, self.cross_entropy, self.argmax
+	
+	def _create_model(self):
+		self.x = tf.placeholder(tf.float32, [None, self.IMAGE_HEIGHT * self.IMAGE_WIDTH], name="data")
+		self.y_ = tf.placeholder(tf.float32, [None, 10], name="labels")
+		self.keep_prob = tf.placeholder(tf.float32, name="dropout")
+		# Build the graph for the deep net
+		self._deepcnn(self.x, self.keep_prob)
+		
+		
 		
 		# graph_location = self.log_dir + 'train'
 		# graph_location_test = self.log_dir + 'test'
@@ -291,6 +295,7 @@ class CNNClassifier():
 	
 	def test(self, test_batch, test_labels, counter=0, is_arg_max=False):
 		if is_arg_max:
+			self.accuracy, self.confidence, self.cross_entropy, self.argmax=self._deepcnn(self.x, self.keep_prob, is_training=False)
 			accuracy, confidence, loss, arg_max = self.sess.run([self.accuracy, self.confidence, self.cross_entropy, self.argmax],
 			                                                    feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
 			print("argmax:{}".format(arg_max))
