@@ -198,7 +198,7 @@ class CNNClassifier():
 		# loss
 		cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y_, logits=self.y_conv)
 		self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
-			self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)
+			self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)+ self.lamb * tf.nn.l2_loss(self.W_fc3)
 		cross_entropy = tf.reduce_mean(cross_entropy)
 		self.cross_entropy = cross_entropy
 		cross_entropy += self.l2_regularization
@@ -311,7 +311,7 @@ class CNNClassifier():
 		
 		# Save the model for a pickle
 		pickle.dump([self.sess.run(self.W_conv1), self.sess.run(self.b_conv1), self.sess.run(self.W_conv2), self.sess.run(self.b_conv2), self.sess.run(self.W_fc1),
-		             self.sess.run(self.b_fc1), self.sess.run(self.W_fc2), self.sess.run(self.b_fc2)], open(self.save_to, 'wb'))
+		             self.sess.run(self.b_fc1), self.sess.run(self.W_fc2), self.sess.run(self.b_fc2),self.sess.run(self.W_fc3), self.sess.run(self.b_fc3)], open(self.save_to, 'wb'))
 		
 		print("Model has been saved!")
 	
