@@ -169,7 +169,7 @@ class MultiModalInfoGAN(object):
 			z = concat([z, y], 1)
 			
 			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
-			net = lrelu(bn(linear(net, 128 * self.input_height / 4 * self.input_width / 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
+			net = lrelu(bn(linear(net, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
 			net = tf.reshape(net, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
 			net = lrelu(bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3'),
 			               is_training=is_training, scope='g_bn3'))
@@ -424,7 +424,7 @@ class MultiModalInfoGAN(object):
 			save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 			            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2_%d.png' % l)
 	
-	def create_dataset_from_GAN(self, is_confidence=True):
+	def create_dataset_from_GAN(self, is_confidence=False):
 		
 		generated_dataset = []
 		generated_labels = []
@@ -505,7 +505,6 @@ class MultiModalInfoGAN(object):
 							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzcc' + '_label_%d.png' % label)
 					generated_dataset += generated_dataset_random_z_clean_c
 					generated_labels += generated_labels_random_z_clean_c
-					# print("adding rzcc")
 				if i == 'rzrc':
 					for _ in range(datasetsize // len(self.dataset_creation_order)):
 						# rzrc
@@ -526,7 +525,6 @@ class MultiModalInfoGAN(object):
 					
 					generated_dataset += generated_dataset_random_z_random_c
 					generated_labels += generated_labels_random_z_random_c
-					# print("adding rzrc")
 		
 		####### PREPROCESS ####
 		# if len(generated_dataset_clean_z_clean_c) > 0:
