@@ -454,5 +454,5 @@ def main_to_train_classifier():
 
 
 if __name__ == '__main__':
-	main()
-	# main_to_train_classifier()
+	# main()
+	main_to_train_classifier()
