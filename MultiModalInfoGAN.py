@@ -424,7 +424,7 @@ class MultiModalInfoGAN(object):
 			save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 			            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2_%d.png' % l)
 	
-	def create_dataset_from_GAN(self, is_confidence=False):
+	def create_dataset_from_GAN(self, is_confidence=True):
 		
 		generated_dataset = []
 		generated_labels = []
