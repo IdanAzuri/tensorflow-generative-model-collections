@@ -118,7 +118,7 @@ class CNNClassifier():
 		self.batch_size = 64
 		self.dropout_prob = 0.8
 		self.save_to = classifier_name + "_classifier.pkl"
-		self.lamb = 1e-6
+		self.lamb = 1e-3
 		self.c_dim = 1
 		self.accuracy_list = []
 		self.loss_list = []
@@ -163,12 +163,10 @@ class CNNClassifier():
 			self.b_conv1 = bias_variable([32])
 			self.W_conv2 = weight_variable([5, 5, 32, 64])
 			self.b_conv2 = bias_variable([64])
-			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64, 256])
-			self.b_fc1 = bias_variable([256])
-			self.W_fc2 = weight_variable([256, 64])
-			self.b_fc2 = bias_variable([64])
-			self.W_fc3 = weight_variable([64, 10])
-			self.b_fc3 = bias_variable([10])
+			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64, 1024])
+			self.b_fc1 = bias_variable([1024])
+			self.W_fc2 = weight_variable([1024, 10])
+			self.b_fc2 = bias_variable([10])
 		
 		self._create_model()
 	
@@ -193,10 +191,9 @@ class CNNClassifier():
 		h_pool2_flat = tf.reshape(h_pool2, [-1, int(self.IMAGE_HEIGHT // 4) * int(self.IMAGE_HEIGHT // 4) * 64])
 		
 		h_fc1 = tf.nn.leaky_relu(bn(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1, is_training=True, scope='cnn_d_fc1'))
-		h_fc2 = tf.nn.leaky_relu(bn(tf.matmul(h_fc1, self.W_fc2) + self.b_fc2, is_training=True, scope='cnn_d_fc2'))
 		
-		h_fc2_drop = tf.nn.dropout(h_fc2, keep_prob)
-		y_conv = tf.matmul(h_fc2_drop, self.W_fc3) + self.b_fc3
+		h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+		y_conv = tf.matmul(h_fc1_drop, self.W_fc2) + self.b_fc2
 		
 		# summary
 		# variable_summaries(self.W_conv1, 'W_conv1')
@@ -251,9 +248,9 @@ class CNNClassifier():
 	# self.test_writer.add_graph(self.sess.graph)
 	
 	def train(self, confidence_in_train=False, confidence_thresh=0.9):
-		start_batch_id = 100  # int(1000 / self.batch_size)
+		start_batch_id = 0  # int(1000 / self.batch_size)
 		self.num_batches = min(len(self.data_X) // self.batch_size, 4000)
-		# print("START TRAINING:{}".format(self.fname))
+		print("START TRAINING:{}".format(self.fname))
 		for epoch in range(self.num_epochs):
 			start_time = time.time()
 			for i in range(start_batch_id, self.num_batches):
