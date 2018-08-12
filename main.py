@@ -2,9 +2,8 @@ import argparse
 import os
 
 import matplotlib
-
-
 matplotlib.use('Agg')
+
 import tensorflow as tf
 
 from ACGAN import ACGAN

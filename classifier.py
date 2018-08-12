@@ -40,8 +40,6 @@ from MultiModalInfoGAN import SEED
 
 LEARNING_RATE = 1e-4
 
-
-
 import matplotlib.pyplot as plt
 from matplotlib.legend_handler import HandlerLine2D
 import argparse
@@ -111,7 +109,7 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-	def __init__(self, classifier_name, original_dataset_name,load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results_seed_{}'.format(SEED)):
+	def __init__(self, classifier_name, original_dataset_name, load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results_seed_{}'.format(SEED)):
 		self.num_epochs = 100
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
@@ -195,7 +193,7 @@ class CNNClassifier():
 		
 		h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 		y_conv = tf.matmul(h_fc1_drop, self.W_fc2) + self.b_fc2
-		self.y_conv=y_conv
+		self.y_conv = y_conv
 		# loss
 		cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y_, logits=self.y_conv)
 		self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
@@ -236,8 +234,6 @@ class CNNClassifier():
 		# Build the graph for the deep net
 		self._deepcnn(self.x, self.keep_prob)
 		
-		
-		
 		# graph_location = self.log_dir + 'train'
 		# graph_location_test = self.log_dir + 'test'
 		# self.merged = tf.summary.merge_all()
@@ -271,7 +267,7 @@ class CNNClassifier():
 					# self.train_writer.add_summary(summary, i)
 					_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
 					print('epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
-					print("time: %4.4f" %(time.time() - start_time))
+					print("time: %4.4f" % (time.time() - start_time))
 					print('accuracy:{}, mean_confidence:{}, loss:{}'.format(accuracy, np.mean(confidence), loss))
 					self.accuracy_list.append(accuracy)
 				else:
@@ -281,8 +277,9 @@ class CNNClassifier():
 						accuracy, confidence, loss = self.test(batch_images, batch_labels, epoch * i)
 						high_confidence_threshold_indices = confidence >= confidence_thresh
 						if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
-							_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images[high_confidence_threshold_indices],
-							                                                self.y_: batch_labels[high_confidence_threshold_indices], self.keep_prob: self.dropout_prob})
+							_ = self.sess.run([self.train_step],
+							                  feed_dict={self.x: batch_images[high_confidence_threshold_indices], self.y_: batch_labels[high_confidence_threshold_indices],
+							                             self.keep_prob: self.dropout_prob})
 						else:
 							print("skipping confidence low max_confidence ={}".format(np.max(confidence)))
 		
@@ -295,7 +292,7 @@ class CNNClassifier():
 	
 	def test(self, test_batch, test_labels, counter=0, is_arg_max=False):
 		if is_arg_max:
-			self.accuracy, self.confidence, self.cross_entropy, self.argmax=self._deepcnn(self.x, self.keep_prob, is_training=False)
+			self.accuracy, self.confidence, self.cross_entropy, self.argmax = self._deepcnn(self.x, self.keep_prob, is_training=False)
 			accuracy, confidence, loss, arg_max = self.sess.run([self.accuracy, self.confidence, self.cross_entropy, self.argmax],
 			                                                    feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
 			print("argmax:{}".format(arg_max))
@@ -312,9 +309,8 @@ class CNNClassifier():
 	def save_model(self):
 		
 		# Save the model for a pickle
-		pickle.dump(
-			[self.sess.run(self.W_conv1), self.sess.run(self.b_conv1), self.sess.run(self.W_conv2), self.sess.run(self.b_conv2), self.sess.run(self.W_fc1),
-			 self.sess.run(self.b_fc1), self.sess.run(self.W_fc2), self.sess.run(self.b_fc2)], open(self.save_to, 'wb'))
+		pickle.dump([self.sess.run(self.W_conv1), self.sess.run(self.b_conv1), self.sess.run(self.W_conv2), self.sess.run(self.b_conv2), self.sess.run(self.W_fc1),
+		             self.sess.run(self.b_fc1), self.sess.run(self.W_fc2), self.sess.run(self.b_fc2)], open(self.save_to, 'wb'))
 		
 		print("Model has been saved!")
 	
@@ -378,7 +374,7 @@ def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64
 	
 	data_y_categorical = data_y
 	# data_y = one_hot_encoder(data_y)
-	pretraind = CNNClassifier(original_dataset_name,original_dataset_name=original_dataset_name)
+	pretraind = CNNClassifier(original_dataset_name, original_dataset_name=original_dataset_name)
 	# indices = np.argwhere(data_y == 1)
 	# low_confidence_indices = []
 	for current_label in range(10):
@@ -451,12 +447,11 @@ def main_to_train_classifier():
 	do_preprocess = args.preprocess
 	confidence_in_train = args.use_confidence
 	confidence_thresh = args.confidence_thresh
-	c = CNNClassifier(original_dataset_name,original_dataset_name=original_dataset_name,pkl_fname=None)
+	c = CNNClassifier(original_dataset_name, original_dataset_name=original_dataset_name, pkl_fname=None)
 	c.train()
-	c.test(c.data_X[:6400].reshape(-1,784),c.data_y[:6400].reshape(-1,10))
+	c.test(c.data_X[:6400].reshape(-1, 784), c.data_y[:6400].reshape(-1, 10))
 
 
 if __name__ == '__main__':
 	# main()
 	main_to_train_classifier()
-
