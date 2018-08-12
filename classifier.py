@@ -125,14 +125,13 @@ class CNNClassifier():
 		self.confidence_list = []
 		self.IMAGE_WIDTH = 28
 		self.IMAGE_HEIGHT = 28
+		self.fname = pkl_fname
 		if load_from_pkl:
 			self.real_mnist_x, self.real_mnist_y = load_mnist(original_dataset_name)
 			self.test_labels = self.real_mnist_y
 			# self.test_labels.astype(np.float32, copy=False)
 			self.test_images = self.real_mnist_x.reshape(-1, 784)
-			
 			pkl_label_path = "{}{}/edited_labels_{}.pkl".format(dir, dir_results, pkl_fname)
-			self.fname = pkl_fname
 			pkl_path = "{}{}/edited_training_set_{}.pkl".format(dir, dir_results, pkl_fname)
 			self.set_log_dir("{}_".format(pkl_fname))
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
@@ -447,7 +446,7 @@ def main_to_train_classifier():
 	do_preprocess = args.preprocess
 	confidence_in_train = args.use_confidence
 	confidence_thresh = args.confidence_thresh
-	c = CNNClassifier(original_dataset_name,original_dataset_name=original_dataset_name)
+	c = CNNClassifier(original_dataset_name,original_dataset_name=original_dataset_name,fname=None)
 	c.train()
 	c.test(c.data_X[:6400].reshape(-1,784),c.data_y[:6400].reshape(-1,10))
 
