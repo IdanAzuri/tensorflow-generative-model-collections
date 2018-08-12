@@ -38,7 +38,7 @@ matplotlib.use('Agg')
 from MultiModalInfoGAN import SEED
 
 
-LEARNING_RATE = 1e-5
+LEARNING_RATE = 1e-4
 
 
 
@@ -112,7 +112,7 @@ def variable_summaries(var, name):
 
 class CNNClassifier():
 	def __init__(self, classifier_name, original_dataset_name,load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results_seed_{}'.format(SEED)):
-		self.num_epochs = 30
+		self.num_epochs = 100
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
@@ -183,14 +183,14 @@ class CNNClassifier():
 	def _deepcnn(self, x, keep_prob):
 		with tf.name_scope('reshape'):
 			x_image = tf.reshape(x, [-1, self.IMAGE_WIDTH, self.IMAGE_HEIGHT, self.c_dim])
-		h_conv1 = tf.nn.leaky_relu(conv2d(x_image, self.W_conv1) + self.b_conv1)
+		h_conv1 = tf.nn.relu(conv2d(x_image, self.W_conv1) + self.b_conv1)
 		h_pool1 = max_pool_2x2(h_conv1)
 		
-		h_conv2 = tf.nn.leaky_relu(conv2d(h_pool1, self.W_conv2) + self.b_conv2)
+		h_conv2 = tf.nn.relu(conv2d(h_pool1, self.W_conv2) + self.b_conv2)
 		h_pool2 = max_pool_2x2(h_conv2)
-		h_pool2_flat = tf.reshape(h_pool2, [-1, int(self.IMAGE_HEIGHT // 4) * int(self.IMAGE_HEIGHT // 4) * 64])
+		h_pool2_flat = tf.reshape(h_pool2, [-1, int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64])
 		
-		h_fc1 = tf.nn.leaky_relu(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1)
+		h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1)
 		
 		h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 		y_conv = tf.matmul(h_fc1_drop, self.W_fc2) + self.b_fc2
@@ -250,7 +250,8 @@ class CNNClassifier():
 	def train(self, confidence_in_train=False, confidence_thresh=0.9):
 		start_batch_id = 0  # int(1000 / self.batch_size)
 		self.num_batches = min(len(self.data_X) // self.batch_size, 4000)
-		print("START TRAINING:{}".format(self.fname))
+		if self.fname is not None:
+			print("START TRAINING:{}".format(self.fname))
 		for epoch in range(self.num_epochs):
 			start_time = time.time()
 			for i in range(start_batch_id, self.num_batches):
@@ -436,7 +437,7 @@ def main():
 
 
 if __name__ == '__main__':
-	main()
-	# c = CNNClassifier("fashion-mnist",original_dataset_name="fashion-mnist",load_from_pkl=True)
-	# c.train()
-	# c.test(c.data_X[:6400].reshape(-1,784),c.data_y[:6400].reshape(-1,10))
+	# main()
+	c = CNNClassifier("fashion-mnist",original_dataset_name="fashion-mnist")
+	c.train()
+	c.test(c.data_X[:6400].reshape(-1,784),c.data_y[:6400].reshape(-1,10))
