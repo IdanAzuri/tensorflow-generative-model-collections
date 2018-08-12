@@ -165,7 +165,7 @@ class CNNClassifier():
 			self.W_fc2 = weight_variable([1024, 512])
 			self.b_fc2 = bias_variable([512])
 			self.W_fc3 = weight_variable([512, 10])
-			self.b_fc2 = bias_variable([10])
+			self.b_fc3 = bias_variable([10])
 		
 		self._create_model()
 	
@@ -190,9 +190,10 @@ class CNNClassifier():
 		h_pool2_flat = tf.reshape(h_pool2, [-1, int(self.IMAGE_HEIGHT // 4) * int(self.IMAGE_HEIGHT // 4) * 64])
 		
 		h_fc1 = tf.nn.leaky_relu(bn(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1, is_training=is_training, scope='cnn_d_fc1'))
+		h_fc2 = tf.nn.leaky_relu(bn(tf.matmul(h_fc1, self.W_fc2) + self.b_fc2, is_training=is_training, scope='cnn_d_fc2'))
 		
-		h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
-		y_conv = tf.matmul(h_fc1_drop, self.W_fc2) + self.b_fc2
+		h_fc2_drop = tf.nn.dropout(h_fc2, keep_prob)
+		y_conv = tf.matmul(h_fc2_drop, self.W_fc3) + self.b_fc3
 		self.y_conv = y_conv
 		# loss
 		cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y_, logits=self.y_conv)
