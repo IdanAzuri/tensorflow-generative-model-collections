@@ -166,6 +166,7 @@ class CNNClassifier():
 			self.b_fc2 = bias_variable([512])
 			self.W_fc3 = weight_variable([512, 10])
 			self.b_fc3 = bias_variable([10])
+		tf.reset_default_graph()
 		
 		self._create_model()
 	
@@ -180,7 +181,6 @@ class CNNClassifier():
 		self.test_labels = self.data_y  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
 	
 	def _deepcnn(self, x, keep_prob, is_training=False):
-		tf.reset_default_graph()
 		with tf.name_scope('reshape'):
 			x_image = tf.reshape(x, [-1, self.IMAGE_WIDTH, self.IMAGE_HEIGHT, self.c_dim])
 		h_conv1 = tf.nn.leaky_relu(bn(conv2d(x_image, self.W_conv1) + self.b_conv1, is_training=is_training, scope="cnn_1"))
