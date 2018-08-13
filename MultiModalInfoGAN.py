@@ -539,7 +539,8 @@ class MultiModalInfoGAN(object):
 		data_y_all = np.asarray(generated_labels, dtype=np.int32).flatten()
 		import copy
 		data_y_updateable = copy.deepcopy(data_y_all)
-		pretraind = CNNClassifier(self.dataset_name, original_dataset_name=self.dataset_name)
+		# pretraind = CNNClassifier(self.dataset_name, original_dataset_name=self.dataset_name)
+		
 		for current_label in range(10):
 			small_mask = data_y_clean_part == current_label
 			mask = data_y_all == current_label
@@ -548,7 +549,7 @@ class MultiModalInfoGAN(object):
 			limit = min(len(data_X_for_current_label) // 10, 10000)
 			dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
 			print(dummy_labels.shape)
-			_, confidence, _, arg_max = pretraind.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+			_, confidence, _, arg_max = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 			if is_confidence:
 				print("confidence:{}".format(confidence))
 				high_confidence_threshold_indices = confidence >= CONFIDENCE_THRESHOLD
