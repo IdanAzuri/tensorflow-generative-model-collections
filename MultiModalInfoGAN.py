@@ -9,8 +9,7 @@ import time
 import warnings
 
 from sklearn.utils import shuffle
-import matplotlib
-matplotlib.use('Agg')
+
 
 SEED = 88
 
@@ -539,6 +538,9 @@ class MultiModalInfoGAN(object):
 		
 		data_y_all = np.asarray(generated_labels, dtype=np.int32).flatten()
 		import copy
+		import matplotlib
+		matplotlib.use('Agg')
+		import matplotlib.pyplot as plt
 		data_y_updateable = copy.deepcopy(data_y_all)
 		# pretraind = CNNClassifier(self.dataset_name, original_dataset_name=self.dataset_name)
 		
