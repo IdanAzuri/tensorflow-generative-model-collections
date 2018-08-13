@@ -325,6 +325,8 @@ class CNNClassifier():
 		self.b_fc1 = tf.Variable(tf.constant(model[5]))
 		self.W_fc2 = tf.Variable(tf.constant(model[6]))
 		self.b_fc2 = tf.Variable(tf.constant(model[7]))
+		self.W_fc3 = tf.Variable(tf.constant(model[8]))
+		self.b_fc3 = tf.Variable(tf.constant(model[9]))
 		print("model has been loaded from {}".format(self.save_to))
 	
 	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P", dir="classifier_results_seed_{}/".format(SEED)):
