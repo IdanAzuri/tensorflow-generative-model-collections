@@ -180,42 +180,42 @@ class CNNClassifier():
 		self.test_labels = self.data_y  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
 	
 	def _deepcnn(self, x, keep_prob, is_training=False, reuse=False):
-		with tf.name_scope('reshape'):
+		with tf.variable_scope("cnn_classifier", reuse=reuse):
 			x_image = tf.reshape(x, [-1, self.IMAGE_WIDTH, self.IMAGE_HEIGHT, self.c_dim])
-		h_conv1 = tf.nn.leaky_relu(bn(conv2d(x_image, self.W_conv1) + self.b_conv1, is_training=is_training, scope="cnn_1"))
-		h_pool1 = max_pool_2x2(h_conv1)
-		
-		h_conv2 = tf.nn.leaky_relu(bn(conv2d(h_pool1, self.W_conv2) + self.b_conv2, is_training=is_training, scope='cnn_d_bn1'))
-		h_pool2 = max_pool_2x2(h_conv2)
-		h_pool2_flat = tf.reshape(h_pool2, [-1, int(self.IMAGE_HEIGHT // 4) * int(self.IMAGE_HEIGHT // 4) * 64])
-		
-		h_fc1 = tf.nn.leaky_relu(bn(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1, is_training=is_training, scope='cnn_d_fc1'))
-		h_fc2 = tf.nn.leaky_relu(bn(tf.matmul(h_fc1, self.W_fc2) + self.b_fc2, is_training=is_training, scope='cnn_d_fc2'))
-		
-		h_fc2_drop = tf.nn.dropout(h_fc2, keep_prob)
-		y_conv = tf.matmul(h_fc2_drop, self.W_fc3) + self.b_fc3
-		self.y_conv = y_conv
-		# loss
-		cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y_, logits=self.y_conv)
-		self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
-			self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)+ self.lamb * tf.nn.l2_loss(self.W_fc3)
-		cross_entropy = tf.reduce_mean(cross_entropy)
-		self.cross_entropy = cross_entropy
-		cross_entropy += self.l2_regularization
-		# tf.summary.scalar('cross_entropy', cross_entropy)
-		
-		self.train_step = tf.train.AdamOptimizer(LEARNING_RATE).minimize(cross_entropy)
-		
-		correct_prediction = tf.equal(tf.argmax(self.y_conv, 1), tf.argmax(self.y_, 1))
-		correct_prediction = tf.cast(correct_prediction, tf.float32)
-		self.accuracy = tf.reduce_mean(correct_prediction)
-		# tf.summary.scalar('accuracy', self.accuracy)
-		
-		# self.confidence = tf.cast(tf.reduce_mean(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), axis=0), tf.float32)
-		self.confidence = tf.cast(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), tf.float32)
-		# tf.summary.scalar('confidence', self.confidence)
-		
-		self.argmax = tf.argmax(self.y_conv, 1)
+			h_conv1 = tf.nn.leaky_relu(bn(conv2d(x_image, self.W_conv1) + self.b_conv1, is_training=is_training, scope="cnn_1"))
+			h_pool1 = max_pool_2x2(h_conv1)
+			
+			h_conv2 = tf.nn.leaky_relu(bn(conv2d(h_pool1, self.W_conv2) + self.b_conv2, is_training=is_training, scope='cnn_d_bn1'))
+			h_pool2 = max_pool_2x2(h_conv2)
+			h_pool2_flat = tf.reshape(h_pool2, [-1, int(self.IMAGE_HEIGHT // 4) * int(self.IMAGE_HEIGHT // 4) * 64])
+			
+			h_fc1 = tf.nn.leaky_relu(bn(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1, is_training=is_training, scope='cnn_d_fc1'))
+			h_fc2 = tf.nn.leaky_relu(bn(tf.matmul(h_fc1, self.W_fc2) + self.b_fc2, is_training=is_training, scope='cnn_d_fc2'))
+			
+			h_fc2_drop = tf.nn.dropout(h_fc2, keep_prob)
+			y_conv = tf.matmul(h_fc2_drop, self.W_fc3) + self.b_fc3
+			self.y_conv = y_conv
+			# loss
+			cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y_, logits=self.y_conv)
+			self.l2_regularization = self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(self.W_conv1) + self.lamb * tf.nn.l2_loss(
+				self.W_fc1) + self.lamb * tf.nn.l2_loss(self.W_fc2)+ self.lamb * tf.nn.l2_loss(self.W_fc3)
+			cross_entropy = tf.reduce_mean(cross_entropy)
+			self.cross_entropy = cross_entropy
+			cross_entropy += self.l2_regularization
+			# tf.summary.scalar('cross_entropy', cross_entropy)
+			
+			self.train_step = tf.train.AdamOptimizer(LEARNING_RATE).minimize(cross_entropy)
+			
+			correct_prediction = tf.equal(tf.argmax(self.y_conv, 1), tf.argmax(self.y_, 1))
+			correct_prediction = tf.cast(correct_prediction, tf.float32)
+			self.accuracy = tf.reduce_mean(correct_prediction)
+			# tf.summary.scalar('accuracy', self.accuracy)
+			
+			# self.confidence = tf.cast(tf.reduce_mean(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), axis=0), tf.float32)
+			self.confidence = tf.cast(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), tf.float32)
+			# tf.summary.scalar('confidence', self.confidence)
+			
+			self.argmax = tf.argmax(self.y_conv, 1)
 		
 		# summary
 		# variable_summaries(self.W_conv1, 'W_conv1')
