@@ -9,7 +9,8 @@ import time
 import warnings
 
 from sklearn.utils import shuffle
-
+import matplotlib
+matplotlib.use('Agg')
 
 SEED = 88
 
