@@ -49,7 +49,7 @@ class MultiModalInfoGAN(object):
 	model_name = "MultiModalInfoGAN"  # name for checkpoint
 	
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2, is_wgan_gp=False,
-	             dataset_creation_order=['czcc', 'czrc', 'rzcc', 'rzrc'], SUPERVISED=True, dir_results="classifier_results_seed_{}".format(SEED)):
+	             dataset_creation_order="czcc czrc rzcc rzrc", SUPERVISED=True, dir_results="classifier_results_seed_{}".format(SEED)):
 		self.test_size = 10000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
@@ -305,7 +305,7 @@ class MultiModalInfoGAN(object):
 		start_time = time.time()
 		for epoch in range(start_epoch, self.epoch):
 			# get batch data
-			for idx in range(start_batch_id, self.num_batches):
+			for idx in range(20):#start_batch_id, self.num_batches):
 				if self.dataset_name != "celebA":
 					batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
 				else:
@@ -424,7 +424,7 @@ class MultiModalInfoGAN(object):
 			save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 			            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2_%d.png' % l)
 	
-	def create_dataset_from_GAN(self, is_confidence=True):
+	def create_dataset_from_GAN(self, is_confidence=False):
 		
 		generated_dataset = []
 		generated_labels = []

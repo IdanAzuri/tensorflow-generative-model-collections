@@ -1,6 +1,8 @@
 import argparse
 import os
-
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 import tensorflow as tf
 
@@ -94,7 +96,7 @@ def main():
 	os.environ['CUDA_VISIBLE_DEVICES'] = args.gpus
 	# open session
 	models = [GAN, CGAN, infoGAN, ACGAN, EBGAN, WGAN, WGAN_GP, DRAGAN, LSGAN, BEGAN, VAE, CVAE, MultiModalInfoGAN, infoGAN, AEMultiModalInfoGAN]
-	dataset_creation_order = args.dataset_order.split()
+	dataset_creation_order = args.dataset_order.split(",")
 	len_continuous_code = args.len_continuous_code
 	sampler = args.sampler
 	mu = args.mu
