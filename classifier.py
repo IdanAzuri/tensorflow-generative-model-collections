@@ -30,11 +30,11 @@ import time
 import warnings
 
 import matplotlib
+matplotlib.use('Agg')
 
 from ops import bn
 
 
-matplotlib.use('Agg')
 from MultiModalInfoGAN import SEED
 
 

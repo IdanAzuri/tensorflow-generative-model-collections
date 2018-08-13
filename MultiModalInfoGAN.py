@@ -643,7 +643,6 @@ class MultiModalInfoGAN(object):
 def plot_from_pkl():
 	import numpy as np
 	
-	import matplotlib.pyplot as plt
 	import pickle
 	plt.Figure(figsize=(15, 15))
 	dir = '/Users/idan.a/results_21_5/'

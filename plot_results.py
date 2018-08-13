@@ -21,7 +21,6 @@ END = 50
 # 10 modalities
 def fashion_MM_plot_from_pkl():
 	import numpy as np
-	import matplotlib.pyplot as plt
 	import pickle
 	# plt.Figure(figsize=(15, 15))
 	

@@ -1,12 +1,10 @@
 import numpy as np
-import matplotlib
 
 from MultiModalInfoGAN import SEED
 
 
 np.random.seed(SEED)
 
-import matplotlib.pyplot as plt
 
 
 class Sampler(object):
