@@ -538,9 +538,7 @@ class MultiModalInfoGAN(object):
 		
 		data_y_all = np.asarray(generated_labels, dtype=np.int32).flatten()
 		import copy
-		import matplotlib
-		matplotlib.use('Agg')
-		import matplotlib.pyplot as plt
+
 		data_y_updateable = copy.deepcopy(data_y_all)
 		# pretraind = CNNClassifier(self.dataset_name, original_dataset_name=self.dataset_name)
 		
@@ -563,9 +561,9 @@ class MultiModalInfoGAN(object):
 			print(str(len(arg_max)) + " were taken")
 			new_label = np.bincount(arg_max).argmax()
 			print("Assinging:{}".format(new_label))
-			plt.title("old_label=" + str(current_label) + "new_label=" + str(new_label))
-			plt.imshow(data_X_for_current_label[0].reshape(28, 28))
-			plt.show()
+			# plt.title("old_label=" + str(current_label) + "new_label=" + str(new_label))
+			# plt.imshow(data_X_for_current_label[0].reshape(28, 28))
+			# plt.show()
 			data_y_updateable[mask] = new_label
 			print(np.bincount(arg_max))
 		data_y_all = one_hot_encoder(data_y_updateable)
