@@ -166,7 +166,6 @@ class CNNClassifier():
 			self.b_fc2 = bias_variable([512])
 			self.W_fc3 = weight_variable([512, 10])
 			self.b_fc3 = bias_variable([10])
-		tf.reset_default_graph()
 		
 		self._create_model()
 	
