@@ -179,7 +179,7 @@ class CNNClassifier():
 		self.test_images = self.data_X.reshape(-1, 784)
 		self.test_labels = self.data_y  # self.get_batch = mnist.train.next_batch(self.batch_size)  # self.mnist = mnist
 	
-	def _deepcnn(self, x, keep_prob, is_training=False):
+	def _deepcnn(self, x, keep_prob, is_training=False, reuse=False):
 		with tf.name_scope('reshape'):
 			x_image = tf.reshape(x, [-1, self.IMAGE_WIDTH, self.IMAGE_HEIGHT, self.c_dim])
 		h_conv1 = tf.nn.leaky_relu(bn(conv2d(x_image, self.W_conv1) + self.b_conv1, is_training=is_training, scope="cnn_1"))
@@ -233,7 +233,7 @@ class CNNClassifier():
 		self.y_ = tf.placeholder(tf.float32, [None, 10], name="labels")
 		self.keep_prob = tf.placeholder(tf.float32, name="dropout")
 		# Build the graph for the deep net
-		self._deepcnn(self.x, self.keep_prob,is_training=True)
+		self._deepcnn(self.x, self.keep_prob,is_training=True,reuse=False)
 		
 		# graph_location = self.log_dir + 'train'
 		# graph_location_test = self.log_dir + 'test'
@@ -293,7 +293,7 @@ class CNNClassifier():
 	
 	def test(self, test_batch, test_labels, counter=0, is_arg_max=False):
 		if is_arg_max:
-			self.accuracy, self.confidence, self.cross_entropy, self.argmax = self._deepcnn(self.x, self.keep_prob, is_training=False)
+			self.accuracy, self.confidence, self.cross_entropy, self.argmax = self._deepcnn(self.x, self.keep_prob, is_training=False,reuse=True)
 			accuracy, confidence, loss, arg_max = self.sess.run([self.accuracy, self.confidence, self.cross_entropy, self.argmax],
 			                                                    feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
 			print("argmax:{}".format(arg_max))
