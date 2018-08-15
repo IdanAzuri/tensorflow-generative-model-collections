@@ -204,28 +204,28 @@ class CNNClassifier():
 			cross_entropy += self.l2_regularization
 			# tf.summary.scalar('cross_entropy', cross_entropy)
 		
-		self.train_step = tf.train.AdamOptimizer(LEARNING_RATE).minimize(cross_entropy)
-		
-		correct_prediction = tf.equal(tf.argmax(self.y_conv, 1), tf.argmax(self.y_, 1))
-		correct_prediction = tf.cast(correct_prediction, tf.float32)
-		self.accuracy = tf.reduce_mean(correct_prediction)
-		# tf.summary.scalar('accuracy', self.accuracy)
-		
-		# self.confidence = tf.cast(tf.reduce_mean(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), axis=0), tf.float32)
-		self.confidence = tf.cast(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), tf.float32)
-		# tf.summary.scalar('confidence', self.confidence)
-		
-		self.argmax = tf.argmax(self.y_conv, 1)
-		
-		# summary
-		# variable_summaries(self.W_conv1, 'W_conv1')
-		# variable_summaries(self.W_conv2, 'W_conv2')
-		# variable_summaries(self.b_conv1, 'b_conv1')
-		# variable_summaries(self.b_conv2, 'b_conv2')
-		# variable_summaries(self.W_fc1, 'W_fc1')
-		# variable_summaries(self.W_fc2, 'W_fc2')
-		# variable_summaries(self.b_fc1, 'b_fc1')
-		# variable_summaries(self.b_fc2, 'b_fc2')
+			self.train_step = tf.train.AdamOptimizer(LEARNING_RATE).minimize(cross_entropy)
+			
+			correct_prediction = tf.equal(tf.argmax(self.y_conv, 1), tf.argmax(self.y_, 1))
+			correct_prediction = tf.cast(correct_prediction, tf.float32)
+			self.accuracy = tf.reduce_mean(correct_prediction)
+			# tf.summary.scalar('accuracy', self.accuracy)
+			
+			# self.confidence = tf.cast(tf.reduce_mean(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), axis=0), tf.float32)
+			self.confidence = tf.cast(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), tf.float32)
+			# tf.summary.scalar('confidence', self.confidence)
+			
+			self.argmax = tf.argmax(self.y_conv, 1)
+			
+			# summary
+			# variable_summaries(self.W_conv1, 'W_conv1')
+			# variable_summaries(self.W_conv2, 'W_conv2')
+			# variable_summaries(self.b_conv1, 'b_conv1')
+			# variable_summaries(self.b_conv2, 'b_conv2')
+			# variable_summaries(self.W_fc1, 'W_fc1')
+			# variable_summaries(self.W_fc2, 'W_fc2')
+			# variable_summaries(self.b_fc1, 'b_fc1')
+			# variable_summaries(self.b_fc2, 'b_fc2')
 		return self.accuracy, self.confidence, self.cross_entropy, self.argmax
 	
 	def _create_model(self):
