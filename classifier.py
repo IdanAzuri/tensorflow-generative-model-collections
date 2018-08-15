@@ -273,7 +273,7 @@ class CNNClassifier():
 					print('accuracy:{}, mean_confidence:{}, loss:{}'.format(accuracy, np.mean(confidence), loss))
 					self.accuracy_list.append(accuracy)
 				else:
-					if not use_confidence:
+					if use_confidence:
 						self.train_step.run(session=self.sess, feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
 					else:
 						accuracy, confidence, loss = self.test(batch_images, batch_labels, epoch * i)
