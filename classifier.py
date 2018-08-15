@@ -440,7 +440,7 @@ def main():
 		
 		# else:
 		c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir, original_dataset_name=original_dataset_name)
-		c.train(confidence_in_train, confidence_thresh)
+		c.train(False, confidence_thresh)
 
 	else:
 		main_to_train_classifier()
