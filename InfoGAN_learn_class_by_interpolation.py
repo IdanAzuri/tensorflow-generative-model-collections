@@ -74,7 +74,7 @@ class InfoGANLearnPhase2(object):
 		self.sample_num = 64  # number of generated images to be saved
 		
 		# code
-		self.len_discrete_code = 9  # categorical distribution (i.e. label)
+		self.len_discrete_code = 10  # categorical distribution (i.e. label)
 		self.len_continuous_code = len_continuous_code  # gaussian distribution (e.g. rotation, thickness)
 		
 		if dataset_name == 'mnist' or dataset_name == 'fashion-mnist':
@@ -151,6 +151,7 @@ class InfoGANLearnPhase2(object):
 		
 		# noises
 		self.z = tf.placeholder(tf.float32, [bs, self.z_dim], name='z')
+		self.latent_code = tf.placeholder(tf.float32, [bs, self.len_discrete_code +self.len_continuous_code], name='c')
 		self.latent_code = tf.placeholder(tf.float32, [bs, self.len_discrete_code +self.len_continuous_code], name='z')
 		
 		""" Loss Function """
