@@ -424,7 +424,7 @@ class MultiModalInfoGAN(object):
 			save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 			            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2_%d.png' % l)
 	
-	def create_dataset_from_GAN(self, is_confidence=False):
+	def create_dataset_from_GAN(self, is_confidence=True):
 		
 		generated_dataset = []
 		generated_labels = []
@@ -549,7 +549,6 @@ class MultiModalInfoGAN(object):
 			
 			limit = min(len(data_X_for_current_label) // 10, 10000)
 			dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
-			print(dummy_labels.shape)
 			_, confidence, _, arg_max = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 			if is_confidence:
 				print("confidence:{}".format(confidence))
@@ -578,7 +577,6 @@ class MultiModalInfoGAN(object):
 		generated_dataset, data_y_all = shuffle(generated_dataset, data_y_all, random_state=0)
 		pickle.dump(generated_dataset, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
 		output_path = open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb')
-		print(output_path)
 		pickle.dump(data_y_all, output_path)
 		
 		fname_trainingset = "generated_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
