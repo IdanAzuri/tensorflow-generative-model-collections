@@ -114,7 +114,7 @@ class CNNClassifier():
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
-		self.dropout_prob = 0.8
+		self.dropout_prob = 0.6
 		self.save_to = classifier_name + "_classifier.pkl"
 		self.lamb = 1e-3
 		self.c_dim = 1
@@ -249,7 +249,7 @@ class CNNClassifier():
 	
 	def train(self, confidence_in_train=False, confidence_thresh=0.9):
 		use_confidence = not confidence_in_train
-		start_batch_id = 0  # int(1000 / self.batch_size)
+		start_batch_id = 100  # int(1000 / self.batch_size)
 		self.num_batches = min(len(self.data_X) // self.batch_size, 4000)
 		if self.fname is not None:
 			print("START TRAINING:{}".format(self.fname))
@@ -458,7 +458,7 @@ def main_to_train_classifier():
 	confidence_thresh = args.confidence_thresh
 	c = CNNClassifier(original_dataset_name, original_dataset_name=original_dataset_name, pkl_fname=None)
 	c.train(confidence_in_train=False)
-	c.test(c.data_X[:6400].reshape(-1, 784), c.data_y[:6400].reshape(-1, 10))
+	c.test(c.data_X[:1000].reshape(-1, 784), c.data_y[:1000].reshape(-1, 10))
 
 
 if __name__ == '__main__':
