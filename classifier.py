@@ -421,7 +421,7 @@ def main():
 	if args is None:
 		exit()
 	train_classifier_for_generated_data=args.train_model
-	if train_classifier_for_generated_data:
+	if False:
 		fname = args.fname
 		dir = args.dir_name
 		original_dataset_name = args.original
