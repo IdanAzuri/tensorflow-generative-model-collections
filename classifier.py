@@ -244,12 +244,13 @@ class CNNClassifier():
 	# self.test_writer.add_graph(self.sess.graph)
 	
 	def train(self, confidence_in_train=False, confidence_thresh=0.9):
+		use_confidence = not confidence_in_train
 		start_batch_id = 0  # int(1000 / self.batch_size)
 		self.num_batches = min(len(self.data_X) // self.batch_size, 4000)
 		if self.fname is not None:
 			print("START TRAINING:{}".format(self.fname))
+		start_time = time.time()
 		for epoch in range(self.num_epochs):
-			start_time = time.time()
 			for i in range(start_batch_id, self.num_batches):
 				batch_images = self.data_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
 				batch_labels = self.data_y[i * self.batch_size:(i + 1) * self.batch_size]
@@ -268,7 +269,7 @@ class CNNClassifier():
 					print('accuracy:{}, mean_confidence:{}, loss:{}'.format(accuracy, np.mean(confidence), loss))
 					self.accuracy_list.append(accuracy)
 				else:
-					if not confidence_in_train:
+					if not use_confidence:
 						self.train_step.run(session=self.sess, feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
 					else:
 						accuracy, confidence, loss = self.test(batch_images, batch_labels, epoch * i)
