@@ -450,7 +450,7 @@ def main_to_train_classifier():
 	confidence_in_train = args.use_confidence
 	confidence_thresh = args.confidence_thresh
 	c = CNNClassifier(original_dataset_name, original_dataset_name=original_dataset_name, pkl_fname=None)
-	c.train()
+	c.train(confidence_in_train=False)
 	c.test(c.data_X[:6400].reshape(-1, 784), c.data_y[:6400].reshape(-1, 10))
 
 
