@@ -177,7 +177,7 @@ class MultiModalInfoGAN(object):
 			z = concat([z, y], 1)
 			
 			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
-			net = lrelu(bn(linear(net, 128 * self.input_height / 4 * self.input_width / 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
+			net = lrelu(bn(linear(net, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
 			net = tf.reshape(net, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
 			net = lrelu(
 				bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training, scope='g_bn3'))
@@ -509,7 +509,8 @@ class MultiModalInfoGAN(object):
 							save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzcc' + '_label_%d.png' % label)
 					generated_dataset += generated_dataset_random_z_clean_c
-					generated_labels += generated_labels_random_z_clean_c  # print("adding rzcc")
+					generated_labels += generated_labels_random_z_clean_c
+					# print("adding rzcc")
 				if i == 'rzrc':
 					for _ in range(datasetsize // len(self.dataset_creation_order)):
 						# rzrc
@@ -529,7 +530,7 @@ class MultiModalInfoGAN(object):
 							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzrc' + '_label_%d.png' % label)
 					
 					generated_dataset += generated_dataset_random_z_random_c
-					generated_labels += generated_labels_random_z_random_c  # print("adding rzrc")
+					generated_labels += generated_labels_random_z_random_c
 		
 		####### PREPROCESS ####
 		# if len(generated_dataset_clean_z_clean_c) > 0:
@@ -544,7 +545,6 @@ class MultiModalInfoGAN(object):
 		data_y_all = np.asarray(generated_labels, dtype=np.int32).flatten()
 		import copy
 		data_y_updateable = copy.deepcopy(data_y_all)
-		pretraind = CNNClassifier(self.dataset_name, original_dataset_name=self.dataset_name)
 		for current_label in range(self.len_discrete_code):
 			small_mask = data_y_clean_part == current_label
 			mask = data_y_all == current_label
@@ -553,7 +553,7 @@ class MultiModalInfoGAN(object):
 			limit = min(len(data_X_for_current_label) // self.len_discrete_code, 10000)
 			dummy_labels = one_hot_encoder(np.random.randint(0, self.len_discrete_code, size=(limit)))  # no meaning for the labels
 			print(dummy_labels.shape)
-			_, confidence, _, arg_max = pretraind.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, self.len_discrete_code), is_arg_max=True)
+			_, confidence, _, arg_max = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, self.len_discrete_code), is_arg_max=True)
 			if is_confidence:
 				print("confidence:{}".format(confidence))
 				high_confidence_threshold_indices = confidence >= CONFIDENCE_THRESHOLD
@@ -564,9 +564,9 @@ class MultiModalInfoGAN(object):
 			print(str(len(arg_max)) + " were taken")
 			new_label = np.bincount(arg_max).argmax()
 			print("Assinging:{}".format(new_label))
-			plt.title("old_label=" + str(current_label) + "new_label=" + str(new_label))
-			plt.imshow(data_X_for_current_label[0].reshape(28, 28))
-			plt.show()
+			# plt.title("old_label=" + str(current_label) + "new_label=" + str(new_label))
+			# plt.imshow(data_X_for_current_label[0].reshape(28, 28))
+			# plt.show()
 			data_y_updateable[mask] = new_label
 			print(np.bincount(arg_max))
 		data_y_all = one_hot_encoder(data_y_updateable)
@@ -580,7 +580,8 @@ class MultiModalInfoGAN(object):
 		generated_dataset = np.asarray(generated_dataset).reshape(-1, 784)
 		generated_dataset, data_y_all = shuffle(generated_dataset, data_y_all, random_state=0)
 		pickle.dump(generated_dataset, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
-		pickle.dump(data_y_all, open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb'))
+		output_path = open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb')
+		pickle.dump(data_y_all, output_path)
 		
 		fname_trainingset = "generated_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}\n\n".format(len(generated_dataset), len(generated_labels), fname_trainingset))
@@ -646,7 +647,6 @@ class MultiModalInfoGAN(object):
 def plot_from_pkl():
 	import numpy as np
 	
-	import matplotlib.pyplot as plt
 	import pickle
 	plt.Figure(figsize=(15, 15))
 	dir = '/Users/idan.a/results_21_5/'
