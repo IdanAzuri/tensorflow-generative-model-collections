@@ -38,8 +38,8 @@ from MultiModalInfoGAN import SEED
 
 
 LEARNING_RATE = 1e-4
-import matplotlib
-matplotlib.use('Agg')
+# import matplotlib
+# matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.legend_handler import HandlerLine2D
 import argparse
