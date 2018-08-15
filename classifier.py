@@ -351,6 +351,7 @@ def parse_args():
 	parser.add_argument('--original', type=str, default="mnist")
 	parser.add_argument('--use_confidence', type=bool, default="False")
 	parser.add_argument('--confidence_thresh', type=float, default=0.9)
+	parser.add_argument('--train_vanila', type=bool, default="False")
 	
 	return parser.parse_args()
 
@@ -418,18 +419,22 @@ def main():
 	args = parse_args()
 	if args is None:
 		exit()
-	fname = args.fname
-	dir = args.dir_name
-	original_dataset_name = args.original
-	do_preprocess = args.preprocess
-	confidence_in_train = args.use_confidence
-	confidence_thresh = args.confidence_thresh
-	# if do_preprocess:
-	# 	preprocess_data(dir, fname, original_dataset_name=original_dataset_name)
-	
-	# else:
-	c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir, original_dataset_name=original_dataset_name)
-	c.train(confidence_in_train, confidence_thresh)
+	train_vanila=args.train_vanila
+	if train_vanila:
+		main_to_train_classifier()
+	else:
+		fname = args.fname
+		dir = args.dir_name
+		original_dataset_name = args.original
+		do_preprocess = args.preprocess
+		confidence_in_train = args.use_confidence
+		confidence_thresh = args.confidence_thresh
+		# if do_preprocess:
+		# 	preprocess_data(dir, fname, original_dataset_name=original_dataset_name)
+		
+		# else:
+		c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir, original_dataset_name=original_dataset_name)
+		c.train(confidence_in_train, confidence_thresh)
 
 
 def main_to_train_classifier():
@@ -449,5 +454,6 @@ def main_to_train_classifier():
 
 
 if __name__ == '__main__':
+	
 	# main()
 	main_to_train_classifier()
