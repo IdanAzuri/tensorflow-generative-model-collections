@@ -357,9 +357,9 @@ def parse_args():
 	parser.add_argument('--preprocess', type=bool, default=False)
 	parser.add_argument('--fname', type=str, default='fashion-mnist_MultivariateGaussianSampler')
 	parser.add_argument('--original', type=str, default="mnist")
-	parser.add_argument('--use_confidence', type=bool, default="False")
+	parser.add_argument('--use_confidence', type=bool, default=False)
 	parser.add_argument('--confidence_thresh', type=float, default=0.9)
-	parser.add_argument('--train_model', type=bool, default="True")
+	parser.add_argument('--train_model', type=bool, default=True)
 	
 	return parser.parse_args()
 
@@ -427,8 +427,8 @@ def main():
 	args = parse_args()
 	if args is None:
 		exit()
-	train_classifier_for_generated_data=args.train_model
-	if train_classifier_for_generated_data:
+	train_classifier_for_generated_data=args.train_model # something is not right
+	if False:
 		fname = args.fname
 		dir = args.dir_name
 		original_dataset_name = args.original
