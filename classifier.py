@@ -37,7 +37,7 @@ from ops import bn
 from MultiModalInfoGAN import SEED
 
 
-LEARNING_RATE = 1e-4
+LEARNING_RATE = 1e-6
 # import matplotlib
 # matplotlib.use('Agg')
 import matplotlib.pyplot as plt
