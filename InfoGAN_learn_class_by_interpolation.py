@@ -46,7 +46,7 @@ def gradient_penalty(real, fake, f):
 
 
 class InfoGANLearnPhase2(object):
-	model_name = "MultiModalInfoGAN"  # name for checkpoint
+	model_name = "MultiModalInfoGAN_phase2"  # name for checkpoint
 	
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2, is_wgan_gp=False,
 	             dataset_creation_order=['czcc', 'czrc', 'rzcc', 'rzrc'], SUPERVISED=True, dir_results="classifier_results_seed_{}".format(SEED)):
@@ -147,12 +147,10 @@ class InfoGANLearnPhase2(object):
 		self.x = tf.placeholder(tf.float32, [bs] + image_dims, name='real_images')
 		
 		# labels
-		self.y = tf.placeholder(tf.float32, [bs, self.y_dim], name='y')
-		
+		# self.y = tf.placeholder(tf.float32, [bs, self.y_dim], name='y')
+		self.y = tf.get_variable("y", shape=[bs, self.y_dim],initializer=tf.contrib.layers.xavier_initializer())
 		# noises
 		self.z = tf.placeholder(tf.float32, [bs, self.z_dim], name='z')
-		self.latent_code = tf.placeholder(tf.float32, [bs, self.len_discrete_code +self.len_continuous_code], name='c')
-		self.latent_code = tf.placeholder(tf.float32, [bs, self.len_discrete_code +self.len_continuous_code], name='z')
 		
 		""" Loss Function """
 		## 1. GAN Loss
@@ -278,13 +276,13 @@ class InfoGANLearnPhase2(object):
 				
 				# update D network
 				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss],
-				                                       feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
+				                                       feed_dict={self.x: batch_images,self.z: batch_z})
 				self.writer.add_summary(summary_str, counter)
 				
 				# update G and Q network
 				_, summary_str_g, g_loss, _, summary_str_q, q_loss = self.sess.run(
 					[self.g_optim, self.g_sum, self.g_loss, self.q_optim, self.q_sum, self.q_loss],
-					feed_dict={self.x: batch_images, self.z: batch_z, self.y: batch_codes})
+					feed_dict={self.x: batch_images, self.z: batch_z})
 				self.writer.add_summary(summary_str_g, counter)
 				self.writer.add_summary(summary_str_q, counter)
 				
@@ -322,7 +320,7 @@ class InfoGANLearnPhase2(object):
 		y_one_hot = np.zeros((self.batch_size, self.y_dim))
 		y_one_hot[np.arange(self.batch_size), y] = 1
 		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
-		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})  # samples_for_test.append(samples)
+		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample})  # samples_for_test.append(samples)
 		
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 		            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
@@ -337,7 +335,7 @@ class InfoGANLearnPhase2(object):
 			y_one_hot = np.zeros((self.batch_size, self.y_dim))
 			y_one_hot[np.arange(self.batch_size), y] = 1
 			
-			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
+			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample})
 			# save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 			#             check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_%d.png' % l)
 			
@@ -379,7 +377,7 @@ class InfoGANLearnPhase2(object):
 			y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
 			y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
 			
-			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
+			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed})
 			
 			save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 			            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2_%d.png' % l)
@@ -421,7 +419,7 @@ class InfoGANLearnPhase2(object):
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
 						y_one_hot = np.zeros((self.batch_size, self.y_dim))
 						y_one_hot[np.arange(self.batch_size), y] = 1
-						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
+						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed})
 						generated_dataset_clean_z_clean_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
 						generated_labels_clean_z_clean_c += [label] * self.batch_size
 						if _ == 1:
@@ -440,7 +438,7 @@ class InfoGANLearnPhase2(object):
 						y_one_hot[np.arange(self.batch_size), y] = 1
 						y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
 						y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
-						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
+						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed})
 						generated_dataset_clean_z_random_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
 						generated_labels_clean_z_random_c += [label] * self.batch_size
 						if _ == 1:
@@ -457,7 +455,7 @@ class InfoGANLearnPhase2(object):
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
 						y_one_hot = np.zeros((self.batch_size, self.y_dim))
 						y_one_hot[np.arange(self.batch_size), y] = 1
-						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
+						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample})
 						generated_dataset_random_z_clean_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
 						generated_labels_random_z_clean_c += [label] * self.batch_size
 						if _ == 1:
@@ -476,7 +474,7 @@ class InfoGANLearnPhase2(object):
 						y_one_hot[np.arange(self.batch_size), y] = 1
 						y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
 						y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
-						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
+						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample})
 						
 						generated_dataset_random_z_random_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
 						generated_labels_random_z_random_c += [label] * self.batch_size
