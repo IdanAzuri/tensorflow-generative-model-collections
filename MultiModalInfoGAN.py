@@ -10,7 +10,6 @@ import warnings
 
 from sklearn.utils import shuffle
 
-
 SEED = 88
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
