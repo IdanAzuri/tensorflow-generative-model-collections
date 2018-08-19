@@ -28,7 +28,7 @@ from __future__ import print_function
 import os
 import time
 import warnings
-from sklearn.cross_validation import KFold
+from sklearn.cross_validation import KFold, train_test_split
 
 from ops import bn
 
@@ -108,7 +108,7 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-    def __init__(self, classifier_name, original_dataset_name, load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results_seed_{}'.format(SEED),data_X=None,data_y=None):
+    def __init__(self, classifier_name, original_dataset_name, load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results_seed_{}'.format(SEED),data_X=None,data_y=None,test_x=None,test_y=None):
         self.num_epochs = 100
         self.classifier_name = classifier_name
         self.log_dir = 'logs/{}/'.format(classifier_name)
@@ -136,6 +136,9 @@ class CNNClassifier():
         if data_X is None and data_y is None:
             self.data_X=data_X
             self.data_y=data_y
+        if data_X is None and data_y is None:
+            self.test_images=test_x
+            self.test_labels=test_y
         if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
             # mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
             self.data_X, self.data_y = load_mnist(self.classifier_name)
@@ -435,11 +438,12 @@ def main():
 
         data_X = pickle.load(open(pkl_path, 'rb'))
         data_y = pickle.load(open(pkl_label_path, 'rb'))
-        k_fold = KFold(int(20e5),n_folds=10,shuffle=True,random_state=SEED)
+
         accuracy_cross_validation=[]
         c=None
-        for train_indices, test_indices in k_fold:
-            c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir, original_dataset_name=original_dataset_name,data_X=data_X[train_indices],data_y= data_y[test_indices])
+        for i in range(10):
+            X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.33, random_state=42+i)
+            c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir, original_dataset_name=original_dataset_name,data_X=X_train,data_y=y_train,test_x=X_test,test_y=y_test)
             accuracy_cross_validation.append(c.train(confidence_in_train, confidence_thresh))
         accuracy_cross_validation=np.asarray(accuracy_cross_validation).mean(axis=0)
         c.plot_train_test_loss("accuracy",accuracy_cross_validation)
