@@ -28,8 +28,7 @@ from __future__ import print_function
 import os
 import time
 import warnings
-from sklearn.cross_validation import KFold, train_test_split
-
+from sklearn.model_selection import train_test_split
 from ops import bn
 
 
