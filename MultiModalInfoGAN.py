@@ -49,7 +49,7 @@ class MultiModalInfoGAN(object):
 	
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2, is_wgan_gp=False,
 	             dataset_creation_order="czcc czrc rzcc rzrc", SUPERVISED=True, dir_results="classifier_results_seed_{}".format(SEED)):
-		self.test_size = 10000
+		self.test_size = 5000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
 		self.confidence_list = []
@@ -150,13 +150,22 @@ class MultiModalInfoGAN(object):
 	def discriminator(self, x, is_training=True, reuse=True):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
 		# Architecture : (64)4c2s-(128)4c2s_BL-FC1024_BL-FC1_S
-		with tf.variable_scope("discriminator", reuse=reuse):
-			net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
-			net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
-			net = tf.reshape(net, [self.batch_size, -1])
-			net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
-			out_logit = linear(net, 1, scope='d_fc4')
-			out = tf.nn.sigmoid(out_logit)
+		if self.wgan_gp:
+			with tf.variable_scope("wgan_discriminator", reuse=reuse):
+				net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
+				net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
+				net = tf.reshape(net, [self.batch_size, -1])
+				net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
+				out_logit = linear(net, 1, scope='d_fc4')
+				out = tf.nn.sigmoid(out_logit)
+		else:
+			with tf.variable_scope("discriminator", reuse=reuse):
+				net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
+				net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
+				net = tf.reshape(net, [self.batch_size, -1])
+				net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
+				out_logit = linear(net, 1, scope='d_fc4')
+				out = tf.nn.sigmoid(out_logit)
 			
 			return out, out_logit, net
 	

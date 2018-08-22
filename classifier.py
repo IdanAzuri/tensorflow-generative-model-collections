@@ -111,7 +111,7 @@ class CNNClassifier():
         self.classifier_name = classifier_name
         self.log_dir = 'logs/{}/'.format(classifier_name)
         self.batch_size = 64
-        self.dropout_prob = 0.8
+        self.dropout_prob = 0.5
         self.save_to = classifier_name + "_classifier.pkl"
         self.lamb = 1e-3
         self.c_dim = 1
