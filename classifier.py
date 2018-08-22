@@ -110,7 +110,7 @@ def variable_summaries(var, name):
 class CNNClassifier():
 	def __init__(self, classifier_name, original_dataset_name, load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results_seed_{}'.format(SEED), data_X=None,
 	             data_y=None, test_x=None, test_y=None):
-		self.num_epochs = 5
+		self.num_epochs = 30
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
@@ -444,7 +444,7 @@ def main():
 		accuracy_cross_validation = []
 		c = None
 		print("Starting cross validation")
-		cv = 2
+		cv = 10
 		for i in range(cv):
 			print("Iteration {}/{}".format(i, 10))
 			X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.33, random_state=10 + i)
@@ -453,7 +453,8 @@ def main():
 			accuracy_cross_validation.append(c.train(confidence_in_train, confidence_thresh))
 			print("Acuuracy of iteration {} : {}".format(i, accuracy_cross_validation[-1]))
 		accuracy_cross_validation = np.asarray(accuracy_cross_validation).mean(axis=0)
-		c.plot_train_test_loss("accuracy_cv_{}".format(cv), accuracy_cross_validation)
+		print("mean Acuuracy {}".format(accuracy_cross_validation))
+		c.plot_train_test_loss("accuracy_cv_{}".format(cv), accuracy_cross_validation[1:])
 	else:
 		main_to_train_classifier()
 
