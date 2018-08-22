@@ -444,15 +444,16 @@ def main():
 		accuracy_cross_validation = []
 		c = None
 		print("Starting cross validation")
-		for i in range(10):
+		cv = 2
+		for i in range(cv):
 			print("Iteration {}/{}".format(i, 10))
-			X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.33, random_state=42 + i)
+			X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.33, random_state=10 + i)
 			c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir, original_dataset_name=original_dataset_name, data_X=X_train, data_y=y_train, test_x=X_test,
 			                  test_y=y_test)
 			accuracy_cross_validation.append(c.train(confidence_in_train, confidence_thresh))
 			print("Acuuracy of iteration {} : {}".format(i, accuracy_cross_validation[-1]))
 		accuracy_cross_validation = np.asarray(accuracy_cross_validation).mean(axis=0)
-		c.plot_train_test_loss("accuracy", accuracy_cross_validation)
+		c.plot_train_test_loss("accuracy_cv_{}".format(cv), accuracy_cross_validation)
 	else:
 		main_to_train_classifier()
 
