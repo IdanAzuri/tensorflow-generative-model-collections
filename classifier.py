@@ -36,9 +36,7 @@ from MultiModalInfoGAN import SEED
 
 
 LEARNING_RATE = 1e-5
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+
 from matplotlib.legend_handler import HandlerLine2D
 import argparse
 import pickle
@@ -108,7 +106,7 @@ def variable_summaries(var, name):
 
 class CNNClassifier():
     def __init__(self, classifier_name, original_dataset_name, load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results_seed_{}'.format(SEED),data_X=None,data_y=None,test_x=None,test_y=None):
-        self.num_epochs = 15
+        self.num_epochs = 5
         self.classifier_name = classifier_name
         self.log_dir = 'logs/{}/'.format(classifier_name)
         self.batch_size = 64
@@ -327,6 +325,9 @@ class CNNClassifier():
         print("model has been loaded from {}".format(self.save_to))
 
     def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P", dir="classifier_results_seed_{}/".format(SEED)):
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
         plt.Figure()
         plt.title('{} {} score'.format(self.fname, name_of_measure), fontsize=18)
         x_range = np.linspace(1, len(array) - 1, len(array))
