@@ -454,7 +454,7 @@ def main():
 			print("Acuuracy of iteration {} : {}".format(i, accuracy_cross_validation[-1]))
 		accuracy_cross_validation = np.asarray(accuracy_cross_validation).mean(axis=0)
 		print("mean Acuuracy {}".format(accuracy_cross_validation))
-		c.plot_train_test_loss("accuracy_cv_{}".format(cv), accuracy_cross_validation[1:])
+		c.plot_train_test_loss("accuracy_cv_{}_selftest".format(cv), accuracy_cross_validation[1:])
 	else:
 		main_to_train_classifier()
 

@@ -2,8 +2,8 @@
 #SBATCH --mem=70g
 #SBATCH -c 16
 #SBATCH --gres=gpu:1
-#SBATCH --time=0-20
-#SBATCH --mail-user=idan.azuri@mail.huji.ac.il
+#SBATCH --time=1-20
+# SBATCH --mail-user=idan.azuri@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
 
 module load tensorflow/1.5.0
