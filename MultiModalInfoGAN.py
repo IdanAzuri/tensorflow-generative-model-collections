@@ -313,7 +313,7 @@ class MultiModalInfoGAN(object):
 		start_time = time.time()
 		for epoch in range(start_epoch, self.epoch):
 			# get batch data
-			for idx in range(start_batch_id, self.num_batches):
+			for idx in range(3):#start_batch_id, self.num_batches):
 				if self.dataset_name != "celebA":
 					batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
 				else:
@@ -555,7 +555,7 @@ class MultiModalInfoGAN(object):
 			mask = data_y_all == current_label
 			data_X_for_current_label = np.asarray(data_X_clean_part[np.where(small_mask == True)]).reshape(-1,784)
 			
-			limit = min(len(data_X_for_current_label) // 10, 10000)
+			limit = min(len(data_X_for_current_label) // 10, 2**12)
 			dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
 			_, confidence, _, arg_max = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 			if is_confidence:
