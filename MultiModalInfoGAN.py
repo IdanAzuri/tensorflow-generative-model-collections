@@ -49,7 +49,7 @@ class MultiModalInfoGAN(object):
 	
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2, is_wgan_gp=False,
 	             dataset_creation_order="czcc czrc rzcc rzrc", SUPERVISED=True, dir_results="classifier_results_seed_{}".format(SEED)):
-		self.test_size = 10000
+		self.test_size = 5000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
 		self.confidence_list = []
@@ -313,7 +313,7 @@ class MultiModalInfoGAN(object):
 		start_time = time.time()
 		for epoch in range(start_epoch, self.epoch):
 			# get batch data
-			for idx in range(start_batch_id, self.num_batches):
+			for idx in range(3):#start_batch_id, self.num_batches):
 				if self.dataset_name != "celebA":
 					batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
 				else:
