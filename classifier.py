@@ -444,7 +444,7 @@ def main():
 			c = CNNClassifier("custom", pkl_fname=fname, data_X=data_X, data_y=data_y, test_x=X_test, test_y=y_test)
 			accuracy_cross_validation.append(c.train(confidence_in_train, confidence_thresh))
 			print("Acuuracy of iteration {} : {}".format(i, accuracy_cross_validation[-1]))
-		c.plot_train_test_loss("accuracy_cv_{}_ganonly".format(cv), accuracy_cross_validation)
+		c.plot_train_test_loss("accuracy_cv_{}_gan_only_origin_test".format(cv), accuracy_cross_validation)
 	else:
 		main_to_train_classifier()
 
