@@ -263,7 +263,7 @@ class CNNClassifier():
 				# plt.show()
 				if i % self.num_batches - 1 == 0:
 					self.test_labels, self.test_images = shuffle(self.test_labels, self.test_images, random_state=SEED)
-					accuracy, confidence, loss = self.test(self.test_images.reshape(-1, 784), self.test_labels.reshape(-1, 10), epoch * i)
+					accuracy, confidence, loss = self.test(self.test_images[:1000].reshape(-1, 784), self.test_labels[:1000].reshape(-1, 10), epoch * i)
 					# summary, _ = self.sess.run([self.merged, self.train_step],
 					#                            feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
 					# self.train_writer.add_summary(summary, i)
