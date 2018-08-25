@@ -449,9 +449,9 @@ def main():
 			X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.001, random_state=10 + i)
 			X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X, data_y, test_size=0.1, random_state=10 + i)
 			X_train=np.append(X_train_real,X_train).reshape(-1,784)
-			y_train=np.append(y_train_real,y_train)
+			y_train=np.append(y_train_real.reshape(-1,10),y_train).reshape(-1,10)
 			X_test=np.append(X_test_real,X_test).reshape(-1,784)
-			y_test=np.append(y_test_real,y_test)
+			y_test=np.append(y_test_real.reshape(-1,10),y_test).reshape(-1,10)
 			print ("Test size={}".format(len(y_test)))
 			c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir, original_dataset_name=original_dataset_name, data_X=X_train, data_y=y_train, test_x=X_test,
 			                  test_y=y_test)
