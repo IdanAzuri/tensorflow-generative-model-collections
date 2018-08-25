@@ -10,14 +10,14 @@ import warnings
 
 from sklearn.utils import shuffle
 
+
 SEED = 88
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 from matplotlib.legend_handler import HandlerLine2D
 
 import utils
-# from cifar10 import *
-from classifier import CNNClassifier, preprocess_data, one_hot_encoder, CONFIDENCE_THRESHOLD
+from classifier import CNNClassifier, one_hot_encoder, CONFIDENCE_THRESHOLD
 from ops import *
 from utils import *
 
@@ -179,8 +179,8 @@ class MultiModalInfoGAN(object):
 			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
 			net = lrelu(bn(linear(net, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
 			net = tf.reshape(net, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
-			net = lrelu(bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3'),
-			               is_training=is_training, scope='g_bn3'))
+			net = lrelu(
+				bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training, scope='g_bn3'))
 			
 			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
 			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
@@ -313,7 +313,7 @@ class MultiModalInfoGAN(object):
 		start_time = time.time()
 		for epoch in range(start_epoch, self.epoch):
 			# get batch data
-			for idx in range(start_batch_id, self.num_batches):
+			for idx in range(3):#start_batch_id, self.num_batches):
 				if self.dataset_name != "celebA":
 					batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
 				else:
@@ -325,21 +325,18 @@ class MultiModalInfoGAN(object):
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 				
 				# update D network
-				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss],
-				                                       feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
+				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss], feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
 				self.writer.add_summary(summary_str, counter)
 				
 				# update G and Q network
-				_, summary_str_g, g_loss, _, summary_str_q, q_loss = self.sess.run(
-					[self.g_optim, self.g_sum, self.g_loss, self.q_optim, self.q_sum, self.q_loss],
+				_, summary_str_g, g_loss, _, summary_str_q, q_loss = self.sess.run([self.g_optim, self.g_sum, self.g_loss, self.q_optim, self.q_sum, self.q_loss],
 					feed_dict={self.x: batch_images, self.z: batch_z, self.y: batch_codes})
 				self.writer.add_summary(summary_str_g, counter)
 				self.writer.add_summary(summary_str_q, counter)
 				
 				# display training status
 				counter += 1
-				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (
-					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss,))
+				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss,))
 			
 			# After an epoch, start_batch_id is set to zero
 			# non-zero value is only for the first epoch after loading pre-trained model
@@ -402,8 +399,8 @@ class MultiModalInfoGAN(object):
 			for c in range(self.len_discrete_code):
 				canvas[s * self.len_discrete_code + c, :, :, :] = all_samples[c * n_styles + s, :, :, :]
 		
-		save_images(canvas, [n_styles, self.len_discrete_code], check_folder(
-			self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes_style_by_style.png')
+		save_images(canvas, [n_styles, self.len_discrete_code],
+		            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes_style_by_style.png')
 		
 		""" fixed noise """
 		assert self.len_continuous_code == 2
@@ -546,23 +543,23 @@ class MultiModalInfoGAN(object):
 		
 		data_y_all = np.asarray(generated_labels, dtype=np.int32).flatten()
 		import copy
-
+		
 		data_y_updateable = copy.deepcopy(data_y_all)
 		# pretraind = CNNClassifier(self.dataset_name, original_dataset_name=self.dataset_name)
 		
 		for current_label in range(10):
 			small_mask = data_y_clean_part == current_label
 			mask = data_y_all == current_label
-			data_X_for_current_label = np.asarray(data_X_clean_part[np.where(small_mask == True)]).reshape(-1,784)
+			data_X_for_current_label = np.asarray(data_X_clean_part[np.where(small_mask == True)]).reshape(-1, 784)
 			
-			limit = min(len(data_X_for_current_label) // 10, 2**10)
+			limit = min(len(data_X_for_current_label) // 10, 2 ** 6)
 			dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
 			_, confidence, _, arg_max = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 			if is_confidence:
 				print("confidence:{}".format(confidence))
 				high_confidence_threshold_indices = confidence >= CONFIDENCE_THRESHOLD
 				if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
-					arg_max= arg_max[high_confidence_threshold_indices]
+					arg_max = arg_max[high_confidence_threshold_indices]
 					print("The length of high confidence:")
 					print(len(high_confidence_threshold_indices[high_confidence_threshold_indices]))
 			print(str(len(arg_max)) + " were taken")
@@ -577,7 +574,7 @@ class MultiModalInfoGAN(object):
 		order_str = '_'.join(self.dataset_creation_order)
 		if not os.path.exists(self.dir_results):
 			os.makedirs(self.dir_results)
-		params = "mu_{}_sigma_{}_ndist_{}".format(self.sampler.mu, self.sampler.sigma,self.sampler.n_distributions)
+		params = "mu_{}_sigma_{}_ndist_{}".format(self.sampler.mu, self.sampler.sigma, self.sampler.n_distributions)
 		
 		fname_trainingset_edited = "edited_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		fname_labeles_edited = "edited_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)

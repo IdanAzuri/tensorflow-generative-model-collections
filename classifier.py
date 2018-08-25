@@ -110,7 +110,7 @@ def variable_summaries(var, name):
 class CNNClassifier():
 	def __init__(self, classifier_name, original_dataset_name, load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results_seed_{}'.format(SEED), data_X=None,
 	             data_y=None, test_x=None, test_y=None):
-		self.num_epochs = 1000
+		self.num_epochs = 100
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
@@ -134,13 +134,13 @@ class CNNClassifier():
 			self.test_images = self.real_mnist_x.reshape(-1, 784)
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
-		if data_X is None and data_y is None:
+		elif data_X is not None and data_y is not None:
 			self.data_X = data_X
 			self.data_y = data_y
-		if data_X is None and data_y is None:
+		if test_x is not None and test_y is not None:
 			self.test_images = test_x
 			self.test_labels = test_y
-		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
+		elif self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
 			# mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
 			self.data_X, self.data_y = load_mnist(self.classifier_name)
 			
@@ -363,62 +363,62 @@ def parse_args():
 	return parser.parse_args()
 
 
-def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64, dir_results="classifier_results_seed_{}".format(SEED)):
-	# mapping only once need to edit the condition
-	if not os.path.exists(dir_results):
-		os.makedirs(dir_results)
-	pkl_label_path = "{}{}/generated_labels_{}.pkl".format(dir, dir_results, pkl_fname)
-	pkl_path = "{}{}/generated_training_set_{}.pkl".format(dir, dir_results, pkl_fname)
-	data_X = pickle.load(open(pkl_path, 'rb'))
-	data_y = pickle.load(open(pkl_label_path, 'rb'))
-	
-	data_X = np.asarray([y for x in data_X for y in x]).reshape(-1, 28, 28)
-	
-	data_y = np.asarray(data_y, dtype=np.int32).flatten()
-	
-	data_y_categorical = data_y
-	# data_y = one_hot_encoder(data_y)
-	pretraind = CNNClassifier(original_dataset_name, original_dataset_name=original_dataset_name)
-	# indices = np.argwhere(data_y == 1)
-	# low_confidence_indices = []
-	for current_label in range(10):
-		mask = data_y == current_label  # (indices[:, 1] == current_label)
-		limit = min(len(data_X) // 10, 10000)
-		# confident = False
-		# offset = 0
-		# while not confident:
-		# 	small_data_X = data_X[np.where(mask == True)][offset:limit+offset]
-		data_X_for_current_label = data_X[np.where(mask == True)]
-		dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
-		_, confidence, _, arg_max = pretraind.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
-		argwhere = np.argwhere(confidence < CONFIDENCE_THRESHOLD).flatten()
-		# confidence_threshold_idx = confidence > CONFIDENCE_THRESHOLD #min(CONFIDENCE_THRESHOLD, np.max(confidence) - 0.001)
-		# 	offset+=50
-		# 	if np.count_nonzero(confidence_threshold_idx) > 30:
-		# 		confident=True
-		
-		# arg_max = arg_max[confidence_threshold_idx]
-		print(str(len(arg_max)) + " were taken")
-		
-		# low_confidence_indices.extend(argwhere)
-		
-		new_label = np.bincount(arg_max).argmax()
-		print("Assinging:{}".format(new_label))
-		# plt.title("old_label=" + str(current_label) + "new_label=" + str(new_label))
-		# plt.imshow(data_X_for_current_label[0].reshape(28, 28))
-		# plt.show()
-		data_y_categorical[mask] = new_label
-		print(np.bincount(arg_max))
-	# if len(low_confidence_indices) > 0:
-	# 	low_confidence_indices = np.asarray(low_confidence_indices)
-	# 	mask_not_take = np.ones_like(low_confidence_indices,dtype=bool) #np.ones_like(a,dtype=bool)
-	# 	mask_not_take[low_confidence_indices] = False
-	# 	data_y_categorical= data_y_categorical[~low_confidence_indices]
-	# 	data_X = data_X[~mask_not_take]
-	data_y = one_hot_encoder(data_y_categorical)
-	# data_X, data_y = shuffle(data_X, data_y, random_state=0)
-	pickle.dump(data_y, open("{}{}/edited_labels_{}.pkl".format(dir, dir_results, pkl_fname), 'wb'))
-	pickle.dump(data_X, open("{}{}/edited_training_set_{}.pkl".format(dir, dir_results, pkl_fname), 'wb'))
+# def preprocess_data(dir, pkl_fname, original_dataset_name='mnist', batch_size=64, dir_results="classifier_results_seed_{}".format(SEED)):
+# 	# mapping only once need to edit the condition
+# 	if not os.path.exists(dir_results):
+# 		os.makedirs(dir_results)
+# 	pkl_label_path = "{}{}/generated_labels_{}.pkl".format(dir, dir_results, pkl_fname)
+# 	pkl_path = "{}{}/generated_training_set_{}.pkl".format(dir, dir_results, pkl_fname)
+# 	data_X = pickle.load(open(pkl_path, 'rb'))
+# 	data_y = pickle.load(open(pkl_label_path, 'rb'))
+#
+# 	data_X = np.asarray([y for x in data_X for y in x]).reshape(-1, 28, 28)
+#
+# 	data_y = np.asarray(data_y, dtype=np.int32).flatten()
+#
+# 	data_y_categorical = data_y
+# 	# data_y = one_hot_encoder(data_y)
+# 	pretraind = CNNClassifier(original_dataset_name, original_dataset_name=original_dataset_name)
+# 	# indices = np.argwhere(data_y == 1)
+# 	# low_confidence_indices = []
+# 	for current_label in range(10):
+# 		mask = data_y == current_label  # (indices[:, 1] == current_label)
+# 		limit = min(len(data_X) // 10, 10000)
+# 		# confident = False
+# 		# offset = 0
+# 		# while not confident:
+# 		# 	small_data_X = data_X[np.where(mask == True)][offset:limit+offset]
+# 		data_X_for_current_label = data_X[np.where(mask == True)]
+# 		dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
+# 		_, confidence, _, arg_max = pretraind.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+# 		argwhere = np.argwhere(confidence < CONFIDENCE_THRESHOLD).flatten()
+# 		# confidence_threshold_idx = confidence > CONFIDENCE_THRESHOLD #min(CONFIDENCE_THRESHOLD, np.max(confidence) - 0.001)
+# 		# 	offset+=50
+# 		# 	if np.count_nonzero(confidence_threshold_idx) > 30:
+# 		# 		confident=True
+#
+# 		# arg_max = arg_max[confidence_threshold_idx]
+# 		print(str(len(arg_max)) + " were taken")
+#
+# 		# low_confidence_indices.extend(argwhere)
+#
+# 		new_label = np.bincount(arg_max).argmax()
+# 		print("Assinging:{}".format(new_label))
+# 		# plt.title("old_label=" + str(current_label) + "new_label=" + str(new_label))
+# 		# plt.imshow(data_X_for_current_label[0].reshape(28, 28))
+# 		# plt.show()
+# 		data_y_categorical[mask] = new_label
+# 		print(np.bincount(arg_max))
+# 	# if len(low_confidence_indices) > 0:
+# 	# 	low_confidence_indices = np.asarray(low_confidence_indices)
+# 	# 	mask_not_take = np.ones_like(low_confidence_indices,dtype=bool) #np.ones_like(a,dtype=bool)
+# 	# 	mask_not_take[low_confidence_indices] = False
+# 	# 	data_y_categorical= data_y_categorical[~low_confidence_indices]
+# 	# 	data_X = data_X[~mask_not_take]
+# 	data_y = one_hot_encoder(data_y_categorical)
+# 	# data_X, data_y = shuffle(data_X, data_y, random_state=0)
+# 	pickle.dump(data_y, open("{}{}/edited_labels_{}.pkl".format(dir, dir_results, pkl_fname), 'wb'))
+# 	pickle.dump(data_X, open("{}{}/edited_training_set_{}.pkl".format(dir, dir_results, pkl_fname), 'wb'))
 
 
 def main():
