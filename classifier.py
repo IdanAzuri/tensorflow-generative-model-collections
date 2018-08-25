@@ -110,13 +110,13 @@ def variable_summaries(var, name):
 class CNNClassifier():
 	def __init__(self, classifier_name, original_dataset_name, load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results_seed_{}'.format(SEED), data_X=None,
 	             data_y=None, test_x=None, test_y=None):
-		self.num_epochs = 50
+		self.num_epochs = 30
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
-		self.dropout_prob = 0.7
+		self.dropout_prob = 0.5
 		self.save_to = classifier_name + "_classifier.pkl"
-		self.lamb = 1e-3
+		self.lamb = 1e-4
 		self.c_dim = 1
 		self.accuracy_list = []
 		self.loss_list = []
@@ -134,13 +134,13 @@ class CNNClassifier():
 			self.test_images = self.real_mnist_x.reshape(-1, 784)
 			self.data_X = pickle.load(open(pkl_path, 'rb'))
 			self.data_y = pickle.load(open(pkl_label_path, 'rb'))
-		if data_X is None and data_y is None:
+		elif data_X is not None and data_y is not None:
 			self.data_X = data_X
 			self.data_y = data_y
-		if data_X is None and data_y is None:
+		if test_x is not None and test_y is not None:
 			self.test_images = test_x
 			self.test_labels = test_y
-		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
+		elif self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
 			# mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
 			self.data_X, self.data_y = load_mnist(self.classifier_name)
 			
@@ -303,7 +303,7 @@ class CNNClassifier():
 			return accuracy, confidence, loss, arg_max
 		else:
 			accuracy, confidence, loss = self.sess.run([self.accuracy, self.confidence, self.cross_entropy],
-			                                           feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
+			                                           feed_dict={self.x: test_batch.reshape(-1,784), self.y_: test_labels, self.keep_prob: 1.})
 			# self.test_writer.add_summary(summary, counter)
 			# print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
 			return accuracy, confidence, loss
@@ -440,7 +440,7 @@ def main():
 		
 		data_X = pickle.load(open(pkl_path, 'rb'))
 		data_y = pickle.load(open(pkl_label_path, 'rb'))
-		
+		test_size=1000
 		accuracy_cross_validation = []
 		c = None
 		print("Starting cross validation")
@@ -469,9 +469,12 @@ def main_to_train_classifier():
 	do_preprocess = args.preprocess
 	confidence_in_train = args.use_confidence
 	confidence_thresh = args.confidence_thresh
-	c = CNNClassifier(original_dataset_name, original_dataset_name=original_dataset_name, pkl_fname=None)
+	data_X, data_y = load_mnist(original_dataset_name)
+	X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.1, random_state=10)
+	c = CNNClassifier(original_dataset_name, original_dataset_name=original_dataset_name, pkl_fname=None, data_X=X_train, data_y=y_train, test_x=X_test,
+	                  test_y=y_test)
 	c.train()
-	c.test(c.data_X[:6400].reshape(-1, 784), c.data_y[:6400].reshape(-1, 10))
+	c.test(X_test,y_test)
 
 
 if __name__ == '__main__':

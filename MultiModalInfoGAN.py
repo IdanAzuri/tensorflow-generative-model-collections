@@ -16,8 +16,7 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 from matplotlib.legend_handler import HandlerLine2D
 
 import utils
-# from cifar10 import *
-from classifier import CNNClassifier, preprocess_data, one_hot_encoder, CONFIDENCE_THRESHOLD
+from classifier import CNNClassifier, one_hot_encoder, CONFIDENCE_THRESHOLD
 from ops import *
 from utils import *
 
@@ -48,8 +47,8 @@ class MultiModalInfoGAN(object):
 	model_name = "MultiModalInfoGAN"  # name for checkpoint
 	
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2, is_wgan_gp=False,
-	             dataset_creation_order="czcc czrc rzcc rzrc", SUPERVISED=True, dir_results="classifier_results_seed_{}".format(SEED)):
-		self.test_size = 5000
+	             dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True, dir_results="classifier_results_seed_{}".format(SEED)):
+		self.test_size = 3840
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
 		self.confidence_list = []
@@ -402,8 +401,8 @@ class MultiModalInfoGAN(object):
 			for c in range(self.len_discrete_code):
 				canvas[s * self.len_discrete_code + c, :, :, :] = all_samples[c * n_styles + s, :, :, :]
 		
-		save_images(canvas, [n_styles, self.len_discrete_code], check_folder(
-			self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes_style_by_style.png')
+		save_images(canvas, [n_styles, self.len_discrete_code],
+		            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes_style_by_style.png')
 		
 		""" fixed noise """
 		assert self.len_continuous_code == 2
@@ -432,7 +431,7 @@ class MultiModalInfoGAN(object):
 			save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 			            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2_%d.png' % l)
 	
-	def create_dataset_from_GAN(self, is_confidence=True):
+	def create_dataset_from_GAN(self, is_confidence=False):
 		
 		generated_dataset = []
 		generated_labels = []
@@ -462,8 +461,9 @@ class MultiModalInfoGAN(object):
 			tmp = check_folder(self.result_dir + '/' + self.model_dir)
 			
 			for i in self.dataset_creation_order:
+				num_iter = max(datasetsize // len(self.dataset_creation_order),10)
 				if i == 'czcc':
-					for _ in range(datasetsize // len(self.dataset_creation_order)):
+					for _ in range(num_iter):
 						# clean samples z fixed - czcc
 						z_fixed = np.zeros([self.batch_size, self.z_dim])
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
@@ -480,7 +480,7 @@ class MultiModalInfoGAN(object):
 				generated_labels += generated_labels_clean_z_clean_c
 				# print("adding czcc")
 				if i == 'czrc':
-					for _ in range(datasetsize // len(self.dataset_creation_order)):
+					for _ in range(num_iter):
 						# z fixed -czrc
 						z_fixed = np.zeros([self.batch_size, self.z_dim])
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
@@ -499,7 +499,7 @@ class MultiModalInfoGAN(object):
 				generated_labels += generated_labels_clean_z_random_c
 				# print("adding czrc")
 				if i == 'rzcc':
-					for _ in range(datasetsize // len(self.dataset_creation_order)):
+					for _ in range(num_iter):
 						# z random c-clean - rzcc
 						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
@@ -514,7 +514,7 @@ class MultiModalInfoGAN(object):
 					generated_dataset += generated_dataset_random_z_clean_c
 					generated_labels += generated_labels_random_z_clean_c
 				if i == 'rzrc':
-					for _ in range(datasetsize // len(self.dataset_creation_order)):
+					for _ in range(num_iter):
 						# rzrc
 						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
@@ -555,7 +555,7 @@ class MultiModalInfoGAN(object):
 			mask = data_y_all == current_label
 			data_X_for_current_label = np.asarray(data_X_clean_part[np.where(small_mask == True)]).reshape(-1,784)
 			
-			limit = min(len(data_X_for_current_label) // 10, 2**10)
+			limit = min(len(data_X_for_current_label) // 10, 2**14)
 			dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
 			_, confidence, _, arg_max = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 			if is_confidence:
