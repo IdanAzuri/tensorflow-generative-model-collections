@@ -457,9 +457,10 @@ class MultiModalInfoGAN(object):
 		generated_labels_random_z_random_c = []
 		for label in range(self.len_discrete_code):
 			tmp = check_folder(self.result_dir + '/' + self.model_dir)
-			
+			print("dataset_creation_order {}".format(self.dataset_creation_order))
 			for i in self.dataset_creation_order:
 				num_iter = max(datasetsize // len(self.dataset_creation_order),1000)
+				print("num_iter ",num_iter )
 				if i == 'czcc':
 					print("in czcc")
 					for _ in range(num_iter):
