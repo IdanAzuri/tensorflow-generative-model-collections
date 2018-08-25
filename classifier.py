@@ -439,9 +439,9 @@ def main():
 		data_X_real, data_y_real = load_mnist(original_dataset_name)
 		for i in range(cv):
 			print("Iteration {}/{}".format(i, 10))
-			# X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.1, random_state=10 + i)
-			test_size = int(1e4)
-			c = CNNClassifier("custom", pkl_fname=fname, data_X=data_X, data_y=data_y, test_x=data_X_real[:test_size], test_y=data_y_real[:test_size])
+			_, X_test, _, y_test = train_test_split(data_X_real, data_y_real, test_size=0.1, random_state=10 + i)
+			print("test size={}".format(len(y_test)))
+			c = CNNClassifier("custom", pkl_fname=fname, data_X=data_X, data_y=data_y, test_x=X_test, test_y=y_test)
 			accuracy_cross_validation.append(c.train(confidence_in_train, confidence_thresh))
 			print("Acuuracy of iteration {} : {}".format(i, accuracy_cross_validation[-1]))
 		c.plot_train_test_loss("accuracy_cv_{}_ganonly".format(cv), accuracy_cross_validation)
