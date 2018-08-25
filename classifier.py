@@ -133,10 +133,10 @@ class CNNClassifier():
 		self.train_y = data_y
 		self.test_X = test_x
 		self.test_y = test_y
-		if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
-			# mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
-			self.train_X, self.train_y = load_mnist(self.classifier_name)
-			self.train_X, self.test_X, self.train_y, self.test_y = train_test_split(data_X, data_y, test_size=0.1, random_state=10)
+		# if self.classifier_name == 'mnist' or self.classifier_name == 'fashion-mnist':
+		# 	# mnist = input_data.read_data_sets('../data/mnist', one_hot=True)
+		# 	self.train_X, self.train_y = load_mnist(self.classifier_name)
+		# 	self.train_X, self.test_X, self.train_y, self.test_y = train_test_split(data_X, data_y, test_size=0.1, random_state=10)
 		# elif self.classifier_name == "cifar10":
 		# 	self.IMAGE_WIDTH = 32
 		# 	self.IMAGE_HEIGHT = 32
@@ -247,32 +247,32 @@ class CNNClassifier():
 		start_time = time.time()
 		for epoch in range(self.num_epochs):
 			for i in range(start_batch_id, self.num_batches):
-				batch_images = self.train_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
-				batch_labels = self.train_y[i * self.batch_size:(i + 1) * self.batch_size]
-				# plt.title(batch_labels[0])
-				# plt.imshow(batch_images[0].reshape(28, 28))
+				X_batch = self.train_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
+				y_batch = self.train_y[i * self.batch_size:(i + 1) * self.batch_size]
+				# plt.title(y_batch[0])
+				# plt.imshow(X_batch[0].reshape(28, 28))
 				# plt.show()
 				if i % self.num_batches - 1 == 0:
 					self.test_y, self.test_X = shuffle(self.test_y, self.test_X, random_state=SEED)
 					accuracy, confidence, loss = self.test(self.test_X.reshape(-1, 784), self.test_y.reshape(-1, 10), epoch * i)
 					# summary, _ = self.sess.run([self.merged, self.train_step],
-					#                            feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
+					#                            feed_dict={self.x: X_batch, self.y_: y_batch, self.keep_prob: 1.})
 					# self.train_writer.add_summary(summary, i)
-					_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
+					_ = self.sess.run([self.train_step], feed_dict={self.x: X_batch, self.y_: y_batch, self.keep_prob: self.dropout_prob})
 					print('epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
 					print("time: %4.4f" % (time.time() - start_time))
 					print('accuracy:{}, mean_confidence:{}, loss:{}'.format(accuracy, np.mean(confidence), loss))
 					self.accuracy_list.append(accuracy)
 				else:
 					if not use_confidence:
-						self.train_step.run(session=self.sess, feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
+						self.train_step.run(session=self.sess, feed_dict={self.x: X_batch, self.y_: y_batch, self.keep_prob: self.dropout_prob})
 					else:
 						print("USING CONFIDENCE")
-						accuracy, confidence, loss = self.test(batch_images, batch_labels, epoch * i)
+						accuracy, confidence, loss = self.test(X_batch, y_batch, epoch * i)
 						high_confidence_threshold_indices = confidence >= confidence_thresh
 						if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
 							_ = self.sess.run([self.train_step],
-							                  feed_dict={self.x: batch_images[high_confidence_threshold_indices], self.y_: batch_labels[high_confidence_threshold_indices],
+							                  feed_dict={self.x: X_batch[high_confidence_threshold_indices], self.y_: y_batch[high_confidence_threshold_indices],
 							                             self.keep_prob: self.dropout_prob})
 						else:
 							print("skipping confidence low max_confidence ={}".format(np.max(confidence)))
