@@ -474,11 +474,15 @@ def main_to_train_classifier():
 	do_preprocess = args.preprocess
 	confidence_in_train = args.use_confidence
 	confidence_thresh = args.confidence_thresh
-	c = CNNClassifier(original_dataset_name, original_dataset_name=original_dataset_name, pkl_fname=None)
+	data_X, data_y = load_mnist(original_dataset_name)
+	X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.1, random_state=10)
+	c = CNNClassifier("custom", load_from_pkl=True, pkl_fname=fname, dir=dir, original_dataset_name=original_dataset_name, data_X=X_train, data_y=y_train, test_x=X_test,
+	                  test_y=y_test)
 	c.train()
-	c.test(c.data_X[:6400].reshape(-1, 784), c.data_y[:6400].reshape(-1, 10))
+	c.test(X_test,y_test)
 
 
 if __name__ == '__main__':
 	
-	main()  # main_to_train_classifier()
+	# main()
+	main_to_train_classifier()
