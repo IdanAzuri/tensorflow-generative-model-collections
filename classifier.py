@@ -440,7 +440,8 @@ def main():
 		for i in range(cv):
 			print("Iteration {}/{}".format(i, 10))
 			# X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.1, random_state=10 + i)
-			c = CNNClassifier("custom", pkl_fname=fname, data_X=data_X, data_y=data_y, test_x=data_X_real[:1e4], test_y=data_y_real[:1e4])
+			test_size = int(1e4)
+			c = CNNClassifier("custom", pkl_fname=fname, data_X=data_X, data_y=data_y, test_x=data_X_real[:test_size], test_y=data_y_real[:test_size])
 			accuracy_cross_validation.append(c.train(confidence_in_train, confidence_thresh))
 			print("Acuuracy of iteration {} : {}".format(i, accuracy_cross_validation[-1]))
 		c.plot_train_test_loss("accuracy_cv_{}_ganonly".format(cv), accuracy_cross_validation)
