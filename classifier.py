@@ -458,7 +458,7 @@ def main():
 			                  test_y=y_test)
 			accuracy_cross_validation.append(c.train(confidence_in_train, confidence_thresh))
 			print("Acuuracy of iteration {} : {}".format(i, accuracy_cross_validation[-1]))
-		c.plot_train_test_loss("accuracy_cv_{}_selftest".format(cv), accuracy_cross_validation)
+		c.plot_train_test_loss("accuracy_cv_{}_mixdataset".format(cv), accuracy_cross_validation)
 	else:
 		main_to_train_classifier()
 
