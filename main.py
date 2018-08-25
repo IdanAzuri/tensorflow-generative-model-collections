@@ -95,6 +95,7 @@ def main():
 	# open session
 	models = [GAN, CGAN, infoGAN, ACGAN, EBGAN, WGAN, WGAN_GP, DRAGAN, LSGAN, BEGAN, VAE, CVAE, MultiModalInfoGAN, infoGAN, AEMultiModalInfoGAN]
 	dataset_creation_order = args.dataset_order.split(",")
+	print("Main " ,dataset_creation_order)
 	len_continuous_code = args.len_continuous_code
 	sampler = args.sampler
 	mu = args.mu
