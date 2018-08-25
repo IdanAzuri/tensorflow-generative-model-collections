@@ -49,7 +49,7 @@ class MultiModalInfoGAN(object):
 	
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2, is_wgan_gp=False,
 	             dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True, dir_results="classifier_results_seed_{}".format(SEED)):
-		self.test_size = 5000
+		self.test_size = 3840
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
 		self.confidence_list = []
@@ -457,12 +457,9 @@ class MultiModalInfoGAN(object):
 		generated_labels_random_z_random_c = []
 		for label in range(self.len_discrete_code):
 			tmp = check_folder(self.result_dir + '/' + self.model_dir)
-			print("dataset_creation_order {}".format(self.dataset_creation_order))
 			for i in self.dataset_creation_order:
 				num_iter = max(datasetsize // len(self.dataset_creation_order),10)
-				print("num_iter ",num_iter )
 				if i == 'czcc':
-					print("in czcc")
 					for _ in range(num_iter):
 						# clean samples z fixed - czcc
 						z_fixed = np.zeros([self.batch_size, self.z_dim])
