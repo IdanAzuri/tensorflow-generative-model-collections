@@ -555,7 +555,7 @@ class MultiModalInfoGAN(object):
 			
 			limit = min(len(data_X_for_current_label) // 10, 32)
 			dummy_labels = one_hot_encoder(np.random.randint(0, 10, size=(limit)))  # no meaning for the labels
-			print("BEFORE ERROR:{},{}".format(len(data_X_for_current_label),data_X_for_current_label[1]))
+			print("BEFORE ERROR:{}".format(len(data_X_for_current_label)))
 			_, confidence, _, arg_max = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 			if is_confidence:
 				print("confidence:{}".format(confidence))
