@@ -258,7 +258,7 @@ class CNNClassifier():
 					# summary, _ = self.sess.run([self.merged, self.train_step],
 					#                            feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
 					# self.train_writer.add_summary(summary, i)
-					_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: 1.})
+					_ = self.sess.run([self.train_step], feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
 					print('epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
 					print("time: %4.4f" % (time.time() - start_time))
 					print('accuracy:{}, mean_confidence:{}, loss:{}'.format(accuracy, np.mean(confidence), loss))
@@ -267,6 +267,7 @@ class CNNClassifier():
 					if not use_confidence:
 						self.train_step.run(session=self.sess, feed_dict={self.x: batch_images, self.y_: batch_labels, self.keep_prob: self.dropout_prob})
 					else:
+						print("USING CONFIDENCE")
 						accuracy, confidence, loss = self.test(batch_images, batch_labels, epoch * i)
 						high_confidence_threshold_indices = confidence >= confidence_thresh
 						if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
