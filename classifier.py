@@ -432,16 +432,15 @@ def main():
 		
 		data_X = pickle.load(open(pkl_path, 'rb'))
 		data_y = pickle.load(open(pkl_label_path, 'rb'))
-		test_size = 1000
 		accuracy_cross_validation = []
 		c = None
 		print("Starting cross validation")
 		cv = 10
+		data_X_real, data_y_real = load_mnist(original_dataset_name)
 		for i in range(cv):
 			print("Iteration {}/{}".format(i, 10))
-			X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.1, random_state=10 + i)
-			print("Test size={}".format(len(y_test)))
-			c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train, data_y=y_train, test_x=X_test, test_y=y_test)
+			# X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.1, random_state=10 + i)
+			c = CNNClassifier("custom", pkl_fname=fname, data_X=data_X, data_y=data_y, test_x=data_X_real[:1e4], test_y=data_y_real[:1e4])
 			accuracy_cross_validation.append(c.train(confidence_in_train, confidence_thresh))
 			print("Acuuracy of iteration {} : {}".format(i, accuracy_cross_validation[-1]))
 		c.plot_train_test_loss("accuracy_cv_{}_selftest".format(cv), accuracy_cross_validation)
@@ -461,7 +460,7 @@ def main_to_train_classifier():
 	confidence_in_train = args.use_confidence
 	confidence_thresh = args.confidence_thresh
 	data_X, data_y = load_mnist(original_dataset_name)
-	X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.3, random_state=10)
+	X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.1, random_state=10)
 	c = CNNClassifier(original_dataset_name, pkl_fname=None, data_X=X_train, data_y=y_train, test_x=X_test, test_y=y_test)
 	c.train()
 	c.test(X_test, y_test)
