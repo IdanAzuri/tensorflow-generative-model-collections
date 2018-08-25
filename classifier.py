@@ -110,13 +110,13 @@ def variable_summaries(var, name):
 class CNNClassifier():
 	def __init__(self, classifier_name, original_dataset_name, load_from_pkl=False, pkl_fname=None, dir=None, dir_results='classifier_results_seed_{}'.format(SEED), data_X=None,
 	             data_y=None, test_x=None, test_y=None):
-		self.num_epochs = 50
+		self.num_epochs = 1000
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
-		self.dropout_prob = 0.7
+		self.dropout_prob = 0.5
 		self.save_to = classifier_name + "_classifier.pkl"
-		self.lamb = 1e-3
+		self.lamb = 1e-4
 		self.c_dim = 1
 		self.accuracy_list = []
 		self.loss_list = []
@@ -303,7 +303,7 @@ class CNNClassifier():
 			return accuracy, confidence, loss, arg_max
 		else:
 			accuracy, confidence, loss = self.sess.run([self.accuracy, self.confidence, self.cross_entropy],
-			                                           feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
+			                                           feed_dict={self.x: test_batch.reshape(-1,784), self.y_: test_labels, self.keep_prob: 1.})
 			# self.test_writer.add_summary(summary, counter)
 			# print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
 			return accuracy, confidence, loss
