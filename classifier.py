@@ -104,7 +104,8 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-    def __init__(self, classifier_name, pkl_fname=None, data_X=None, data_y=None, test_X=None, test_y=None):
+    def __init__(self, classifier_name, pkl_fname=None, data_X=None, data_y=None, test_X=None, test_y=None, save_model=False):
+        self.save_model = save_model
         self.num_epochs = 200
         self.classifier_name = classifier_name
         self.log_dir = 'logs/{}/'.format(classifier_name)
@@ -244,8 +245,7 @@ class CNNClassifier():
         start_time = time.time()
         for epoch in range(self.num_epochs):
             for i in range(start_batch_id, self.num_batches):
-                X_batch = self.train_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1,
-                                                                                              self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
+                X_batch = self.train_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
                 y_batch = self.train_y[i * self.batch_size:(i + 1) * self.batch_size]
                 # plt.title(y_batch[0])
                 # plt.imshow(X_batch[0].reshape(28, 28))
@@ -278,7 +278,7 @@ class CNNClassifier():
                         else:
                             print("skipping confidence low max_confidence ={}".format(np.max(confidence)))
 
-        if not self.classifier_name == "custom":
+        if self.save_model:
             self.save_model()
         # self.plot_train_test_loss("accuracy", self.accuracy_list)
         return self.accuracy_list
@@ -510,7 +510,7 @@ def main_to_train_classifier():
     data_X, data_y = load_mnist(original_dataset_name)
     X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.2, random_state=10)
     c = CNNClassifier(original_dataset_name, pkl_fname=None, data_X=X_train, data_y=y_train, test_X=X_test,
-                      test_y=y_test)
+                      test_y=y_test,save_model=False)
     c.train(confidence_in_train=confidence_in_train)
     c.test(X_test, y_test)
 
