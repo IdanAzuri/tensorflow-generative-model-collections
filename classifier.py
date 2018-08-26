@@ -507,10 +507,10 @@ def main_to_train_classifier():
     confidence_in_train = args.use_confidence
     confidence_thresh = args.confidence_thresh
     data_X, data_y = load_mnist(original_dataset_name)
-    X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.1, random_state=10)
+    X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.2, random_state=10)
     c = CNNClassifier(original_dataset_name, pkl_fname=None, data_X=X_train, data_y=y_train, test_X=X_test,
                       test_y=y_test)
-    c.train()
+    c.train(confidence_in_train=confidence_in_train)
     c.test(X_test, y_test)
 
 
