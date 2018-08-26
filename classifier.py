@@ -484,13 +484,13 @@ def main():
             X_train, y_train = shuffle((X_train, y_train), random_state=10+i)
 
             print("Test size={}".format(len(y_test_real)))
-            c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train, data_y=y_train, test_X=X_test_real,
+            c = CNNClassifier(original_dataset_name, pkl_fname=fname, data_X=X_train, data_y=y_train, test_X=X_test_real,
                               test_y=y_test_real)
             accuracy_cross_validation.append(c.train(confidence_in_train=confidence_in_train))
             print("Acuuracy of iteration {} : {}".format(i, accuracy_cross_validation[-1]))
         pickle.dump(accuracy_cross_validation, open("{}.pkl".format("accuracy_cv_{}_mixdataset".format(cv)), 'wb'))
 
-        c.save_and_plot_results_cv("accuracy_cv_{}_mixdataset".format(cv), accuracy_cross_validation)
+        c.save_and_plot_results_cv("accuracy_cv_{}_improve_model".format(cv), accuracy_cross_validation)
     else:
         main_to_train_classifier()
 
