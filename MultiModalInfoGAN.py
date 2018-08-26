@@ -48,7 +48,7 @@ class MultiModalInfoGAN(object):
 	
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2, is_wgan_gp=False,
 	             dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True, dir_results="classifier_results_seed_{}".format(SEED)):
-		self.test_size = 3840
+		self.test_size = 5000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
 		self.confidence_list = []
@@ -463,7 +463,7 @@ class MultiModalInfoGAN(object):
 			for i in self.dataset_creation_order:
 				num_iter = max(datasetsize // len(self.dataset_creation_order),10)
 				if i == 'czcc':
-					for _ in range(num_iter):
+					#ONLY ONCE
 						# clean samples z fixed - czcc
 						z_fixed = np.zeros([self.batch_size, self.z_dim])
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
@@ -472,9 +472,8 @@ class MultiModalInfoGAN(object):
 						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
 						generated_dataset_clean_z_clean_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
 						generated_labels_clean_z_clean_c += [label] * self.batch_size
-						if _ == 1:
-							save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_czcc' + '_label_%d.png' % label)
+						save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+									check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_czcc' + '_label_%d.png' % label)
 				
 				generated_dataset += generated_dataset_clean_z_clean_c
 				generated_labels += generated_labels_clean_z_clean_c
