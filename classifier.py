@@ -104,7 +104,7 @@ def variable_summaries(var, name):
 
 class CNNClassifier():
     def __init__(self, classifier_name, pkl_fname=None, data_X=None, data_y=None, test_X=None, test_y=None):
-        self.num_epochs = 30
+        self.num_epochs = 100
         self.classifier_name = classifier_name
         self.log_dir = 'logs/{}/'.format(classifier_name)
         self.batch_size = 64
@@ -256,8 +256,8 @@ class CNNClassifier():
                     # summary, _ = self.sess.run([self.merged, self.train_step],
                     #                            feed_dict={self.x: X_batch, self.y_: y_batch, self.keep_prob: 1.})
                     # self.train_writer.add_summary(summary, i)
-                    # _ = self.sess.run([self.train_step],
-                    #                   feed_dict={self.x: X_batch, self.y_: y_batch, self.keep_prob: self.dropout_prob})
+                    _ = self.sess.run([self.train_step],
+                                      feed_dict={self.x: X_batch, self.y_: y_batch, self.keep_prob: self.dropout_prob})
                     print('epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
                     print("time: %4.4f" % (time.time() - start_time))
                     print('accuracy:{}, mean_confidence:{}, loss:{}'.format(accuracy, np.mean(confidence), loss))
@@ -468,21 +468,28 @@ def main():
         cv = 4
         for i in range(cv):
             print("Iteration {}/{}".format(i, 10))
-            X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.001, random_state=10 + i)
-            X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real, test_size=0.2,
+            # X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.001, random_state=10 + i)
+            X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real,
+                                                                                    test_size=0.2,
                                                                                     random_state=10 + i)
-            X_train = np.append(X_train_real, X_train).reshape(-1, 784)
-            y_train = np.append(y_train_real.reshape(-1, 10), y_train).reshape(-1, 10)
-            X_test = np.append(X_test_real,X_test).reshape(-1,784)
-            y_test = np.append(y_test_real.reshape(-1,10),y_test).reshape(-1,10)
-            print("Test size={}".format(len(y_test)))
-            c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train, data_y=y_train, test_X=X_test,
-                              test_y=y_test)
+            print("X_train_real={}, data_X={}, y_test_real={}, y_test={}".format(len(X_train_real), len(data_X), len(y_test_real), len(data_y)))
+            len_dataX = min(len(X_train_real),len(data_X))
+            data_X = data_X[:len_dataX]
+            data_y = data_y[:len_dataX]
+            X_train = np.append(data_X,X_train_real).reshape(-1, 784)
+            y_train = np.append(data_y,y_train_real.reshape(-1, 10)).reshape(-1, 10)
+            # X_test = np.append(X_test_real, X_test).reshape(-1, 784)
+            # y_test = np.append(y_test_real.reshape(-1, 10), y_test).reshape(-1, 10)
+            X_train, y_train = shuffle((X_train, y_train), random_state=10+i)
+
+            print("Test size={}".format(len(y_test_real)))
+            c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train, data_y=y_train, test_X=X_test_real,
+                              test_y=y_test_real)
             accuracy_cross_validation.append(c.train(confidence_in_train=confidence_in_train))
             print("Acuuracy of iteration {} : {}".format(i, accuracy_cross_validation[-1]))
         pickle.dump(accuracy_cross_validation, open("{}.pkl".format("accuracy_cv_{}_mixdataset".format(cv)), 'wb'))
 
-        c.plot_train_test_loss("accuracy_cv_{}_mixdataset".format(cv), accuracy_cross_validation)
+        c.save_and_plot_results_cv("accuracy_cv_{}_mixdataset".format(cv), accuracy_cross_validation)
     else:
         main_to_train_classifier()
 
@@ -499,13 +506,12 @@ def main_to_train_classifier():
     confidence_in_train = args.use_confidence
     confidence_thresh = args.confidence_thresh
     data_X, data_y = load_mnist(original_dataset_name)
-    X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.1, random_state=10)
+    X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.2, random_state=10)
     c = CNNClassifier(original_dataset_name, pkl_fname=None, data_X=X_train, data_y=y_train, test_X=X_test,
                       test_y=y_test)
-    c.train()
+    c.train(confidence_in_train=confidence_in_train)
     c.test(X_test, y_test)
 
 
 if __name__ == '__main__':
-    main()  #
-    # main_to_train_classifier()
+    main()  # main_to_train_classifier()
