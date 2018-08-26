@@ -105,7 +105,7 @@ def variable_summaries(var, name):
 
 class CNNClassifier():
     def __init__(self, classifier_name, pkl_fname=None, data_X=None, data_y=None, test_X=None, test_y=None):
-        self.num_epochs = 100
+        self.num_epochs = 200
         self.classifier_name = classifier_name
         self.log_dir = 'logs/{}/'.format(classifier_name)
         self.batch_size = 64
@@ -468,23 +468,25 @@ def main():
         print("Starting cross validation")
         cv = 3
         for i in range(cv):
-            print("Iteration {}/{}".format(i, 3))
+            print("Iteration {}/{}".format(i, cv))
             # X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.001, random_state=10 + i)
             X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real,
                                                                                     test_size=0.2,
                                                                                     random_state=10 + i)
-            print("X_train_real={}, data_X={}, y_test_real={}, y_test={}".format(len(X_train_real), len(data_X), len(y_test_real), len(data_y)))
-            len_dataX = min(len(X_train_real),len(data_X))
+            print("X_train_real={}, data_X={}, y_test_real={}, y_test={}".format(len(X_train_real), len(data_X),
+                                                                                 len(y_test_real), len(data_y)))
+            len_dataX = min(len(X_train_real), len(data_X))
             data_X = data_X[:len_dataX]
             data_y = data_y[:len_dataX]
-            X_train = np.append(data_X,X_train_real).reshape(-1, 784)
-            y_train = np.append(data_y,y_train_real.reshape(-1, 10)).reshape(-1, 10)
+            X_train = np.append(data_X, X_train_real).reshape(-1, 784)
+            y_train = np.append(data_y, y_train_real.reshape(-1, 10)).reshape(-1, 10)
             # X_test = np.append(X_test_real, X_test).reshape(-1, 784)
             # y_test = np.append(y_test_real.reshape(-1, 10), y_test).reshape(-1, 10)
-            X_train, y_train = shuffle((X_train, y_train), random_state=10+i)
+            X_train, y_train = shuffle((X_train, y_train), random_state=10 + i)
 
             print("Test size={}".format(len(y_test_real)))
-            c = CNNClassifier(original_dataset_name, pkl_fname=fname, data_X=X_train, data_y=y_train, test_X=X_test_real,
+            c = CNNClassifier(original_dataset_name, pkl_fname=fname, data_X=X_train, data_y=y_train,
+                              test_X=X_test_real,
                               test_y=y_test_real)
             accuracy_cross_validation.append(c.train(confidence_in_train=confidence_in_train))
             print("Acuuracy of iteration {} : {}".format(i, accuracy_cross_validation[-1]))
