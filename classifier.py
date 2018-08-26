@@ -280,7 +280,7 @@ class CNNClassifier():
 
         if not self.classifier_name == "custom":
             self.save_model()
-        self.plot_train_test_loss("accuracy", self.accuracy_list)
+        # self.plot_train_test_loss("accuracy", self.accuracy_list)
         return self.accuracy_list
 
     # self.plot_train_test_loss("confidence", self.confidence_list)
@@ -466,9 +466,9 @@ def main():
         accuracy_cross_validation = []
         c = None
         print("Starting cross validation")
-        cv = 4
+        cv = 3
         for i in range(cv):
-            print("Iteration {}/{}".format(i, 10))
+            print("Iteration {}/{}".format(i, 3))
             # X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.001, random_state=10 + i)
             X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real,
                                                                                     test_size=0.2,
@@ -488,7 +488,7 @@ def main():
                               test_y=y_test_real)
             accuracy_cross_validation.append(c.train(confidence_in_train=confidence_in_train))
             print("Acuuracy of iteration {} : {}".format(i, accuracy_cross_validation[-1]))
-        pickle.dump(accuracy_cross_validation, open("{}.pkl".format("accuracy_cv_{}_mixdataset".format(cv)), 'wb'))
+        pickle.dump(accuracy_cross_validation, open("{}.pkl".format("accuracy_cv_{}_improve_model".format(cv)), 'wb'))
 
         c.save_and_plot_results_cv("accuracy_cv_{}_improve_model".format(cv), accuracy_cross_validation)
     else:
