@@ -104,8 +104,9 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-    def __init__(self, classifier_name, pkl_fname=None, data_X=None, data_y=None, test_X=None, test_y=None):
-        self.num_epochs = 100
+    def __init__(self, classifier_name, pkl_fname=None, data_X=None, data_y=None, test_X=None, test_y=None, save_model=False):
+        self.save_model = save_model
+        self.num_epochs = 200
         self.classifier_name = classifier_name
         self.log_dir = 'logs/{}/'.format(classifier_name)
         self.batch_size = 64
@@ -244,8 +245,7 @@ class CNNClassifier():
         start_time = time.time()
         for epoch in range(self.num_epochs):
             for i in range(start_batch_id, self.num_batches):
-                X_batch = self.train_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1,
-                                                                                              self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
+                X_batch = self.train_X[i * self.batch_size:(i + 1) * self.batch_size].reshape(-1, self.IMAGE_WIDTH * self.IMAGE_HEIGHT)
                 y_batch = self.train_y[i * self.batch_size:(i + 1) * self.batch_size]
                 # plt.title(y_batch[0])
                 # plt.imshow(X_batch[0].reshape(28, 28))
@@ -278,9 +278,9 @@ class CNNClassifier():
                         else:
                             print("skipping confidence low max_confidence ={}".format(np.max(confidence)))
 
-        if not self.classifier_name == "custom":
+        if self.save_model:
             self.save_model()
-        self.plot_train_test_loss("accuracy", self.accuracy_list)
+        # self.plot_train_test_loss("accuracy", self.accuracy_list)
         return self.accuracy_list
 
     # self.plot_train_test_loss("confidence", self.confidence_list)
@@ -368,6 +368,7 @@ class CNNClassifier():
 
         plt.savefig(name_figure + ".png")
         plt.close()
+        print("Saved! ",name_figure)
 
 
 def parse_args():
@@ -466,29 +467,29 @@ def main():
         accuracy_cross_validation = []
         c = None
         print("Starting cross validation")
-        cv = 4
+        cv = 3
         for i in range(cv):
-            print("Iteration {}/{}".format(i, 10))
+            print("Iteration {}/{}".format(i, cv))
             # X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.001, random_state=10 + i)
             X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real,
                                                                                     test_size=0.2,
                                                                                     random_state=10 + i)
-            print("X_train_real={}, data_X={}, y_test_real={}, y_test={}".format(len(X_train_real), len(data_X), len(y_test_real), len(data_y)))
-            len_dataX = min(len(X_train_real),len(data_X))
+            print("X_train_real={}, data_X={}, y_test_real={}, y_test={}".format(len(X_train_real), len(data_X),
+                                                                                 len(y_test_real), len(data_y)))
+            len_dataX = min(len(X_train_real), len(data_X))
             data_X = data_X[:len_dataX]
             data_y = data_y[:len_dataX]
-            X_train = np.append(data_X,X_train_real).reshape(-1, 784)
-            y_train = np.append(data_y,y_train_real.reshape(-1, 10)).reshape(-1, 10)
+            X_train = np.append(data_X, X_train_real).reshape(-1, 784)
+            y_train = np.append(data_y, y_train_real.reshape(-1, 10)).reshape(-1, 10)
             # X_test = np.append(X_test_real, X_test).reshape(-1, 784)
             # y_test = np.append(y_test_real.reshape(-1, 10), y_test).reshape(-1, 10)
-            X_train, y_train = shuffle((X_train, y_train), random_state=10+i)
+            X_train, y_train = shuffle((X_train, y_train), random_state=10 + i)
 
-            print("Test size={}".format(len(y_test_real)))
-            c = CNNClassifier(original_dataset_name, pkl_fname=fname, data_X=X_train, data_y=y_train, test_X=X_test_real,
+            c = CNNClassifier(original_dataset_name, pkl_fname=fname, data_X=X_train, data_y=y_train,
+                              test_X=X_test_real,
                               test_y=y_test_real)
             accuracy_cross_validation.append(c.train(confidence_in_train=confidence_in_train))
-            print("Acuuracy of iteration {} : {}".format(i, accuracy_cross_validation[-1]))
-        pickle.dump(accuracy_cross_validation, open("{}.pkl".format("accuracy_cv_{}_mixdataset".format(cv)), 'wb'))
+        pickle.dump(accuracy_cross_validation, open("{}.pkl".format("accuracy_cv_{}_improve_model".format(cv)), 'wb'))
 
         c.save_and_plot_results_cv("accuracy_cv_{}_improve_model".format(cv), accuracy_cross_validation)
     else:
@@ -509,7 +510,7 @@ def main_to_train_classifier():
     data_X, data_y = load_mnist(original_dataset_name)
     X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.2, random_state=10)
     c = CNNClassifier(original_dataset_name, pkl_fname=None, data_X=X_train, data_y=y_train, test_X=X_test,
-                      test_y=y_test)
+                      test_y=y_test,save_model=False)
     c.train(confidence_in_train=confidence_in_train)
     c.test(X_test, y_test)
 
