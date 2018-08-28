@@ -461,7 +461,6 @@ def main():
 		
 		c = CNNClassifier("custom", pkl_fname=fname, data_X=data_X, data_y=data_y, test_X=X_test_real, test_y=y_test_real,seed=seed,save_model=False)
 		accuracy_cross_validation.append(c.train(confidence_in_train=confidence_in_train))
-	pickle.dump(accuracy_cross_validation, open("{}.pkl".format("accuracy_cv_{}_improve_model".format(cv)), 'wb'))
 	
 	c.save_and_plot_results_cv("accuracy_cv_{}_gan_only_no_prior".format(cv), accuracy_cross_validation)
 
