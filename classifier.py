@@ -459,7 +459,7 @@ def main():
 		print("X_train_real={}, data_X={}, y_test_real={}, y_test={}".format(len(X_train_real), len(data_X), len(y_test_real), len(data_y)))
 		data_X, data_y = shuffle((data_X, data_y), random_state=10 + i)
 		
-		c = CNNClassifier(original_dataset_name, pkl_fname=fname, data_X=data_X, data_y=data_y, test_X=X_test_real, test_y=y_test_real,seed=seed,save_model=False)
+		c = CNNClassifier("custom", pkl_fname=fname, data_X=data_X, data_y=data_y, test_X=X_test_real, test_y=y_test_real,seed=seed,save_model=False)
 		accuracy_cross_validation.append(c.train(confidence_in_train=confidence_in_train))
 	pickle.dump(accuracy_cross_validation, open("{}.pkl".format("accuracy_cv_{}_improve_model".format(cv)), 'wb'))
 	
