@@ -105,7 +105,7 @@ def variable_summaries(var, name):
 
 class CNNClassifier():
     def __init__(self, classifier_name, pkl_fname=None, data_X=None, data_y=None, test_X=None, test_y=None, save_model=False):
-        self.save_model = save_model
+        self.is_save_model = save_model
         self.num_epochs = 200
         self.classifier_name = classifier_name
         self.log_dir = 'logs/{}/'.format(classifier_name)
@@ -278,7 +278,7 @@ class CNNClassifier():
                         else:
                             print("skipping confidence low max_confidence ={}".format(np.max(confidence)))
 
-        if self.save_model:
+        if self.is_save_model:
             self.save_model()
         # self.plot_train_test_loss("accuracy", self.accuracy_list)
         return self.accuracy_list
