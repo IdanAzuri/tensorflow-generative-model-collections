@@ -10,7 +10,7 @@ import warnings
 
 from sklearn.utils import shuffle
 
-SEED = 88
+# SEED = 88
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 from matplotlib.legend_handler import HandlerLine2D
@@ -21,7 +21,7 @@ from ops import *
 from utils import *
 
 
-np.random.seed(SEED)
+
 
 
 def gradient_penalty(real, fake, f):
@@ -47,7 +47,8 @@ class MultiModalInfoGAN(object):
 	model_name = "MultiModalInfoGAN"  # name for checkpoint
 	
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2, is_wgan_gp=False,
-	             dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True, dir_results="classifier_results_seed_{}".format(SEED)):
+	             dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True, seed=88):
+		np.random.seed(seed)
 		self.test_size = 5000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
@@ -63,7 +64,7 @@ class MultiModalInfoGAN(object):
 		self.pretrained_classifier = CNNClassifier(self.dataset_name)
 		self.dataset_creation_order = dataset_creation_order
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
-		self.dir_results = dir_results
+		self.dir_results = "classifier_results_seed_{}".format(seed)
 		# train
 		self.learning_rate = 0.0002
 		self.beta1 = 0.5
