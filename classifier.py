@@ -434,47 +434,44 @@ def main():
 	if args is None:
 		exit()
 	train_classifier_for_generated_data = args.train_model
-	if train_classifier_for_generated_data:
-		fname = args.fname
-		dir = args.dir_name
-		original_dataset_name = args.original
-		do_preprocess = args.preprocess
-		confidence_in_train = args.use_confidence
-		confidence_thresh = args.confidence_thresh
-		seed = args.seed
-		dir_results = 'classifier_results_seed_{}'.format(seed)
-		pkl_label_path = "{}{}/edited_labels_{}.pkl".format(dir, dir_results, fname)
-		pkl_path = "{}{}/edited_training_set_{}.pkl".format(dir, dir_results, fname)
+	fname = args.fname
+	dir = args.dir_name
+	original_dataset_name = args.original
+	do_preprocess = args.preprocess
+	confidence_in_train = args.use_confidence
+	confidence_thresh = args.confidence_thresh
+	seed = args.seed
+	dir_results = 'classifier_results_seed_{}'.format(seed)
+	pkl_label_path = "{}{}/edited_labels_{}.pkl".format(dir, dir_results, fname)
+	pkl_path = "{}{}/edited_training_set_{}.pkl".format(dir, dir_results, fname)
+	
+	data_X = pickle.load(open(pkl_path, 'rb'))
+	data_y = pickle.load(open(pkl_label_path, 'rb'))
+	data_X_real, data_y_real = load_mnist(original_dataset_name)
+	
+	accuracy_cross_validation = []
+	c = None
+	print("Starting cross validation")
+	cv = 3
+	for i in range(cv):
+		print("Iteration {}/{}".format(i, cv))
+		# X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.001, random_state=10 + i)
+		X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real, test_size=0.2, random_state=10 + i)
+		print("X_train_real={}, data_X={}, y_test_real={}, y_test={}".format(len(X_train_real), len(data_X), len(y_test_real), len(data_y)))
+		len_dataX = min(len(X_train_real), len(data_X))
+		data_X = data_X[:len_dataX]
+		data_y = data_y[:len_dataX]
+		X_train = np.append(data_X, X_train_real).reshape(-1, 784)
+		y_train = np.append(data_y, y_train_real.reshape(-1, 10)).reshape(-1, 10)
+		# X_test = np.append(X_test_real, X_test).reshape(-1, 784)
+		# y_test = np.append(y_test_real.reshape(-1, 10), y_test).reshape(-1, 10)
+		X_train, y_train = shuffle((X_train, y_train), random_state=10 + i)
 		
-		data_X = pickle.load(open(pkl_path, 'rb'))
-		data_y = pickle.load(open(pkl_label_path, 'rb'))
-		data_X_real, data_y_real = load_mnist(original_dataset_name)
-		
-		accuracy_cross_validation = []
-		c = None
-		print("Starting cross validation")
-		cv = 3
-		for i in range(cv):
-			print("Iteration {}/{}".format(i, cv))
-			# X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size=0.001, random_state=10 + i)
-			X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real, test_size=0.2, random_state=10 + i)
-			print("X_train_real={}, data_X={}, y_test_real={}, y_test={}".format(len(X_train_real), len(data_X), len(y_test_real), len(data_y)))
-			len_dataX = min(len(X_train_real), len(data_X))
-			data_X = data_X[:len_dataX]
-			data_y = data_y[:len_dataX]
-			X_train = np.append(data_X, X_train_real).reshape(-1, 784)
-			y_train = np.append(data_y, y_train_real.reshape(-1, 10)).reshape(-1, 10)
-			# X_test = np.append(X_test_real, X_test).reshape(-1, 784)
-			# y_test = np.append(y_test_real.reshape(-1, 10), y_test).reshape(-1, 10)
-			X_train, y_train = shuffle((X_train, y_train), random_state=10 + i)
-			
-			c = CNNClassifier(original_dataset_name, pkl_fname=fname, data_X=X_train, data_y=y_train, test_X=X_test_real, test_y=y_test_real,seed=seed)
-			accuracy_cross_validation.append(c.train(confidence_in_train=confidence_in_train))
-		pickle.dump(accuracy_cross_validation, open("{}.pkl".format("accuracy_cv_{}_improve_model".format(cv)), 'wb'))
-		
-		c.save_and_plot_results_cv("accuracy_cv_{}_improve_model".format(cv), accuracy_cross_validation)
-	else:
-		main_to_train_classifier()
+		c = CNNClassifier(original_dataset_name, pkl_fname=fname, data_X=X_train, data_y=y_train, test_X=X_test_real, test_y=y_test_real,seed=seed,save_model=False)
+		accuracy_cross_validation.append(c.train(confidence_in_train=confidence_in_train))
+	pickle.dump(accuracy_cross_validation, open("{}.pkl".format("accuracy_cv_{}_improve_model".format(cv)), 'wb'))
+	
+	c.save_and_plot_results_cv("accuracy_cv_{}_improve_model".format(cv), accuracy_cross_validation)
 
 
 def main_to_train_classifier():
