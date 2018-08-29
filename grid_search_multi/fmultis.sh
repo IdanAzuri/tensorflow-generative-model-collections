@@ -17,7 +17,7 @@ source /cs/labs/daphna/idan.azuri/venv_64/bin/activate
 
 SEEDS=(88 125 12 7 49 21 23 45 11)
 
-SEED=${SEEDS[SLURM_ARRAY_TASK_ID]}
+SEED=${SEEDS[((SLURM_ARRAY_TASK_ID/10))]}
 
 if [ $((${SLURM_ARRAY_TASK_ID} % 1)) -eq 0 ]
 then
