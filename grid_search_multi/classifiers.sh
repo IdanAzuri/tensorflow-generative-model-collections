@@ -29,7 +29,7 @@ python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generativ
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_ndist_3 --original fashion-mnist --seed 125
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_3 --original fashion-mnist --seed 125
 
-elif [${SLURM_ARRAY_TASK_ID} -eq  2 ]
+elif [ ${SLURM_ARRAY_TASK_ID} -eq 2 ]
 then
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_ndist_3 --original fashion-mnist --seed 125
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_3 --original fashion-mnist --seed 125
@@ -39,7 +39,7 @@ python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generativ
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_ndist_3 --original fashion-mnist --seed 125
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_3 --original fashion-mnist --seed 125
 
-elif [${SLURM_ARRAY_TASK_ID} -eq  3 ]
+elif [ ${SLURM_ARRAY_TASK_ID} -eq 3 ]
 then
 
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_5 --original fashion-mnist --seed 88
@@ -50,8 +50,7 @@ python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generativ
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_ndist_5 --original fashion-mnist --seed 88
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_5 --original fashion-mnist --seed 88
 
-echo You may not go to the party.
-elif [${SLURM_ARRAY_TASK_ID} -eq  4 ]
+elif [ ${SLURM_ARRAY_TASK_ID} -eq 4 ]
 then
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_ndist_5 --original fashion-mnist --seed 88
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_5 --original fashion-mnist --seed 88
@@ -61,7 +60,7 @@ python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generativ
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_ndist_5 --original fashion-mnist --seed 88
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_5 --original fashion-mnist --seed 88
 
-elif [${SLURM_ARRAY_TASK_ID} -eq  5 ]
+elif [ ${SLURM_ARRAY_TASK_ID} -eq 5 ]
 then
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_10 --original fashion-mnist --seed 88
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_ndist_10 --original fashion-mnist --seed 88
@@ -71,7 +70,7 @@ python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generativ
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_ndist_10 --original fashion-mnist --seed 88
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_10 --original fashion-mnist --seed 88
 
-elif [${SLURM_ARRAY_TASK_ID} -eq  6 ]
+elif [ ${SLURM_ARRAY_TASK_ID} -eq 6 ]
 then
 
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_ndist_10 --original fashion-mnist --seed 88
@@ -81,7 +80,7 @@ python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generativ
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_ndist_10 --original fashion-mnist --seed 88
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_ndist_10 --original fashion-mnist --seed 88
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_10 --original fashion-mnist --seed 88
-elif [${SLURM_ARRAY_TASK_ID} -eq 0 ]
+elif [ ${SLURM_ARRAY_TASK_ID} -eq 0 ]
 then
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSample_mu_0.0_sigma_0.1_ndist_10 --original fashion-mnist --seed 125
 
