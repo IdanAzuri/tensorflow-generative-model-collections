@@ -352,7 +352,7 @@ class CNNClassifier():
 		
 		plt.savefig(name_figure + ".png")
 		plt.close()
-		print("Saved! ", name_figure)
+		print("pkl has been sSaved! ", name_figure)
 
 
 def parse_args():
