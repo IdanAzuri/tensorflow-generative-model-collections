@@ -18,7 +18,7 @@ source /cs/labs/daphna/idan.azuri/venv_64/bin/activate
 
 
 
-if [ ${SLURM_ARRAY_TASK_ID} == 1]
+if [ ${SLURM_ARRAY_TASK_ID} == 1 ]
 then
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_3 --original fashion-mnist --seed 125
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_3 --original fashion-mnist --seed 125
