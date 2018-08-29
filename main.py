@@ -53,6 +53,7 @@ def parse_args():
 	parser.add_argument('--mu', type=float, default=0.1)
 	parser.add_argument('--sigma', type=float, default=0.15)
 	parser.add_argument('--ndist', type=int, default=10)
+	parser.add_argument('--seed', type=int, default=88)
 	
 	return check_args(parser.parse_args())
 
@@ -101,6 +102,7 @@ def main():
 	mu = args.mu
 	sigma = args.sigma
 	n_distributions=args.ndist
+	seed=args.seed
 	sampler_method = UniformSample()
 	if sampler == 'multi-uniform':
 		sampler_method = MultiModalUniformSample()
@@ -122,7 +124,7 @@ def main():
 				# order_str = '_'.join(dataset_creation_order)
 				print("CHEKPOINT DIR: {}".format(sampler))
 				gan = model(sess, epoch=args.epoch, batch_size=args.batch_size, z_dim=args.z_dim, dataset_name=args.dataset,
-				            checkpoint_dir=args.checkpoint_dir + '/' + sampler +'/' + str(SEED), result_dir=args.result_dir + '/' + sampler+'/' + str(SEED),
+				            checkpoint_dir=args.checkpoint_dir + '/' + sampler +'/' + str(seed), result_dir=args.result_dir + '/' + sampler+'/' + str(seed),
 				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method, is_wgan_gp=is_wgan_gp)
 		if gan is None:
 			raise Exception("[!] There is no option for " + args.gan_type)
