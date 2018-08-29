@@ -352,7 +352,7 @@ class CNNClassifier():
 		
 		plt.savefig(name_figure + ".png")
 		plt.close()
-		print("Saved! ", name_figure)
+		print("pkl has been sSaved! ", name_figure)
 
 
 def parse_args():
@@ -467,7 +467,7 @@ def main():
 		# y_test = np.append(y_test_real.reshape(-1, 10), y_test).reshape(-1, 10)
 		X_train, y_train = shuffle((X_train, y_train), random_state=10 + i)
 		
-		c = CNNClassifier(original_dataset_name, pkl_fname=fname, data_X=X_train, data_y=y_train, test_X=X_test_real, test_y=y_test_real,seed=seed,save_model=False)
+		c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train, data_y=y_train, test_X=X_test_real, test_y=y_test_real,seed=seed,save_model=False)
 		accuracy_cross_validation.append(c.train(confidence_in_train=confidence_in_train))
 	pickle.dump(accuracy_cross_validation, open("{}.pkl".format("accuracy_cv_{}_improve_model".format(cv)), 'wb'))
 	
