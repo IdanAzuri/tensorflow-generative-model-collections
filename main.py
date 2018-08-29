@@ -53,7 +53,7 @@ def parse_args():
 	parser.add_argument('--mu', type=float, default=0.1)
 	parser.add_argument('--sigma', type=float, default=0.15)
 	parser.add_argument('--ndist', type=int, default=10)
-	parser.add_argument('--seed', type=int, default=88)
+	parser.add_argument('--seed', type=int)
 	
 	return check_args(parser.parse_args())
 
@@ -98,6 +98,7 @@ def main():
 	# dataset_creation_order = args.dataset_order#.split(",")
 	# print("Main " ,args.dataset_order)
 	len_continuous_code = args.len_continuous_code
+	print(args)
 	sampler = args.sampler
 	mu = args.mu
 	sigma = args.sigma

@@ -44,8 +44,8 @@ def gradient_penalty(real, fake, f):
 class MultiModalInfoGAN(object):
 	model_name = "MultiModalInfoGAN"  # name for checkpoint
 	
-	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2, is_wgan_gp=False,
-	             dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True, seed=88):
+	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, seed, len_continuous_code=2, is_wgan_gp=False,
+	             dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True):
 		print("saving to esults dir={}".format(result_dir))
 		np.random.seed(seed)
 		self.test_size = 5000
@@ -329,7 +329,7 @@ class MultiModalInfoGAN(object):
 				
 				# update G and Q network
 				_, summary_str_g, g_loss, _, summary_str_q, q_loss = self.sess.run([self.g_optim, self.g_sum, self.g_loss, self.q_optim, self.q_sum, self.q_loss],
-					feed_dict={self.x: batch_images, self.z: batch_z, self.y: batch_codes})
+				                                                                   feed_dict={self.x: batch_images, self.z: batch_z, self.y: batch_codes})
 				self.writer.add_summary(summary_str_g, counter)
 				self.writer.add_summary(summary_str_q, counter)
 				
@@ -585,7 +585,7 @@ class MultiModalInfoGAN(object):
 		pickle.dump(data_y_all, output_path)
 		
 		fname_trainingset = "generated_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-		print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}{}\n\n".format(len(generated_dataset), len(generated_labels), self.dir_results,fname_trainingset))
+		print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}{}\n\n".format(len(generated_dataset), len(generated_labels), self.dir_results, fname_trainingset))
 		fname_labeles = "generated_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
 		# np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2])

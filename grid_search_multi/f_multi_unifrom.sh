@@ -26,7 +26,7 @@ python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generativ
 #
 #python3 main.py --gan_type MultiModalInfoGAN --epoch 60 --dataset fashion-mnist --sampler multi-uniform --batch_size 64 --dataset_order "rzcc rzrc czcc czrc"
 ##python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultiModalUniformSample_mu_0_sigma_0.15_rzcc_rzrc_czcc_czrc --preprocess True --original fashion-mnist
-#python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultiModalUniformSample_mu_0_sigma_0.15_rzcc_rzrc_czcc_czrc --original fashion-mnist
+#python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultiModalUniformSample_mu_0_sigma_0    .15_rzcc_rzrc_czcc_czrc --original fashion-mnist
 #
 #
 #python3 main.py --gan_type MultiModalInfoGAN --epoch 60 --dataset fashion-mnist --sampler multi-uniform --batch_size 64 --dataset_order "czrc czcc rzcc rzrc"
