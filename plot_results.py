@@ -16,32 +16,34 @@ dir3 = 'classifier_results_seed_125/'
 START = 3
 start = START
 END = 50
-
-
+#regex
+# (classifier_MM.*_sigma_\d.\d)(.*)(_ndist_\d+)(_accuracy)(.pkl)
+#$1$3$4_cv_3_gan_only_no_prior$5
+"classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl"
 # 10 modalities
 def fashion_MM_plot_from_pkl():
 	# plt.Figure(figsize=(15, 15))
 	
 	a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_accuracy.pkl", "rb"))[START:END])
 	b = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
-	d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
-	a2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	a2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	b2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	c2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	c2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
 	# DIR 3
-	a3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	a3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	b3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	c3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	c3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_UniformSample_mu_0.0_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultiModalUniformSample_mu_0.0_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
 	# CALC MEAN AND STDERR
 	a_mean = np.mean([a, a2, a3], axis=0)
@@ -76,50 +78,50 @@ def MM_mu_05_07_08_zoom_plot_from_pkl():
 	# title = 'MMinfoGAN_Fsion-Mnist_multi-modal Gaussian Sampler 10 modals'
 	# plt.title(title, fontsize=10)
 	a = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	b = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	c = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	e = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	# DIR 2
 	a2 = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	b2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	c2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	e2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
 	# DIR 3
 	# a3 = np.mean(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	# b3 = np.mean(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	c3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	# e3 = np.mean(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
 	# CALC MEAN AND STDERR
 	a_mean = np.mean([a, a2], axis=0)
@@ -161,38 +163,38 @@ def MM_mu_05_07_08_zoom_plot_from_pkl():
 
 def MM_mu_01_zoom_plot_from_pkl():
 	a = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	b = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	c = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
-	# e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
 	a2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	b2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	c2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
-	# e2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# e2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
 	a3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
-	# b3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
-	# c3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# b3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
-	# e3 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# e3 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	## CALC MEAN AND STDERR
 	a_mean = np.mean([a, a2], axis=0)
 	a_stderr = np.std([a, a2], axis=0) / np.sqrt(3)
@@ -234,42 +236,42 @@ def MM_mu_01_zoom_plot_from_pkl():
 def MM_mu_1_zoom_plot_from_pkl():
 	plt.Figure(figsize=(15, 15))
 	
-	# a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	b = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
-	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
-	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	e = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
-	# a2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# a2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	b2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
-	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
-	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	e2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	#
 	
-	# a3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# a3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	b3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
-	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
-	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	e3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	## CALC MEAN AND STDERR
 	# a_mean = np.mean([a, a2], axis=0)
 	# a_stderr = np.std([a, a2], axis=0) / np.sqrt(3)
@@ -314,45 +316,45 @@ def MM_mu_1_zoom_plot_from_pkl():
 def MM_mu_05_07_08_zoom_plot_from_pkl_5_modals():
 	plt.Figure(figsize=(15, 15))
 	
-	# a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	c = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	# DIR 2
-	# a2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# a2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	c2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# e2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# e2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
 	# DIR 3
 	# a3 = np.mean(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	# b3 = np.mean(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	c3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	# e3 = np.mean(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	## CALC MEAN AND STDERR
 	# a_mean = np.mean([a, a2], axis=0)
 	# a_stderr = np.std([a, a2], axis=0) / np.sqrt(3)
@@ -395,34 +397,34 @@ def MM_mu_05_07_08_zoom_plot_from_pkl_5_modals():
 def MM_mu_01_zoom_plot_from_pkl_5modals():
 	
 	a = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
 	a2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# c2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# e2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# e2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
 	a3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# b3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# c3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# b3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# e3 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# e3 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
 	## CALC MEAN AND STDERR
 	a_mean = np.mean([a, a2], axis=0)
@@ -463,42 +465,42 @@ def MM_mu_01_zoom_plot_from_pkl_5modals():
 
 
 def MM_mu_1_zoom_plot_from_pkl_5modals():
-	# a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	b = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	e = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
-	# a2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# a2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	b2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	e2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	#
 	
-	# a3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+	# a3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	b3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
-	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	e3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_5_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_5_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	#
 	## CALC MEAN AND STDERR
 	# a_mean = np.mean([a, a2, a3], axis=0)
@@ -542,44 +544,44 @@ def MM_mu_1_zoom_plot_from_pkl_5modals():
 
 
 def MM_mu_05_07_08_zoom_plot_from_pkl3modals():
-	# a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	c = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	# DIR 2
-	# a2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# a2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	c2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# e2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# e2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
 	# DIR 3
 	# a3 = np.mean(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.5_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	# b3 = np.mean(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	c3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	# e3 = np.mean(pickle.load(
-	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# 	open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.3_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
 	## CALC MEAN AND STDERR
 	# a_mean = np.mean([a, a2], axis=0)
@@ -622,34 +624,34 @@ def MM_mu_05_07_08_zoom_plot_from_pkl3modals():
 
 def MM_mu_01_zoom_plot_from_pkl3modals():
 	a = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# b = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# e = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
 	a2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# c2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# b2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# e2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# e2 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
 	a3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# b3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.13_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# c3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.15_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# b3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	d3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.17_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# e3 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# e3 = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
 	## CALC MEAN AND STDERR
 	a_mean = np.mean([a, a2, a3], axis=0)
@@ -690,41 +692,41 @@ def MM_mu_01_zoom_plot_from_pkl3modals():
 
 
 def MM_mu_1_zoom_plot_from_pkl3modals():
-	# a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_10_accuracy.pkl", "rb"))[START:END])
+	# a = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_ndist_10_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	b = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	e = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# f = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# f = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g = np.mean(
-		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	
-	# a2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# a2 = np.mean(pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	b2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	e2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g2 = np.mean(
-		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir2 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	#
 	
-	# a3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+	# a3 = np.mean(pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.1_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	b3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
-	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# c = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
+	# d = np.mean(pickle.load(open(dir + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.2_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	e3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	f3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.4_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	g3 = np.mean(
-		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_czcc_czrc_rzcc_rzrc_ndist_3_accuracy.pkl", "rb"))[START:END])
+		pickle.load(open(dir3 + "classifier_MMinfoGAN_fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_3_accuracy_cv_3_gan_only_no_prior.pkl", "rb"))[START:END])
 	#
 	## CALC MEAN AND STDERR
 	# a_mean = np.mean([a, a2], axis=0)
