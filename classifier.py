@@ -34,7 +34,6 @@ import warnings
 from sklearn.model_selection import train_test_split
 from ops import bn
 
-from MultiModalInfoGAN import SEED
 
 LEARNING_RATE = 1e-5
 
