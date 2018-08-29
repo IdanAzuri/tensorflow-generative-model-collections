@@ -5,7 +5,7 @@
 #SBATCH --time=1-20
 # SBATCH --mail-user=idan.azuri@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
-#SBATCH --array=0-20%10
+#SBATCH --array=0-89%10
 
 
 module load tensorflow/1.5.0
