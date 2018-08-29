@@ -574,7 +574,10 @@ class MultiModalInfoGAN(object):
 		order_str = '_'.join(self.dataset_creation_order)
 		if not os.path.exists(self.dir_results):
 			os.makedirs(self.dir_results)
-		params = "mu_{}_sigma_{}_ndist_{}".format(self.sampler.mu, self.sampler.sigma, self.sampler.n_distributions)
+		if self.wgan_gp:
+			params = "mu_{}_sigma_{}_ndist_{}_WGAN".format(self.sampler.mu, self.sampler.sigma, self.sampler.n_distributions)
+		else:
+			params = "mu_{}_sigma_{}_ndist_{}".format(self.sampler.mu, self.sampler.sigma, self.sampler.n_distributions)
 		
 		fname_trainingset_edited = "edited_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		fname_labeles_edited = "edited_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
