@@ -19,7 +19,7 @@ SEEDS=(88 125 12 7 49 21 23 45 11)
 
 SEED=${SEEDS[SLURM_ARRAY_TASK_ID)]}
 
-if [  ((${SLURM_ARRAY_TASK_ID} % 1 == 0))) ]
+if [  ((${SLURM_ARRAY_TASK_ID} % 1 == 0)) ]
 then
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler multi-gaussian --batch_size 64 --mu 0.1 --sigma 0.1  --ndist 3 --seed SEED
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler multi-gaussian --batch_size 64 --mu 0.1 --sigma 0.17  --ndist 3 --seed SEED
