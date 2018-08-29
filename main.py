@@ -126,7 +126,7 @@ def main():
 				print("CHEKPOINT DIR: {}".format(sampler))
 				gan = model(sess, epoch=args.epoch, batch_size=args.batch_size, z_dim=args.z_dim, dataset_name=args.dataset,
 				            checkpoint_dir=args.checkpoint_dir + '/' + sampler +'/' + str(seed), result_dir=args.result_dir + '/' + sampler+'/' + str(seed),
-				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method, is_wgan_gp=is_wgan_gp)
+				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method, is_wgan_gp=is_wgan_gp,seed=seed)
 		if gan is None:
 			raise Exception("[!] There is no option for " + args.gan_type)
 		
