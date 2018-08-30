@@ -155,7 +155,7 @@ class CNNClassifier():
 			self.b_conv1 = bias_variable([32])
 			self.W_conv2 = weight_variable([5, 5, 32, 64])
 			self.b_conv2 = bias_variable([64])
-			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT / 4) * int(self.IMAGE_HEIGHT / 4) * 64, 1024])
+			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT // 4) * int(self.IMAGE_HEIGHT // 4) * 64, 1024])
 			self.b_fc1 = bias_variable([1024])
 			self.W_fc2 = weight_variable([1024, 10])
 			self.b_fc2 = bias_variable([10])
@@ -459,9 +459,8 @@ def main():
 	# y_train = np.append(data_y, y_train_real.reshape(-1, 10)).reshape(-1, 10)
 	# X_test = np.append(X_test_real, X_test).reshape(-1, 784)
 	# y_test = np.append(y_test_real.reshape(-1, 10), y_test).reshape(-1, 10)
-	X_train, y_train = shuffle((data_X, data_y), random_state=seed)
-		
-	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train, data_y=y_train, test_X=X_test_real, test_y=y_test_real,seed=seed,save_model=False)
+	data_X, data_y = shuffle(data_X, data_y, random_state=seed)
+	c = CNNClassifier("custom", pkl_fname=fname, data_X=data_X, data_y=data_y, test_X=X_test_real, test_y=y_test_real,seed=seed,save_model=False)
 	accuracy_list=c.train(confidence_in_train=confidence_in_train)
 	c.plot_train_test_loss("accuracy_gan_no_prior", accuracy_list)
 
