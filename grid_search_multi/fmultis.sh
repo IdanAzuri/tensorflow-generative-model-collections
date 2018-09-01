@@ -18,12 +18,8 @@ source /cs/labs/daphna/idan.azuri/venv_64/bin/activate
 SEEDS=(88 125 12 7 49 21 23 45 11)
 
 SEED=${SEEDS[((SLURM_ARRAY_TASK_ID/10))]}
-echo $(( $SLURM_ARRAY_TASK_ID % 1))  -eq 0
-echo $(( $SLURM_ARRAY_TASK_ID % 1))  -eq 1
-echo $(( $SLURM_ARRAY_TASK_ID % 1))  -eq 2
-echo $(( $SLURM_ARRAY_TASK_ID % 1))  -eq 3
 
-if [ $(( $SLURM_ARRAY_TASK_ID % 1))  -eq 0 ]
+if [ $(( $SLURM_ARRAY_TASK_ID % 9))  -eq 1 ]
 then
 echo $SEED
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler multi-gaussian --batch_size 64 --mu 0.1 --sigma 0.1 --ndist 3 --seed $SEED
@@ -52,7 +48,7 @@ python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generativ
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_ndist_3 --original fashion-mnist --seed $SEED
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_3 --original fashion-mnist --seed $SEED
 
-elif [ $(( $SLURM_ARRAY_TASK_ID % 2)) -eq 0 ]
+elif [ $(( $SLURM_ARRAY_TASK_ID % 9)) -eq 2 ]
 then
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler multi-gaussian --batch_size 64 --mu 0.7 --sigma 0.25 --ndist 3 --seed $SEED
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler multi-gaussian --batch_size 64 --mu 0.8 --sigma 0.2 --ndist 3 --seed $SEED
@@ -69,7 +65,7 @@ python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generativ
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_ndist_3 --original fashion-mnist --seed $SEED
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_3 --original fashion-mnist --seed $SEED
 
-elif [ $(( $SLURM_ARRAY_TASK_ID % 3)) -eq 0 ]
+elif [ $(( $SLURM_ARRAY_TASK_ID % 9)) -eq 3 ]
 then
 
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler multi-gaussian --batch_size 64 --mu 0.1 --sigma 0.1 --ndist 5 --seed $SEED
@@ -98,7 +94,7 @@ python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generativ
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_ndist_5 --original fashion-mnist
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_5 --original fashion-mnist
 
-elif [ $(( $SLURM_ARRAY_TASK_ID % 4)) -eq 0 ]
+elif [ $(( $SLURM_ARRAY_TASK_ID % 9)) -eq 4 ]
 then
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler multi-gaussian --batch_size 64 --mu 0.7 --sigma 0.25 --ndist 5 --seed $SEED
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler multi-gaussian --batch_size 64 --mu 0.8 --sigma 0.2 --ndist 5 --seed $SEED
@@ -116,7 +112,7 @@ python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generativ
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_ndist_5 --original fashion-mnist --seed $SEED
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_5 --original fashion-mnist --seed $SEED
 
-elif [ $(( $SLURM_ARRAY_TASK_ID % 5)) -eq 0 ]
+elif [ $(( $SLURM_ARRAY_TASK_ID % 9)) -eq 5 ]
 then
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler multi-gaussian --batch_size 64 --mu 0.1 --sigma 0.1 --ndist 10 --seed $SEED
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler multi-gaussian --batch_size 64 --mu 0.1 --sigma 0.17 --ndist 10 --seed $SEED
@@ -144,7 +140,7 @@ python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generativ
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.25_ndist_10 --original fashion-mnist --seed $SEED
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_0.1_sigma_0.2_ndist_10 --original fashion-mnist --seed $SEED
 
-elif [ $(( $SLURM_ARRAY_TASK_ID % 6)) -eq 0 ]
+elif [ $(( $SLURM_ARRAY_TASK_ID % 9)) -eq 6 ]
 then
 
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler multi-gaussian --batch_size 64 --mu 0.7 --sigma 0.25 --ndist 10 --seed $SEED
@@ -165,12 +161,12 @@ python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generativ
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.3_ndist_10 --original fashion-mnist --seed $SEED
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_10 --original fashion-mnist --seed $SEED
 
-elif [ $(( $SLURM_ARRAY_TASK_ID % 7)) -eq 0 ]
+elif [ $(( $SLURM_ARRAY_TASK_ID % 9)) -eq 7 ]
 then
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSample_mu_0.0_sigma_0.1_ndist_10 --original fashion-mnist --seed $SEED
 
 
-elif [ $(( $SLURM_ARRAY_TASK_ID % 8)) -eq 0 ]
+elif [ $(( $SLURM_ARRAY_TASK_ID % 9)) -eq 8 ]
 then
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.1 --seed $SEED
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler gaussian --batch_size 64 --mu 0.0 --sigma 0.17 --seed $SEED
@@ -190,7 +186,7 @@ python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generativ
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSample_mu_0.0_sigma_0.4_ndist_10 --original fashion-mnist --seed $SEED
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_GaussianSample_mu_0.0_sigma_0.5_ndist_10 --original fashion-mnist --seed $SEED
 
-elif [ $(( $SLURM_ARRAY_TASK_ID % 9)) -eq 0 ]
+elif [ $(( $SLURM_ARRAY_TASK_ID % 9)) -eq 9 ]
 then
 
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset mnist --sampler multi-uniform --batch_size 64 --seed $SEED
