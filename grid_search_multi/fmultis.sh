@@ -19,6 +19,10 @@ SEEDS=(88 125 12 7 49 21 23 45 11)
 
 SEED=${SEEDS[((SLURM_ARRAY_TASK_ID/10))]}
 echo $SLURM_ARRAY_TASK_ID
+echo $((${SLURM_ARRAY_TASK_ID} % 1))
+echo $((${SLURM_ARRAY_TASK_ID} % 2))
+echo $((${SLURM_ARRAY_TASK_ID} % 3))
+echo $(( $SLURM_ARRAY_TASK_ID % 1))
 if [ $((${SLURM_ARRAY_TASK_ID} % 1)) ]
 then
 echo $SEED
