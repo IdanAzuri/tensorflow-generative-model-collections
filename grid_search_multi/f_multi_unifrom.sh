@@ -8,7 +8,7 @@
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
 #SBATCH --array=0-9%9
 SEEDS=(88 $SEED5 $SEED 7 49 21 23 45 11)
-SEED=${SEEDS[((SLURM_ARRAY_TASK_ID/10 ))]}
+SEED=${SEEDS[((SLURM_ARRAY_TASK_ID ))]}
 module load tensorflow/1.5.0
 
 dir=/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections
