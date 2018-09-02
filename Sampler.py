@@ -1,11 +1,5 @@
 import numpy as np
 
-from MultiModalInfoGAN import SEED
-
-
-np.random.seed(SEED)
-
-
 
 class Sampler(object):
 	def __init__(self,mu=0.,sigma=0.15,n_distributions=10):

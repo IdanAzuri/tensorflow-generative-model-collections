@@ -1,10 +1,7 @@
 import argparse
 import os
 
-import matplotlib
 
-
-matplotlib.use('Agg')
 import tensorflow as tf
 
 from ACGAN import ACGAN
@@ -48,7 +45,7 @@ def parse_args():
 	parser.add_argument('--log_dir', type=str, default='logs', help='Directory name to save training logs')
 	parser.add_argument('--sampler', type=str, default='uniform',
 	                    choices=['uniform', 'multi-uniform', 'multi-gaussian', 'multi-gaussianTF', 'gaussian', 'truncated'])
-	# parser.add_argument('--dataset_order', '-do', type=str, default="czcc,czrc,rzcc,rzrc", help="czcc,czrc,rzcc,rzrc")
+	# parser.add_argument('--dataset_order', '-do', type=str, default=['czcc', 'czrc', 'rzcc', 'rzrc'], help="czcc,czrc,rzcc,rzrc")
 	
 	parser.add_argument('--gpus', type=str, default='0')
 	parser.add_argument('--len_continuous_code', type=int, default=2)
@@ -56,6 +53,7 @@ def parse_args():
 	parser.add_argument('--mu', type=float, default=0.1)
 	parser.add_argument('--sigma', type=float, default=0.15)
 	parser.add_argument('--ndist', type=int, default=10)
+	parser.add_argument('--seed', type=int)
 	parser.add_argument('--pref', type=str, default="",help="prefix experiment title")
 	
 	return check_args(parser.parse_args())
@@ -99,12 +97,15 @@ def main():
 	# open session
 	title_prefix = args.pref
 	models = [GAN, CGAN, infoGAN, ACGAN, EBGAN, WGAN, WGAN_GP, DRAGAN, LSGAN, BEGAN, VAE, CVAE, MultiModalInfoGAN, infoGAN, AEMultiModalInfoGAN]
-	# dataset_creation_order = args.dataset_order.split()
+	# dataset_creation_order = args.dataset_order#.split(",")
+	# print("Main " ,args.dataset_order)
 	len_continuous_code = args.len_continuous_code
+	print(args)
 	sampler = args.sampler
 	mu = args.mu
 	sigma = args.sigma
 	n_distributions=args.ndist
+	seed=args.seed
 	sampler_method = UniformSample()
 	if sampler == 'multi-uniform':
 		sampler_method = MultiModalUniformSample()
@@ -126,8 +127,8 @@ def main():
 				# order_str = '_'.join(dataset_creation_order)
 				print("CHEKPOINT DIR: {}".format(sampler))
 				gan = model(sess, epoch=args.epoch, batch_size=args.batch_size, z_dim=args.z_dim, dataset_name=args.dataset,
-				            checkpoint_dir=args.checkpoint_dir + '/' + sampler +'/' + str(SEED), result_dir=args.result_dir + '/' + sampler+'/' + str(SEED),
-				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method, is_wgan_gp=is_wgan_gp)
+				            checkpoint_dir=args.checkpoint_dir + '/' + sampler +'/' + str(seed), result_dir=args.result_dir + '/' + sampler+'/' + str(seed),
+				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method, is_wgan_gp=is_wgan_gp,seed=seed)
 		if gan is None:
 			raise Exception("[!] There is no option for " + args.gan_type)
 		

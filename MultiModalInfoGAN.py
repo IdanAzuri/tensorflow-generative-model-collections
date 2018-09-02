@@ -11,19 +11,17 @@ import warnings
 from sklearn.utils import shuffle
 
 
-SEED = 12
+# SEED = 88
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 from matplotlib.legend_handler import HandlerLine2D
 
 import utils
-# from cifar10 import *
-from classifier import CNNClassifier, preprocess_data, one_hot_encoder, CONFIDENCE_THRESHOLD
+from classifier import CNNClassifier, one_hot_encoder, CONFIDENCE_THRESHOLD
 from ops import *
 from utils import *
 
 
-np.random.seed(SEED)
 
 
 def gradient_penalty(real, fake, f):
@@ -48,9 +46,11 @@ def gradient_penalty(real, fake, f):
 class MultiModalInfoGAN(object):
 	model_name = "MultiModalInfoGAN"  # name for checkpoint
 	
-	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, len_continuous_code=2, is_wgan_gp=False,
-	             dataset_creation_order=['czcc', 'czrc', 'rzcc', 'rzrc'], SUPERVISED=True, dir_results="classifier_results_seed_{}".format(SEED)):
-		self.test_size = 10000
+	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, seed, len_continuous_code=2, is_wgan_gp=False,
+	             dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True):
+		print("saving to esults dir={}".format(result_dir))
+		np.random.seed(seed)
+		self.test_size = 3000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
 		self.confidence_list = []
@@ -62,10 +62,10 @@ class MultiModalInfoGAN(object):
 		self.epoch = epoch
 		self.batch_size = batch_size
 		self.sampler = sampler
-		self.pretrained_classifier = CNNClassifier(self.dataset_name, original_dataset_name=self.dataset_name)
+		self.pretrained_classifier = CNNClassifier(self.dataset_name, seed=seed)
 		self.dataset_creation_order = dataset_creation_order
 		self.SUPERVISED = SUPERVISED  # if it is true, label info is directly used for code
-		self.dir_results = dir_results
+		self.dir_results = "classifier_results_seed_{}".format(seed)
 		# train
 		self.learning_rate = 0.0002
 		self.beta1 = 0.5
@@ -159,13 +159,22 @@ class MultiModalInfoGAN(object):
 	def discriminator(self, x, is_training=True, reuse=True):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
 		# Architecture : (64)4c2s-(128)4c2s_BL-FC1024_BL-FC1_S
-		with tf.variable_scope("discriminator", reuse=reuse):
-			net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
-			net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
-			net = tf.reshape(net, [self.batch_size, -1])
-			net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
-			out_logit = linear(net, 1, scope='d_fc4')
-			out = tf.nn.sigmoid(out_logit)
+		if self.wgan_gp:
+			with tf.variable_scope("wgan_discriminator", reuse=reuse):
+				net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
+				net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
+				net = tf.reshape(net, [self.batch_size, -1])
+				net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
+				out_logit = linear(net, 1, scope='d_fc4')
+				out = tf.nn.sigmoid(out_logit)
+		else:
+			with tf.variable_scope("discriminator", reuse=reuse):
+				net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
+				net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
+				net = tf.reshape(net, [self.batch_size, -1])
+				net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
+				out_logit = linear(net, 1, scope='d_fc4')
+				out = tf.nn.sigmoid(out_logit)
 			
 			return out, out_logit, net
 	
@@ -429,7 +438,7 @@ class MultiModalInfoGAN(object):
 			save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 			            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2_%d.png' % l)
 	
-	def create_dataset_from_GAN(self, is_confidence=True):
+	def create_dataset_from_GAN(self, is_confidence=False):
 		
 		generated_dataset = []
 		generated_labels = []
@@ -459,8 +468,9 @@ class MultiModalInfoGAN(object):
 			tmp = check_folder(self.result_dir + '/' + self.model_dir)
 			
 			for i in self.dataset_creation_order:
+				num_iter = max(datasetsize // len(self.dataset_creation_order), 10)
 				if i == 'czcc':
-					for _ in range(datasetsize // len(self.dataset_creation_order)):
+					for _ in range(num_iter):
 						# clean samples z fixed - czcc
 						z_fixed = np.zeros([self.batch_size, self.z_dim])
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
@@ -477,7 +487,7 @@ class MultiModalInfoGAN(object):
 				generated_labels += generated_labels_clean_z_clean_c
 				# print("adding czcc")
 				if i == 'czrc':
-					for _ in range(datasetsize // len(self.dataset_creation_order)):
+					for _ in range(num_iter):
 						# z fixed -czrc
 						z_fixed = np.zeros([self.batch_size, self.z_dim])
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
@@ -496,7 +506,7 @@ class MultiModalInfoGAN(object):
 				generated_labels += generated_labels_clean_z_random_c
 				# print("adding czrc")
 				if i == 'rzcc':
-					for _ in range(datasetsize // len(self.dataset_creation_order)):
+					for _ in range(num_iter):
 						# z random c-clean - rzcc
 						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
@@ -512,7 +522,7 @@ class MultiModalInfoGAN(object):
 					generated_labels += generated_labels_random_z_clean_c
 					# print("adding rzcc")
 				if i == 'rzrc':
-					for _ in range(datasetsize // len(self.dataset_creation_order)):
+					for _ in range(num_iter):
 						# rzrc
 						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
@@ -544,13 +554,14 @@ class MultiModalInfoGAN(object):
 		
 		data_y_all = np.asarray(generated_labels, dtype=np.int32).flatten()
 		import copy
+		
 		data_y_updateable = copy.deepcopy(data_y_all)
 		for current_label in range(self.len_discrete_code):
 			small_mask = data_y_clean_part == current_label
 			mask = data_y_all == current_label
 			data_X_for_current_label = np.asarray(data_X_clean_part[np.where(small_mask == True)]).reshape(-1, 784)
 			
-			limit = min(len(data_X_for_current_label) // self.len_discrete_code, 10000)
+			limit = min(len(data_X_for_current_label) // self.len_discrete_code, 2 ** 14)
 			dummy_labels = one_hot_encoder(np.random.randint(0, self.len_discrete_code, size=(limit)))  # no meaning for the labels
 			print(dummy_labels.shape)
 			_, confidence, _, arg_max = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, self.len_discrete_code), is_arg_max=True)
@@ -573,7 +584,10 @@ class MultiModalInfoGAN(object):
 		order_str = '_'.join(self.dataset_creation_order)
 		if not os.path.exists(self.dir_results):
 			os.makedirs(self.dir_results)
-		params = "mu_{}_sigma_{}_{}_ndist_{}".format(self.sampler.mu, self.sampler.sigma, order_str, self.sampler.n_distributions)
+		if self.wgan_gp:
+			params = "mu_{}_sigma_{}_ndist_{}_WGAN".format(self.sampler.mu, self.sampler.sigma, self.sampler.n_distributions)
+		else:
+			params = "mu_{}_sigma_{}_ndist_{}".format(self.sampler.mu, self.sampler.sigma, self.sampler.n_distributions)
 		
 		fname_trainingset_edited = "edited_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		fname_labeles_edited = "edited_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
@@ -584,7 +598,7 @@ class MultiModalInfoGAN(object):
 		pickle.dump(data_y_all, output_path)
 		
 		fname_trainingset = "generated_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-		print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}\n\n".format(len(generated_dataset), len(generated_labels), fname_trainingset))
+		print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}{}\n\n".format(len(generated_dataset), len(generated_labels), self.dir_results, fname_trainingset))
 		fname_labeles = "generated_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
 		# np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2])

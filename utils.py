@@ -6,7 +6,8 @@ from __future__ import division
 from __future__ import print_function
 
 import gzip
-
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import scipy.misc
 import tensorflow.contrib.slim as slim
