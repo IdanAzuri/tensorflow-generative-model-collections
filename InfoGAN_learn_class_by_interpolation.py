@@ -18,7 +18,7 @@ from matplotlib.legend_handler import HandlerLine2D
 
 import utils
 # from cifar10 import *
-from classifier import CNNClassifier, preprocess_data, one_hot_encoder, CONFIDENCE_THRESHOLD
+from classifier import CNNClassifier, one_hot_encoder, CONFIDENCE_THRESHOLD
 from ops import *
 from utils import *
 
