@@ -20,7 +20,7 @@ import utils
 from classifier import CNNClassifier, one_hot_encoder, CONFIDENCE_THRESHOLD
 from ops import *
 from utils import *
-
+import tensorflow as tf
 
 def gradient_penalty(real, fake, f):
 	def interpolate(a, b):
@@ -48,7 +48,7 @@ class MultiModalInfoGAN(object):
 	             dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True):
 		print("saving to esults dir={}".format(result_dir))
 		np.random.seed(seed)
-		self.test_size = 5000
+		self.test_size = 3000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
 		self.confidence_list = []

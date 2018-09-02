@@ -5,7 +5,7 @@
 #SBATCH --time=0-20
 # SBATCH --mail-user=idan.azuri@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
-#SBATCH --array=0-9%9
+#SBATCH --array=0-9%1
 SEEDS=(88 $SEED5 $SEED 7 49 21 23 45 11)
 SEED=${SEEDS[((SLURM_ARRAY_TASK_ID ))]}
 module load tensorflow/1.5.0
@@ -13,7 +13,7 @@ module load tensorflow/1.5.0
 dir=/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections
 
 cd $dir
-source /cs/labs/daphna/idan.azuri/venv_64/bin/activate
+source /cs/labs/daphna/idan.azuri/venv/bin/activate
 
 
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler multi-gaussian --batch_size 64 --mu 0.7 --sigma 0.25  --ndist 10 --seed $SEED
