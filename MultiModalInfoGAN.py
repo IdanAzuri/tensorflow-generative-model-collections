@@ -48,6 +48,7 @@ class MultiModalInfoGAN(object):
 	
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, seed, len_continuous_code=2, is_wgan_gp=False,
 	             dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True):
+		self.ignored_lable = 7
 		print("saving to esults dir={}".format(result_dir))
 		np.random.seed(seed)
 		self.test_size = 3000
@@ -91,10 +92,10 @@ class MultiModalInfoGAN(object):
 			# load mnist
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
 			# REMOVING 1 DIGIT
-			indiceis_of_7 = np.where(np.argmax(self.data_y, 1) == 7)
+			indiceis_of_7 = np.where(np.argmax(self.data_y, 1) == self.ignored_lable)
 			self.data_y_only7 = self.data_y[indiceis_of_7]
 			self.data_X_only7 = self.data_X[indiceis_of_7]
-			indiceis_to_keep = np.where(np.argmax(self.data_y, 1) == 7)
+			indiceis_to_keep = np.where(np.argmax(self.data_y, 1) == self.ignored_lable)
 			self.data_y = self.data_y[indiceis_to_keep]
 			self.data_X = self.data_X[indiceis_to_keep]
 			# self.data_y += self.data_y_only7[0]
@@ -328,7 +329,9 @@ class MultiModalInfoGAN(object):
 				else:
 					batch_images = self.data_pool.batch()
 				
-				batch_labels = np.random.multinomial(1, self.len_discrete_code * [float(1.0 / self.len_discrete_code)], size=[self.batch_size])
+				discrete_code_probs = self.len_discrete_code * [float(1.0 / self.len_discrete_code - 1)]
+				discrete_code_probs[self.ignored_lable]=0.
+				batch_labels = np.random.multinomial(1, discrete_code_probs, size=[self.batch_size])
 				
 				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
