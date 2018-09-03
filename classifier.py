@@ -36,7 +36,7 @@ from sklearn.model_selection import train_test_split
 from ops import bn
 
 
-LEARNING_RATE = 1e-5
+LEARNING_RATE = 1e-6
 
 from matplotlib.legend_handler import HandlerLine2D
 import argparse
@@ -115,7 +115,7 @@ class CNNClassifier():
 		self.batch_size = 64
 		self.dropout_prob = 0.5
 		self.save_to = classifier_name + "_classifier.pkl"
-		self.lamb = 1e-4
+		self.lamb = 1e-3
 		self.c_dim = 1
 		self.accuracy_list = []
 		self.loss_list = []
