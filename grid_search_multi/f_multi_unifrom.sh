@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --mem=16g
-#SBATCH -c 8
+#SBATCH --mem=4g
+#SBATCH -c 4
 #SBATCH --gres=gpu:1
 #SBATCH --time=0-20
 # SBATCH --mail-user=idan.azuri@mail.huji.ac.il
@@ -21,4 +21,3 @@ python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generativ
 
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler uniform --batch_size 64 --seed $SEED
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_UniformSample_mu_0.0_sigma_0.15_ndist_10 --original fashion-mnist --seed $SEED
-#
