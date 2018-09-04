@@ -463,7 +463,7 @@ def main():
 	c = CNNClassifier("custom", pkl_fname=fname, data_X=data_X, data_y=data_y, test_X=X_test_real, test_y=y_test_real,seed=seed,save_model=False)
 	accuracy_list=c.train(confidence_in_train=confidence_in_train)
 	c.plot_train_test_loss("accuracy_gan_no_prior", accuracy_list)
-
+	print("Classifier training saved successfully")
 
 def main_to_train_classifier():
 	# parse arguments
