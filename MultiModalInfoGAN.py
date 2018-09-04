@@ -75,7 +75,7 @@ class MultiModalInfoGAN(object):
 		self.sample_num = 64  # number of generated images to be saved
 		
 		# code
-		self.len_discrete_code = 9  # the 10th class will be represnted by the others
+		self.len_discrete_code = 10  # the 10th class will be represnted by the others
 		self.len_continuous_code = len_continuous_code  # gaussian distribution (e.g. rotation, thickness)
 		
 		if dataset_name == 'mnist' or dataset_name == 'fashion-mnist':
@@ -330,7 +330,7 @@ class MultiModalInfoGAN(object):
 					batch_images = self.data_pool.batch()
 				
 				discrete_code_probs = self.len_discrete_code * [float(1.0 / self.len_discrete_code - 1)]
-				discrete_code_probs[self.ignored_lable]=0.
+				discrete_code_probs[self.ignored_lable] = 0.
 				batch_labels = np.random.multinomial(1, discrete_code_probs, size=[self.batch_size])
 				
 				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
