@@ -345,7 +345,7 @@ class MultiModalInfoGAN(object):
 			self.save(self.checkpoint_dir, counter)
 			
 			# show temporal results
-			self.visualize_results(epoch)
+			# self.visualize_results(epoch)
 		# plotting
 		self.create_dataset_from_GAN()
 		self.save(self.checkpoint_dir, counter)
@@ -488,9 +488,9 @@ class MultiModalInfoGAN(object):
 						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
 						generated_dataset_clean_z_random_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
 						generated_labels_clean_z_random_c += [label] * self.batch_size
-						if _ == 1:
-							save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_czrc' + '_label_%d.png' % label)
+						# if _ == 1:
+						# 	save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+						# 	            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_czrc' + '_label_%d.png' % label)
 				
 				generated_dataset += generated_dataset_clean_z_random_c
 				generated_labels += generated_labels_clean_z_random_c
@@ -505,9 +505,9 @@ class MultiModalInfoGAN(object):
 						samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
 						generated_dataset_random_z_clean_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
 						generated_labels_random_z_clean_c += [label] * self.batch_size
-						if _ == 1:
-							save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzcc' + '_label_%d.png' % label)
+						# if _ == 1:
+						# 	save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+						# 	            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzcc' + '_label_%d.png' % label)
 					generated_dataset += generated_dataset_random_z_clean_c
 					generated_labels += generated_labels_random_z_clean_c
 				if i == 'rzrc':
@@ -524,9 +524,9 @@ class MultiModalInfoGAN(object):
 						
 						generated_dataset_random_z_random_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
 						generated_labels_random_z_random_c += [label] * self.batch_size
-						if _ == 1:
-							save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-							            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzrc' + '_label_%d.png' % label)
+						# if _ == 1:
+						# 	save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+						# 	            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzrc' + '_label_%d.png' % label)
 					
 					generated_dataset += generated_dataset_random_z_random_c
 					generated_labels += generated_labels_random_z_random_c
