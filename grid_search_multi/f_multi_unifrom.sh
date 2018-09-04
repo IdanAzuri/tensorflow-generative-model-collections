@@ -6,7 +6,7 @@
 # SBATCH --mail-user=idan.azuri@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMITc.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
-#SBATCH --array=0-8%4
+#SBATCH --array=0-8%8
 SEEDS=(88 125 12 7 49 21 23 45 11)
 SEED=${SEEDS[SLURM_ARRAY_TASK_ID]}
 module load tensorflow/1.5.0
