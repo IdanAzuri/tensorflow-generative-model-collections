@@ -5,7 +5,7 @@
 #SBATCH --time=1-20
 # SBATCH --mail-user=idan.azuri@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
-#SBATCH --array=0-9%2
+#SBATCH --array=0-8%2
 SEEDS=(88 125 12 7 49 21 23 45 11)
 SEED=${SEEDS[((SLURM_ARRAY_TASK_ID ))]}
 echo $SEED
