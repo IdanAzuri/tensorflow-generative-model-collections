@@ -14,7 +14,7 @@ module load tensorflow/1.5.0
 dir=/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections
 
 cd $dir
-source /cs/labs/daphna/idan.azuri/venv_64/bin/activate
+source /cs/labs/daphna/idan.azuri/venv/bin/activate
 
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler multi-uniform --batch_size 64 --seed $SEED
 python3 classifier.py --dir_name /cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/ --fname fashion-mnist_MultiModalUniformSample_mu_0_sigma_0.15_ndist_10 --original fashion-mnist --seed $SEED

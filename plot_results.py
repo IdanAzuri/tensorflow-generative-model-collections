@@ -27,7 +27,7 @@ END = 50
 
 def MMgeneral_plot_from_pkl(groupby=""):
 	import glob, os
-	param_list = []
+	param_list = dict()
 	files_list = defaultdict(list)
 	dirs = [d for d in glob.iglob("/Users/idan.a/repos/tensorflow-generative-model-collections/classifier_results_seed_*")]
 	
@@ -38,7 +38,7 @@ def MMgeneral_plot_from_pkl(groupby=""):
 			mu=tmp[5]
 			sigma=tmp[7]
 			ndist=tmp[9]
-			param_list.append("$\Sigma={},\mu={}$".format(sigma,mu))
+			param_list[fname]=("$\Sigma={},\mu={}$".format(sigma,mu))
 			print(fname,f)
 			try:
 				np_max = np.max(pickle.load(open(f, "rb")))
@@ -54,14 +54,19 @@ def MMgeneral_plot_from_pkl(groupby=""):
 	std_errs=[]
 	for key in files_list.keys():
 		current_experiment = files_list[key]
-		means.append(np.mean(current_experiment, axis=0))
-		std_errs.append(np.std(current_experiment, axis=0) / len(current_experiment))
+		num_experiments = len(current_experiment)
+		if num_experiments > 4:
+			means.append(np.mean(current_experiment, axis=0))
+			std_errs.append(np.std(current_experiment, axis=0) / num_experiments)
+		elif key in param_list.keys():
+			del param_list[key]
+			
 	
 
 
 
 	fig, ax = plt.subplots()
-	models = set(param_list)
+	models = set(param_list.values())
 	title = 'MMinfoGAN_Fsion-Mnist_multi-modal Multi modal Gaussian - {} modals'.format(groupby)
 	
 	ax.set_title(title, fontsize=10)
