@@ -6,14 +6,14 @@
 #SBATCH --mail-user=idan.azuri@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
 #SBATCH --array=0-8%8
-SEEDS=(88 125 12 7 49 21 23 45 11)
+SEEDS=(49 21 23 45 11 7 12 125 88)
 SEED=${SEEDS[SLURM_ARRAY_TASK_ID]}
 module load tensorflow/1.5.0
 
 dir=/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections
 
 cd $dir
-source /cs/labs/daphna/idan.azuri/venv/bin/activate
+source /cs/labs/daphna/idan.azuri/venv_64/bin/activate
 
 
 
