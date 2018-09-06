@@ -9,7 +9,8 @@
 SEEDS=(88 125 12 7 49 21 23 45 11)
 SEED=${SEEDS[SLURM_ARRAY_TASK_ID]}
 module load tensorflow/1.5.0
-dir=/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections
+#dir=/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections
+dir=/cs/snapless/daphna/idan.azuri/tensorflow-generative-model-collections
 cd $dir
 source /cs/labs/daphna/idan.azuri/venv_64/bin/activate
 
