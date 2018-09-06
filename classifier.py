@@ -109,7 +109,7 @@ class CNNClassifier():
 	def __init__(self, classifier_name, pkl_fname=None, data_X=None, data_y=None, test_X=None, test_y=None, save_model=False,seed=88):
 		self.seed=seed
 		self.is_save_model = save_model
-		self.num_epochs = 50
+		self.num_epochs = 500
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
@@ -484,5 +484,5 @@ def main_to_train_classifier():
 
 
 if __name__ == '__main__':
-	main()
-	# main_to_train_classifier()
+	# main()
+	main_to_train_classifier()
