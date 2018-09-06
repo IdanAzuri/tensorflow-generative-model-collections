@@ -43,8 +43,8 @@ def MMgeneral_plot_from_pkl(groupby=""):
 			param_list[fname] = ("$\Sigma={},\mu={}$".format(sigma, mu))
 			print(fname, f)
 			try:
-				# np_max = np.max(pickle.load(open(f, "rb")))
-				np_max = pickle.load(open(f, "rb"))[-1]
+				np_max = np.max(pickle.load(open(f, "rb")))
+				# np_max = pickle.load(open(f, "rb"))[-1]
 				files_list[fname].append(np_max)
 			except Exception as e:
 				print("ERROR:{}\n{}".format(f, e))
@@ -104,9 +104,9 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 				sigma = tmp[7]
 				ndist = tmp[9]
 				if sampler == "MultivariateGaussianSampler":
-					param_list[fname] = ("MM Gaussian$\Sigma={},\mu={}$ {} models".format(sigma, mu, ndist))
+					param_list[fname] = ("MM Gaussian{} models".format(ndist))
 				elif sampler == "GaussianSample":
-					param_list[fname] = ("Gaussian $\sigma={},\mu={}$".format(sigma, mu))
+					param_list[fname] = ("1d Gaussian".format(sigma, mu))
 				elif sampler == "UniformSample":
 					param_list[fname] = ("Uniform".format(sigma, mu))
 				
