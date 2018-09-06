@@ -20,7 +20,7 @@ START = 3
 start = START
 END = 50
 PATH = "/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/classifier_results_seed_*"
-
+# PATH = "/Users/idan.a/repos/tensorflow-generative-model-collections/classifier_results_seed_*"
 
 # regex
 # (classifier_MM.*_sigma_\d.\d)(.*)(_ndist_\d+)(_accuracy)(.pkl)
@@ -92,7 +92,7 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 	files_list = defaultdict(list)
 	dirs = [d for d in glob.iglob(PATH)]
 	
-	l = "fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_3,fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_ndist_5,fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_5,fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_ndist_10,fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_ndist_10,fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_10,fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_ndist_10,fashion-mnist_UniformSample_mu_0.0_sigma_0.15_ndist_10"
+	l = "fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_3,fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_5,fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_ndist_10,fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_ndist_10,fashion-mnist_UniformSample_mu_0.0_sigma_0.15_ndist_10"
 	tmp = l.split(",")
 	for t in tmp:
 		for dir in dirs:
