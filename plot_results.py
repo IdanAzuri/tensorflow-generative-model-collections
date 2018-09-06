@@ -62,7 +62,7 @@ def MMgeneral_plot_from_pkl(groupby=""):
 	fig, ax = plt.subplots()
 	models = set(param_list.values())
 	title = 'MMinfoGAN_Fsion-Mnist_multi-modal Multi modal Gaussian - {} modals'.format(groupby)
-	print(means)
+	print("means",means)
 	print(models)
 	ax.set_title(title, fontsize=10)
 	x_pos = np.arange(len(models))
