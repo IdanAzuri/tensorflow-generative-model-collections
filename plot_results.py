@@ -153,9 +153,9 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 
 
 if __name__ == '__main__':
-	MMgeneral_plot_from_pkl("GaussianSample_")
-	MMgeneral_plot_from_pkl("Uniform")
-	MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_10")
-	MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_5")
-	MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_3")
+	# MMgeneral_plot_from_pkl("GaussianSample_")
+	# MMgeneral_plot_from_pkl("Uniform")
+	# MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_10")
+	# MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_5")
+	# MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_3")
 	MMgeneral_plot_from_pkl_comparison()
