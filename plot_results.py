@@ -16,11 +16,11 @@ from matplotlib.legend_handler import HandlerLine2D
 dir = 'classifier_results_seed_12/'
 dir2 = 'classifier_results_seed_88/'
 dir3 = 'classifier_results_seed_125/'
-START = 3
+START = 1
 start = START
 END = 50
 PATH = "/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/classifier_results_seed_*"
-# PATH = "/Users/idan.a/repos/tensorflow-generative-model-collections/classifier_results_seed_*"
+PATH = "/Users/idan.a/repos/tensorflow-generative-model-collections/classifier_results_seed_*"
 
 # regex
 # (classifier_MM.*_sigma_\d.\d)(.*)(_ndist_\d+)(_accuracy)(.pkl)
