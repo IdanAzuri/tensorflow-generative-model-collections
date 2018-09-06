@@ -88,7 +88,7 @@ def MMgeneral_plot_from_pkl(groupby=""):
 
 def MMgeneral_plot_from_pkl_comparison(groupby=""):
 	import glob, os
-	param_list = dict()
+	param_list = defaultdict()
 	files_list = defaultdict(list)
 	dirs = [d for d in glob.iglob(PATH)]
 	
@@ -104,7 +104,7 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 				sigma = tmp[7]
 				ndist = tmp[9]
 				if sampler == "MultivariateGaussianSampler":
-					param_list[fname] = ("MM Gaussian{} models".format(ndist))
+					param_list[fname] = ("{} models".format(ndist))
 				elif sampler == "GaussianSample":
 					param_list[fname] = ("1d Gaussian".format(sigma, mu))
 				elif sampler == "UniformSample":
@@ -125,7 +125,7 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 	for key in files_list.keys():
 		current_experiment = files_list[key]
 		num_experiments = len(current_experiment)
-		if num_experiments > 2:
+		if num_experiments > 4:
 			means.append(np.mean(current_experiment, axis=0))
 			std_errs.append(np.std(current_experiment, axis=0) / num_experiments)
 		elif key in param_list.keys():
