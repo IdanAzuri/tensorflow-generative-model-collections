@@ -19,7 +19,8 @@ dir3 = 'classifier_results_seed_125/'
 START = 3
 start = START
 END = 50
-PATH= "/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/classifier_results_seed_*"
+PATH = "/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/classifier_results_seed_*"
+
 
 # regex
 # (classifier_MM.*_sigma_\d.\d)(.*)(_ndist_\d+)(_accuracy)(.pkl)
@@ -62,7 +63,7 @@ def MMgeneral_plot_from_pkl(groupby=""):
 	fig, ax = plt.subplots()
 	models = set(param_list.values())
 	title = 'MMinfoGAN_Fsion-Mnist_multi-modal Multi modal Gaussian - {} modals'.format(groupby)
-	print("means",means)
+	print("means", means)
 	print(models)
 	ax.set_title(title, fontsize=10)
 	x_pos = np.arange(len(models))
@@ -91,8 +92,8 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 	files_list = defaultdict(list)
 	dirs = [d for d in glob.iglob(PATH)]
 	
-	l="fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_3,fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_ndist_5,fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_5,fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_ndist_10,fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_ndist_10,fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_10,fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_ndist_10,fashion-mnist_UniformSample_mu_0.0_sigma_0.15_ndist_10"
-	tmp=l.split(",")
+	l = "fashion-mnist_MultivariateGaussianSampler_mu_0.8_sigma_0.2_ndist_3,fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.25_ndist_5,fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.5_ndist_5,fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.22_ndist_10,fashion-mnist_MultivariateGaussianSampler_mu_1.0_sigma_0.25_ndist_10,fashion-mnist_MultivariateGaussianSampler_mu_0.7_sigma_0.3_ndist_10,fashion-mnist_GaussianSample_mu_0.0_sigma_0.2_ndist_10,fashion-mnist_UniformSample_mu_0.0_sigma_0.15_ndist_10"
+	tmp = l.split(",")
 	for t in tmp:
 		for dir in dirs:
 			for f in glob.iglob("{}/classifier*{}*.pkl".format(dir, t)):
@@ -108,21 +109,23 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 					param_list[fname] = ("Gaussian $\sigma={},\mu={}$".format(sigma, mu))
 				elif sampler == "UniformSample":
 					param_list[fname] = ("Uniform".format(sigma, mu))
-					
-				print(fname, f)
+				
+				print(fname)
 				try:
 					np_max = np.max(pickle.load(open(f, "rb")))
 					# np_max = pickle.load(open(f, "rb"))[-1]
 					files_list[fname].append(np_max)
+					print("added", np_max)
 				except Exception as e:
 					print("ERROR:{}\n{}".format(f, e))
-		
+	
 	means = []
 	std_errs = []
+	print("file lists:",files_list)
 	for key in files_list.keys():
 		current_experiment = files_list[key]
 		num_experiments = len(current_experiment)
-		if num_experiments > 4:
+		if num_experiments > 2:
 			means.append(np.mean(current_experiment, axis=0))
 			std_errs.append(np.std(current_experiment, axis=0) / num_experiments)
 		elif key in param_list.keys():
@@ -130,8 +133,8 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 	
 	fig, ax = plt.subplots()
 	models = set(param_list.values())
-	title = 'MMinfoGAN_Fsion-Mnist_multi-modal Multi modal Gaussian comparison'.format(groupby)
-	print("means",means)
+	title = 'MMinfoGAN comparison'
+	print("means", means)
 	print(models)
 	ax.set_title(title, fontsize=10)
 	x_pos = np.arange(len(models))
