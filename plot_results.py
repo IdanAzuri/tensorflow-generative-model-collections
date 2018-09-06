@@ -122,7 +122,7 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 	for key in files_list.keys():
 		current_experiment = files_list[key]
 		num_experiments = len(current_experiment)
-		if num_experiments > 8:
+		if num_experiments > 4:
 			means.append(np.mean(current_experiment, axis=0))
 			std_errs.append(np.std(current_experiment, axis=0) / num_experiments)
 		elif key in param_list.keys():
@@ -154,9 +154,9 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 
 
 if __name__ == '__main__':
-	# MMgeneral_plot_from_pkl("GaussianSample_")
-	# MMgeneral_plot_from_pkl("Uniform")
-	# MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_10")
-	# MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_5")
-	# MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_3")
+	MMgeneral_plot_from_pkl("GaussianSample_")
+	MMgeneral_plot_from_pkl("Uniform")
+	MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_10")
+	MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_5")
+	MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_3")
 	MMgeneral_plot_from_pkl_comparison()
