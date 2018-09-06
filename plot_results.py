@@ -131,7 +131,8 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 	fig, ax = plt.subplots()
 	models = set(param_list.values())
 	title = 'MMinfoGAN_Fsion-Mnist_multi-modal Multi modal Gaussian comparison'.format(groupby)
-	
+	print("means",means)
+	print(models)
 	ax.set_title(title, fontsize=10)
 	x_pos = np.arange(len(models))
 	ax.bar(x_pos, means, yerr=std_errs, align='center', alpha=0.5, ecolor='black', capsize=10)
