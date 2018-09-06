@@ -11,7 +11,7 @@ SEED=${SEEDS[SLURM_ARRAY_TASK_ID]}
 module load tensorflow/1.5.0
 dir=/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections
 cd $dir
-source /cs/labs/daphna/idan.azuri/venv/bin/activate
+source /cs/labs/daphna/idan.azuri/venv_64/bin/activate
 
 
 python3 main.py --gan_type MultiModalInfoGAN --epoch 40 --dataset fashion-mnist --sampler multi-gaussian --batch_size 64 --mu 0.8 --sigma 0.2  --ndist 3 --seed $SEED
