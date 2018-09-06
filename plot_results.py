@@ -30,10 +30,11 @@ def MMgeneral_plot_from_pkl(groupby=""):
 	import glob, os
 	param_list = dict()
 	files_list = defaultdict(list)
-	dirs = [d for d in glob.iglob("/Users/idan.a/repos/tensorflow-generative-model-collections/classifier_results_seed_*")]
+	# dirs = [d for d in glob.iglob("/Users/idan.a/repos/tensorflow-generative-model-collections/classifier_results_seed_*")]
+	dirs = [d for d in glob.iglob("/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/classifier_results_seed_*")]
 	
 	for dir in dirs:
-		for f in glob.iglob("{}/*{}*.pkl".format(dir, groupby)):
+		for f in glob.iglob("{}/classifier*{}*.pkl".format(dir, groupby)):
 			fname = f.split("/")[-1]
 			tmp = fname.split("_")
 			mu = tmp[5]
@@ -153,9 +154,9 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 
 
 if __name__ == '__main__':
-	MMgeneral_plot_from_pkl("GaussianSample_")
-	MMgeneral_plot_from_pkl("Uniform")
-	MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_10")
-	MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_5")
-	MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_3")
+	# MMgeneral_plot_from_pkl("GaussianSample_")
+	# MMgeneral_plot_from_pkl("Uniform")
+	# MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_10")
+	# MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_5")
+	# MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_3")
 	MMgeneral_plot_from_pkl_comparison()
