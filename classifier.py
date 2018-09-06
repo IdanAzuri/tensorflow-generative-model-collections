@@ -36,7 +36,7 @@ from sklearn.model_selection import train_test_split
 from ops import bn
 
 
-LEARNING_RATE = 1e-6
+LEARNING_RATE = 1e-5
 
 from matplotlib.legend_handler import HandlerLine2D
 import argparse
