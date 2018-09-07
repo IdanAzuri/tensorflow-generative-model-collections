@@ -48,7 +48,7 @@ class MultiModalInfoGAN(object):
 	             dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True):
 		print("saving to esults dir={}".format(result_dir))
 		np.random.seed(seed)
-		self.test_size = 3000
+		self.test_size = 5000
 		self.wgan_gp = is_wgan_gp
 		self.loss_list = []
 		self.confidence_list = []
@@ -261,19 +261,19 @@ class MultiModalInfoGAN(object):
 		# for test
 		self.fake_images = self.generator(self.z, self.y, is_training=False, reuse=True)
 		""" Summary """
-		# d_loss_real_sum = tf.summary.scalar("d_loss_real", d_loss_real)
-		# d_loss_fake_sum = tf.summary.scalar("d_loss_fake", d_loss_fake)
-		# d_loss_sum = tf.summary.scalar("d_loss", self.d_loss)
-		# g_loss_sum = tf.summary.scalar("g_loss", self.g_loss)
-		#
-		# q_loss_sum = tf.summary.scalar("g_loss", self.q_loss)
-		# q_disc_sum = tf.summary.scalar("q_disc_loss", q_disc_loss)
-		# q_cont_sum = tf.summary.scalar("q_cont_loss", q_cont_loss)
-		#
-		# # final summary operations
-		# self.g_sum = tf.summary.merge([d_loss_fake_sum, g_loss_sum])
-		# self.d_sum = tf.summary.merge([d_loss_real_sum, d_loss_sum])
-		# self.q_sum = tf.summary.merge([q_loss_sum, q_disc_sum, q_cont_sum])
+		d_loss_real_sum = tf.summary.scalar("d_loss_real", d_loss_real)
+		d_loss_fake_sum = tf.summary.scalar("d_loss_fake", d_loss_fake)
+		d_loss_sum = tf.summary.scalar("d_loss", self.d_loss)
+		g_loss_sum = tf.summary.scalar("g_loss", self.g_loss)
+		
+		q_loss_sum = tf.summary.scalar("g_loss", self.q_loss)
+		q_disc_sum = tf.summary.scalar("q_disc_loss", q_disc_loss)
+		q_cont_sum = tf.summary.scalar("q_cont_loss", q_cont_loss)
+		
+		# final summary operations
+		self.g_sum = tf.summary.merge([d_loss_fake_sum, g_loss_sum])
+		self.d_sum = tf.summary.merge([d_loss_real_sum, d_loss_sum])
+		self.q_sum = tf.summary.merge([q_loss_sum, q_disc_sum, q_cont_sum])
 	
 	def train(self):
 		
@@ -293,7 +293,7 @@ class MultiModalInfoGAN(object):
 		self.saver = tf.train.Saver()
 		
 		# summary writer
-		# self.writer = tf.summary.FileWriter(self.log_dir + '/' + self.model_name, self.sess.graph)
+		self.writer = tf.summary.FileWriter(self.log_dir + '/' + self.model_name, self.sess.graph)
 		
 		# restore check-point if it exits
 		could_load, checkpoint_counter = self.load(self.checkpoint_dir)
@@ -322,11 +322,14 @@ class MultiModalInfoGAN(object):
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
 				
 				# update D network
-				_, d_loss = self.sess.run([self.d_optim, self.d_loss], feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
+				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss], feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
+				self.writer.add_summary(summary_str, counter)
 				
 				# update G and Q network
-				_, g_loss, _, q_loss = self.sess.run([self.g_optim, self.g_loss, self.q_optim, self.q_loss],
+				_, summary_str_g, g_loss, _, summary_str_q, q_loss = self.sess.run([self.g_optim, self.g_sum, self.g_loss, self.q_optim, self.q_sum, self.q_loss],
 				                                                                   feed_dict={self.x: batch_images, self.z: batch_z, self.y: batch_codes})
+				self.writer.add_summary(summary_str_g, counter)
+				self.writer.add_summary(summary_str_q, counter)
 				
 				# display training status
 				counter += 1
@@ -340,7 +343,7 @@ class MultiModalInfoGAN(object):
 			self.save(self.checkpoint_dir, counter)
 			
 			# show temporal results
-			# self.visualize_results(epoch)
+			self.visualize_results(epoch)
 		# plotting
 		self.create_dataset_from_GAN()
 		self.save(self.checkpoint_dir, counter)
