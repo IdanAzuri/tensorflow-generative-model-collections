@@ -115,7 +115,7 @@ class CNNClassifier():
 		self.batch_size = 64
 		self.dropout_prob = 0.7
 		self.save_to = classifier_name + "_classifier.pkl"
-		self.lamb = 1e-4
+		self.lamb = 1e-3
 		self.c_dim = 1
 		self.accuracy_list = []
 		self.loss_list = []
@@ -310,7 +310,7 @@ class CNNClassifier():
 		self.b_fc1 = tf.Variable(tf.constant(model[5]))
 		self.W_fc2 = tf.Variable(tf.constant(model[6]))
 		self.b_fc2 = tf.Variable(tf.constant(model[7]))
-		print("model has been loaded from {}".format(self.save_to))
+		print("\nmodel has been loaded from {}\n".format(self.save_to))
 	
 	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P"):
 		
