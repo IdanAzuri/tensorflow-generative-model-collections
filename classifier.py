@@ -366,6 +366,7 @@ def parse_args():
 	parser.add_argument('--confidence_thresh', type=float, default=0.9)
 	parser.add_argument('--train_model', type=bool, default="True")
 	parser.add_argument('--seed', type=int, default=88)
+	parser.add_argument('--pref', type=str, default="",help="prefix experiment title")
 	
 	return parser.parse_args()
 
@@ -441,7 +442,8 @@ def main():
 	confidence_in_train = args.use_confidence
 	confidence_thresh = args.confidence_thresh
 	seed = args.seed
-	dir_results = 'classifier_results_seed_{}'.format(seed)
+	pref = args.pref
+	dir_results = '{}_classifier_results_seed_{}'.format(pref,seed)
 	pkl_label_path = "{}{}/edited_labels_{}.pkl".format(dir, dir_results, fname)
 	pkl_path = "{}{}/edited_training_set_{}.pkl".format(dir, dir_results, fname)
 	
