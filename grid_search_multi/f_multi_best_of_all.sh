@@ -12,7 +12,7 @@ module load tensorflow/1.5.0
 #dir=/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections
 dir=/cs/snapless/daphna/idan.azuri/tensorflow-generative-model-collections
 cd $dir
-source /cs/labs/daphna/idan.azuri/venv_64/bin/activate
+source /cs/labs/daphna/idan.azuri/venv/bin/activate
 
 data_dir=/cs/snapless/daphna/idan.azuri/tensorflow-generative-model-collections/
 

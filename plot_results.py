@@ -19,8 +19,8 @@ dir3 = 'classifier_results_seed_125/'
 START = 1
 start = START
 END = 50
-PATH = "/cs/labs/daphna/idan.azuri/tensorflow-generative-model-collections/classifier_results_seed_*"
-PATH = "/Users/idan.a/repos/tensorflow-generative-model-collections/classifier_results_seed_*"
+PATH = "/cs/snapless/daphna/idan.azuri/tensorflow-generative-model-collections/classifier_results_seed_*"
+# PATH = "/Users/idan.a/repos/tensorflow-generative-model-collections/classifier_results_seed_*"
 
 # regex
 # (classifier_MM.*_sigma_\d.\d)(.*)(_ndist_\d+)(_accuracy)(.pkl)
