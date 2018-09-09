@@ -140,7 +140,7 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 	x_pos = np.arange(len(models))
 	ax.bar(x_pos, means, yerr=std_errs, align='center', alpha=0.5, ecolor='black', capsize=10)
 	ax.set_ylabel('Accuracy')
-	ax.set_xticks(x_pos)
+	ax.set_xticks(['Uniform','1d Gaussian','3 modals', '5 modals', '10 modals'])
 	ax.set_xticklabels(models)
 	plt.xticks(rotation=90)
 	ax.set_ylim([0.5, 0.63])
