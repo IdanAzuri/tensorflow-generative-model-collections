@@ -140,8 +140,8 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 	x_pos = np.arange(len(models))
 	ax.bar(x_pos, means, yerr=std_errs, align='center', alpha=0.5, ecolor='black', capsize=10)
 	ax.set_ylabel('Accuracy')
-	ax.set_xticks(['Uniform','1d Gaussian','3 modals', '10 modals'])
-	ax.set_xticklabels(models)
+	ax.set_xticks(x_pos)
+	ax.set_xticklabels(['Uniform','1d Gaussian','3 modals', '10 modals'])
 	plt.xticks(rotation=90)
 	ax.set_ylim([0.5, 0.63])
 	# ax.set_title('Prior')
@@ -158,9 +158,9 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 
 
 if __name__ == '__main__':
-	# MMgeneral_plot_from_pkl("GaussianSample_")
-	# MMgeneral_plot_from_pkl("Uniform")
-	# MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_10")
-	# MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_5")
-	# MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_3")
+	MMgeneral_plot_from_pkl("GaussianSample_")
+	MMgeneral_plot_from_pkl("Uniform")
+	MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_10")
+	MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_5")
+	MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_3")
 	MMgeneral_plot_from_pkl_comparison()
