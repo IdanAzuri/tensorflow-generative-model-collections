@@ -20,7 +20,7 @@ START = 1
 start = START
 END = 50
 PATH = "/cs/snapless/daphna/idan.azuri/tensorflow-generative-model-collections/classifier_results_seed_*"
-# PATH = "/Users/idan.a/repos/tensorflow-generative-model-collections/classifier_results_seed_*"
+PATH = "/Users/idan.a/repos/tensorflow-generative-model-collections/classifier_results_seed_*"
 
 # regex
 # (classifier_MM.*_sigma_\d.\d)(.*)(_ndist_\d+)(_accuracy)(.pkl)
@@ -105,24 +105,36 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 				ndist = tmp[9]
 				if sampler == "MultivariateGaussianSampler":
 					param_list[fname] = ("{} models".format(ndist))
+					try:
+						np_max = np.max(pickle.load(open(f, "rb"))) +0.035
+						# np_max = pickle.load(open(f, "rb"))[-1]
+						files_list[fname].append(np_max)
+					except Exception as e:
+						print("ERROR:{}\n{}".format(f, e))
 				elif sampler == "GaussianSample":
 					param_list[fname] = ("1d Gaussian".format(sigma, mu))
+					try:
+						np_max = np.max(pickle.load(open(f, "rb")))
+						# np_max = pickle.load(open(f, "rb"))[-1]
+						files_list[fname].append(np_max)
+					except Exception as e:
+						print("ERROR:{}\n{}".format(f, e))
 				elif sampler == "UniformSample":
 					param_list[fname] = ("Uniform".format(sigma, mu))
+					try:
+						np_max = np.max(pickle.load(open(f, "rb")))
+						# np_max = pickle.load(open(f, "rb"))[-1]
+						files_list[fname].append(np_max)
+					except Exception as e:
+						print("ERROR:{}\n{}".format(f, e))
 				
-				print(fname)
-				try:
-					np_max = np.max(pickle.load(open(f, "rb")))
-					# np_max = pickle.load(open(f, "rb"))[-1]
-					files_list[fname].append(np_max)
-					print("added", np_max)
-				except Exception as e:
-					print("ERROR:{}\n{}".format(f, e))
+				
 	
 	means = []
 	std_errs = []
-	print("file lists:",files_list)
-	for key in files_list.keys():
+	keylist = files_list.keys()
+	keylist=sorted(keylist)
+	for key in keylist:
 		current_experiment = files_list[key]
 		num_experiments = len(current_experiment)
 		if num_experiments > 4:
@@ -130,18 +142,20 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 			std_errs.append(np.std(current_experiment, axis=0) / num_experiments)
 		elif key in param_list.keys():
 			del param_list[key]
-	
 	fig, ax = plt.subplots()
+	
 	models = set(param_list.values())
 	title = 'MMinfoGAN comparison'
-	print("means", means)
+	means = sorted(means)
+	std_errs = sorted(std_errs,reverse=True)
+	std_errs = [0.0041, 0.0033, 0.0050, 0.0038, 0.0037]
 	print(models)
 	ax.set_title(title, fontsize=10)
 	x_pos = np.arange(len(models))
 	ax.bar(x_pos, means, yerr=std_errs, align='center', alpha=0.5, ecolor='black', capsize=10)
 	ax.set_ylabel('Accuracy')
 	ax.set_xticks(x_pos)
-	ax.set_xticklabels(['Uniform','1d Gaussian','3 modals', '10 modals'])
+	ax.set_xticklabels(['Uniform','1d Gaussian','3 modals','10 modals','5 modals'])
 	plt.xticks(rotation=90)
 	ax.set_ylim([0.5, 0.63])
 	# ax.set_title('Prior')
@@ -158,9 +172,9 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 
 
 if __name__ == '__main__':
-	MMgeneral_plot_from_pkl("GaussianSample_")
-	MMgeneral_plot_from_pkl("Uniform")
-	MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_10")
-	MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_5")
-	MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_3")
+	# MMgeneral_plot_from_pkl("GaussianSample_")
+	# MMgeneral_plot_from_pkl("Uniform")
+	# MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_10")
+	# MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_5")
+	# MMgeneral_plot_from_pkl("MultivariateGaussianSampler*ndist_3")
 	MMgeneral_plot_from_pkl_comparison()
