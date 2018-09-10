@@ -48,7 +48,7 @@ class MultiModalInfoGAN(object):
 	
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, seed, len_continuous_code=2, is_wgan_gp=False,
 	             dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True,pref=""):
-		self.ignored_lable = 7
+		self.ignored_lable = 9
 		print("saving to esults dir={}".format(result_dir))
 		np.random.seed(seed)
 		self.pref=pref
@@ -76,7 +76,7 @@ class MultiModalInfoGAN(object):
 		self.sample_num = 64  # number of generated images to be saved
 		
 		# code
-		self.len_discrete_code = 10  # the 10th class will be represnted by the others
+		self.len_discrete_code = 9  # the 10th class will be represnted by the others
 		self.len_continuous_code = len_continuous_code  # gaussian distribution (e.g. rotation, thickness)
 		
 		if dataset_name == 'mnist' or dataset_name == 'fashion-mnist':
@@ -93,9 +93,9 @@ class MultiModalInfoGAN(object):
 			# load mnist
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
 			# REMOVING 1 DIGIT
-			indiceis_of_7 = np.where(np.argmax(self.data_y, 1) == self.ignored_lable)
-			self.data_y_only7 = self.data_y[indiceis_of_7]
-			self.data_X_only7 = self.data_X[indiceis_of_7]
+			indiceis_of_9 = np.where(np.argmax(self.data_y, 1) == self.ignored_lable)
+			self.data_y_only9 = self.data_y[indiceis_of_9]
+			self.data_X_only9 = self.data_X[indiceis_of_9]
 			indiceis_to_keep = np.where(np.argmax(self.data_y, 1) != self.ignored_lable)
 			self.data_y = self.data_y[indiceis_to_keep]
 			self.data_X = self.data_X[indiceis_to_keep]
@@ -324,7 +324,7 @@ class MultiModalInfoGAN(object):
 		start_time = time.time()
 		for epoch in range(start_epoch, self.epoch):
 			# get batch data
-			for idx in range(start_batch_id, self.num_batches):
+			for idx in range(4000):#start_batch_id, self.num_batches):
 				if self.dataset_name != "celebA":
 					batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
 				else:
