@@ -76,7 +76,7 @@ class MultiModalInfoGAN(object):
 		self.sample_num = 64  # number of generated images to be saved
 		
 		# code
-		self.len_discrete_code = 10  # the 10th class will be represnted by the others
+		self.len_discrete_code = 9  # the 10th class will be represnted by the others
 		self.len_continuous_code = len_continuous_code  # gaussian distribution (e.g. rotation, thickness)
 		
 		if dataset_name == 'mnist' or dataset_name == 'fashion-mnist':
@@ -99,9 +99,7 @@ class MultiModalInfoGAN(object):
 			indiceis_to_keep = np.where(np.argmax(self.data_y, 1) != self.ignored_lable)
 			self.data_y = self.data_y[indiceis_to_keep]
 			self.data_X = self.data_X[indiceis_to_keep]
-			# self.data_y += self.data_y_only7[0]
-			# self.data_X += self.data_X_only7[0]
-			# get number of batches for a single epoch
+			self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			self.num_batches = len(self.data_X) // self.batch_size
 		# elif dataset_name == 'cifar10':
 		# 	print("IN CIFAR")
@@ -296,8 +294,7 @@ class MultiModalInfoGAN(object):
 		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)  # np.random.uniform(-1, 1,
 		# size=(self.batch_size, self.z_dim))
 		self.test_labels = np.ones([self.batch_size, self.y_dim])
-		if self.dataset_name != "celebA":
-			self.test_labels = self.data_y[0:self.batch_size]
+		self.test_labels = self.data_y[0:self.batch_size]
 		
 		self.test_codes = np.concatenate((self.test_labels, np.zeros([self.batch_size, self.len_continuous_code])), axis=1)
 		
@@ -331,7 +328,7 @@ class MultiModalInfoGAN(object):
 					batch_images = self.data_pool.batch()
 				
 				discrete_code_probs = self.len_discrete_code * [float(1.0 / self.len_discrete_code - 1)]
-				discrete_code_probs[self.ignored_lable] = 0.
+				# discrete_code_probs[self.ignored_lable] = 0.
 				batch_labels = np.random.multinomial(1, discrete_code_probs, size=[self.batch_size])
 				
 				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
@@ -568,7 +565,7 @@ class MultiModalInfoGAN(object):
 			limit = min(len(data_X_for_current_label) // self.len_discrete_code, 2 ** 14)
 			dummy_labels = one_hot_encoder(np.random.randint(0, self.len_discrete_code, size=(limit)))  # no meaning for the labels
 			print(dummy_labels.shape)
-			_, confidence, _, arg_max = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, self.len_discrete_code), is_arg_max=True)
+			_, confidence, _, arg_max = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 			if is_confidence:
 				print("confidence:{}".format(confidence))
 				high_confidence_threshold_indices = confidence >= CONFIDENCE_THRESHOLD
