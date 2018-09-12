@@ -1,7 +1,6 @@
 import argparse
 import os
 
-
 import tensorflow as tf
 
 from ACGAN import ACGAN
@@ -13,6 +12,7 @@ from CVAE import CVAE
 from DRAGAN import DRAGAN
 from EBGAN import EBGAN
 from GAN import GAN
+from InfoGAN_learn_class_by_interpolation import MultiModalInfoGAN_phase2
 from LSGAN import LSGAN
 from MultiModalInfoGAN import MultiModalInfoGAN
 from Sampler import *
@@ -33,7 +33,7 @@ def parse_args():
 	parser = argparse.ArgumentParser(description=desc)
 	
 	parser.add_argument('--gan_type', type=str, default='GAN',
-	                    choices=['GAN', 'CGAN', 'infoGAN', 'WGAN', 'WGAN_GP', 'MultiModalInfoGAN', 'AEMultiModalInfoGAN'], help='The type of GAN',
+	                    choices=['GAN', 'CGAN', 'infoGAN', 'WGAN', 'WGAN_GP', 'MultiModalInfoGAN', 'AEMultiModalInfoGAN', 'MultiModalInfoGAN_phase2'], help='The type of GAN',
 	                    required=True)
 	parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist', 'fashion-mnist', 'cifar10', 'celebA'], help='The name of '
 	                                                                                                                          'dataset')
@@ -43,8 +43,7 @@ def parse_args():
 	parser.add_argument('--checkpoint_dir', type=str, default='checkpoint', help='Directory name to save the checkpoints')
 	parser.add_argument('--result_dir', type=str, default='results', help='Directory name to save the generated images')
 	parser.add_argument('--log_dir', type=str, default='logs', help='Directory name to save training logs')
-	parser.add_argument('--sampler', type=str, default='uniform',
-	                    choices=['uniform', 'multi-uniform', 'multi-gaussian', 'multi-gaussianTF', 'gaussian', 'truncated'])
+	parser.add_argument('--sampler', type=str, default='uniform', choices=['uniform', 'multi-uniform', 'multi-gaussian', 'multi-gaussianTF', 'gaussian', 'truncated'])
 	# parser.add_argument('--dataset_order', '-do', type=str, default=['czcc', 'czrc', 'rzcc', 'rzrc'], help="czcc,czrc,rzcc,rzrc")
 	
 	parser.add_argument('--gpus', type=str, default='0')
@@ -54,7 +53,7 @@ def parse_args():
 	parser.add_argument('--sigma', type=float, default=0.15)
 	parser.add_argument('--ndist', type=int, default=10)
 	parser.add_argument('--seed', type=int)
-	parser.add_argument('--pref', type=str, default="",help="prefix experiment title")
+	parser.add_argument('--pref', type=str, default="", help="prefix experiment title")
 	
 	return check_args(parser.parse_args())
 
@@ -96,7 +95,7 @@ def main():
 	os.environ['CUDA_VISIBLE_DEVICES'] = args.gpus
 	# open session
 	title_prefix = args.pref
-	models = [GAN, CGAN, infoGAN, ACGAN, EBGAN, WGAN, WGAN_GP, DRAGAN, LSGAN, BEGAN, VAE, CVAE, MultiModalInfoGAN, infoGAN, AEMultiModalInfoGAN]
+	models = [GAN, CGAN, infoGAN, ACGAN, EBGAN, WGAN, WGAN_GP, DRAGAN, LSGAN, BEGAN, VAE, CVAE, MultiModalInfoGAN, infoGAN, AEMultiModalInfoGAN, MultiModalInfoGAN_phase2]
 	# dataset_creation_order = args.dataset_order#.split(",")
 	# print("Main " ,args.dataset_order)
 	len_continuous_code = args.len_continuous_code
@@ -104,20 +103,20 @@ def main():
 	sampler = args.sampler
 	mu = args.mu
 	sigma = args.sigma
-	n_distributions=args.ndist
-	seed=args.seed
+	n_distributions = args.ndist
+	seed = args.seed
 	sampler_method = UniformSample()
 	if sampler == 'multi-uniform':
 		sampler_method = MultiModalUniformSample()
 	elif sampler == 'multi-gaussian':
-		sampler = "{}_{}/mu_{}_sigma{}_n_distributions{}".format(title_prefix,sampler, mu, sigma,n_distributions)
-		sampler_method = MultivariateGaussianSampler(mu=mu, sigma=sigma,n_distributions=n_distributions)
+		sampler = "{}_{}/mu_{}_sigma{}_n_distributions{}".format(title_prefix, sampler, mu, sigma, n_distributions)
+		sampler_method = MultivariateGaussianSampler(mu=mu, sigma=sigma, n_distributions=n_distributions)
 	elif sampler == 'gaussian':
-		sampler = "{}_{}/mu_{}_sigma{}_n_distributions".format(title_prefix,sampler, mu, sigma,n_distributions)
-		sampler_method = GaussianSample(mu=mu, sigma=sigma,n_distributions=n_distributions)
+		sampler = "{}_{}/mu_{}_sigma{}_n_distributions".format(title_prefix, sampler, mu, sigma, n_distributions)
+		sampler_method = GaussianSample(mu=mu, sigma=sigma, n_distributions=n_distributions)
 	elif sampler == 'truncated':
 		sampler = "{}/mu_{}_sigma{}".format(sampler, mu, sigma)
-		sampler_method = TruncatedGaussianSample(mu=mu, sigma=sigma,n_distributions=n_distributions)
+		sampler_method = TruncatedGaussianSample(mu=mu, sigma=sigma, n_distributions=n_distributions)
 	is_wgan_gp = args.wgan
 	with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
 		
@@ -127,8 +126,8 @@ def main():
 				# order_str = '_'.join(dataset_creation_order)
 				print("CHEKPOINT DIR: {}".format(sampler))
 				gan = model(sess, epoch=args.epoch, batch_size=args.batch_size, z_dim=args.z_dim, dataset_name=args.dataset,
-				            checkpoint_dir=args.checkpoint_dir + '/' + sampler +'/' + str(seed), result_dir=args.result_dir + '/' + sampler+'/' + str(seed),
-				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method, is_wgan_gp=is_wgan_gp,seed=seed,pref=title_prefix)
+				            checkpoint_dir=args.checkpoint_dir + '/' + sampler + '/' + str(seed), result_dir=args.result_dir + '/' + sampler + '/' + str(seed),
+				            log_dir=args.log_dir + '/' + sampler, sampler=sampler_method, is_wgan_gp=is_wgan_gp, seed=seed, pref=title_prefix)
 		if gan is None:
 			raise Exception("[!] There is no option for " + args.gan_type)
 		
