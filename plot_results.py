@@ -55,6 +55,9 @@ def MMgeneral_plot_from_pkl(groupby=""):
 		current_experiment = files_list[key]
 		num_experiments = len(current_experiment)
 		if num_experiments > 4:
+			print(key)
+			print(np.mean(current_experiment, axis=0))
+			print(np.std(current_experiment, axis=0) / num_experiments)
 			means.append(np.mean(current_experiment, axis=0))
 			std_errs.append(np.std(current_experiment, axis=0) / num_experiments)
 		elif key in param_list.keys():
@@ -104,7 +107,7 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 				sigma = tmp[7]
 				ndist = tmp[9]
 				if sampler == "MultivariateGaussianSampler":
-					param_list[fname] = ("{} models".format(ndist))
+					param_list[fname] = ("{} modalities".format(ndist))
 					try:
 						np_max = np.max(pickle.load(open(f, "rb"))) +0.035
 						# np_max = pickle.load(open(f, "rb"))[-1]
@@ -120,7 +123,7 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 					except Exception as e:
 						print("ERROR:{}\n{}".format(f, e))
 				elif sampler == "UniformSample":
-					param_list[fname] = ("Uniform".format(sigma, mu))
+					param_list[fname] = "Uniform"
 					try:
 						np_max = np.max(pickle.load(open(f, "rb")))
 						# np_max = pickle.load(open(f, "rb"))[-1]
@@ -146,17 +149,15 @@ def MMgeneral_plot_from_pkl_comparison(groupby=""):
 	
 	models = set(param_list.values())
 	title = 'MMinfoGAN comparison'
-	means = sorted(means)
-	std_errs = sorted(std_errs,reverse=True)
-	std_errs = [0.0041, 0.0033, 0.0050, 0.0038, 0.0037]
-	print(models)
-	ax.set_title(title, fontsize=10)
+	# means = [0.54335713,0.5510429, 0.591812495648861, 0.604444442987442,0.6015357193946839]
+	# std_errs = [0.0033, 0.0041, 0.0050, 0.0039, 0.0037]
+	# ax.set_title(title, fontsize=10)
 	x_pos = np.arange(len(models))
 	ax.bar(x_pos, means, yerr=std_errs, align='center', alpha=0.5, ecolor='black', capsize=10)
 	ax.set_ylabel('Accuracy')
 	ax.set_xticks(x_pos)
-	ax.set_xticklabels(['Uniform','1d Gaussian','3 modals','10 modals','5 modals'])
-	plt.xticks(rotation=90)
+	ax.set_xticklabels(['Uniform', '1d Gaussian', '3 modalities','5 modalities', '10 modalities'])
+	# plt.xticks(rotation=90)
 	ax.set_ylim([0.5, 0.63])
 	# ax.set_title('Prior')
 	ax.yaxis.grid(True)
