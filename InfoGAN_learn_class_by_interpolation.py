@@ -91,6 +91,7 @@ class MultiModalInfoGAN_phase2(object):
 			
 			# load mnist
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
+			self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			# REMOVING 1 DIGIT
 			indiceis_of_9 = np.where(np.argmax(self.data_y, 1) == self.ignored_lable)
 			self.data_y_only9 = self.data_y[indiceis_of_9]
@@ -98,7 +99,6 @@ class MultiModalInfoGAN_phase2(object):
 			# indiceis_to_keep = np.where(np.argmax(self.data_y, 1) != self.ignored_lable)
 			# self.data_y = self.data_y[indiceis_to_keep]
 			# self.data_X = self.data_X[indiceis_to_keep]
-			# self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
 		self.model_dir = self.get_model_dir()
