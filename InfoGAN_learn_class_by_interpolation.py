@@ -91,12 +91,12 @@ class MultiModalInfoGAN_phase2(object):
 			
 			# load mnist
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
-			self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			# REMOVING 1 DIGIT
 			indiceis_of_9 = np.where(np.argmax(self.data_y, 1) == self.ignored_lable)
 			self.data_y_only9 = self.data_y[indiceis_of_9]
 			self.data_X_only9 = self.data_X[indiceis_of_9]
 			self.data_y = self.data_y_only9
+			self.data_y_only9 = np.delete(self.data_y_only9, self.data_y.shape[1] - 1, axis=1)
 			self.data_X = self.data_X_only9
 			# indiceis_to_keep = np.where(np.argmax(self.data_y, 1) != self.ignored_lable)
 			# self.data_y = self.data_y[indiceis_to_keep]
@@ -252,14 +252,8 @@ class MultiModalInfoGAN_phase2(object):
 		tf.global_variables_initializer().run()
 		
 		# graph inputs for visualize training results
-		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)  # np.random.uniform(-1, 1,
-		# size=(self.batch_size, self.z_dim))
-		self.test_labels = np.ones([self.batch_size, self.y_dim])
-		if self.dataset_name != "celebA":
-			self.test_labels = self.data_y[0:self.batch_size]
-		
-		self.test_codes = np.concatenate((self.test_labels, np.zeros([self.batch_size, self.len_continuous_code])), axis=1)
-		
+		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
+
 		# saver to save model
 		self.saver = tf.train.Saver()
 		
@@ -503,69 +497,45 @@ class MultiModalInfoGAN_phase2(object):
 					generated_dataset += generated_dataset_random_z_random_c
 					generated_labels += generated_labels_random_z_random_c
 		
-		####### PREPROCESS ####
-		# if len(generated_dataset_clean_z_clean_c) > 0:
-		# 	clean_dataset = generated_dataset_clean_z_clean_c
-		# 	clean_labels = generated_labels_clean_z_clean_c
+		# ####### PREPROCESS ####
+		# # if len(generated_dataset_clean_z_clean_c) > 0:
+		# # 	clean_dataset = generated_dataset_clean_z_clean_c
+		# # 	clean_labels = generated_labels_clean_z_clean_c
+		# # else:
+		# clean_dataset = generated_dataset
+		# clean_labels = generated_labels
+		# data_X_clean_part = np.asarray([y for x in clean_dataset for y in x]).reshape(-1, 28, 28)
+		# data_y_clean_part = np.asarray(clean_labels, dtype=np.int32).flatten()
+		#
+		# data_y_all = np.asarray(generated_labels, dtype=np.int32).flatten()
+		# import copy
+		#
+		# data_y_updateable = copy.deepcopy(data_y_all)
+		#
+		# data_y_all = one_hot_encoder(data_y_updateable)
+		# order_str = '_'.join(self.dataset_creation_order)
+		# if not os.path.exists(self.dir_results):
+		# 	os.makedirs(self.dir_results)
+		# if self.wgan_gp:
+		# 	params = "mu_{}_sigma_{}_ndist_{}_WGAN".format(self.sampler.mu, self.sampler.sigma, self.sampler.n_distributions)
 		# else:
-		clean_dataset = generated_dataset
-		clean_labels = generated_labels
-		data_X_clean_part = np.asarray([y for x in clean_dataset for y in x]).reshape(-1, 28, 28)
-		data_y_clean_part = np.asarray(clean_labels, dtype=np.int32).flatten()
-		
-		data_y_all = np.asarray(generated_labels, dtype=np.int32).flatten()
-		import copy
-		
-		data_y_updateable = copy.deepcopy(data_y_all)
-		for current_label in range(self.len_discrete_code):
-			small_mask = data_y_clean_part == current_label
-			mask = data_y_all == current_label
-			data_X_for_current_label = np.asarray(data_X_clean_part[np.where(small_mask == True)]).reshape(-1, 784)
-			
-			limit = min(len(data_X_for_current_label) // self.len_discrete_code, 2 ** 14)
-			dummy_labels = one_hot_encoder(np.random.randint(0, self.len_discrete_code, size=(limit)))  # no meaning for the labels
-			print(dummy_labels.shape)
-			_, confidence, _, arg_max = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, self.len_discrete_code),
-			                                                            is_arg_max=True)
-			if is_confidence:
-				print("confidence:{}".format(confidence))
-				high_confidence_threshold_indices = confidence >= CONFIDENCE_THRESHOLD
-				if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
-					arg_max = arg_max[high_confidence_threshold_indices]
-					print("The length of high confidence:")
-					print(len(high_confidence_threshold_indices[high_confidence_threshold_indices]))
-			print(str(len(arg_max)) + " were taken")
-			new_label = np.bincount(arg_max).argmax()
-			print("Assinging:{}".format(new_label))
-			# plt.title("old_label=" + str(current_label) + "new_label=" + str(new_label))
-			# plt.imshow(data_X_for_current_label[0].reshape(28, 28))
-			# plt.show()
-			data_y_updateable[mask] = new_label
-			print(np.bincount(arg_max))
-		data_y_all = one_hot_encoder(data_y_updateable)
-		order_str = '_'.join(self.dataset_creation_order)
-		if not os.path.exists(self.dir_results):
-			os.makedirs(self.dir_results)
-		if self.wgan_gp:
-			params = "mu_{}_sigma_{}_ndist_{}_WGAN".format(self.sampler.mu, self.sampler.sigma, self.sampler.n_distributions)
-		else:
-			params = "mu_{}_sigma_{}_ndist_{}".format(self.sampler.mu, self.sampler.sigma, self.sampler.n_distributions)
-		
-		fname_trainingset_edited = "edited_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-		fname_labeles_edited = "edited_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-		generated_dataset = np.asarray(generated_dataset).reshape(-1, 784)
-		generated_dataset, data_y_all = shuffle(generated_dataset, data_y_all, random_state=0)
-		pickle.dump(generated_dataset, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
-		output_path = open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb')
-		pickle.dump(data_y_all, output_path)
-		
-		fname_trainingset = "generated_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-		print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}{}\n\n".format(len(generated_dataset), len(generated_labels), self.dir_results, fname_trainingset))
-		fname_labeles = "generated_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-		pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
-		# np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2])
-		pickle.dump(np.asarray(generated_labels), open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
-		
+		# 	params = "mu_{}_sigma_{}_ndist_{}".format(self.sampler.mu, self.sampler.sigma, self.sampler.n_distributions)
+		#
+		# fname_trainingset_edited = "edited_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
+		# fname_labeles_edited = "edited_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
+		# generated_dataset = np.asarray(generated_dataset).reshape(-1, 784)
+		# generated_dataset, data_y_all = shuffle(generated_dataset, data_y_all, random_state=0)
+		# pickle.dump(generated_dataset, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
+		# output_path = open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb')
+		# pickle.dump(data_y_all, output_path)
+		#
+		# fname_trainingset = "generated_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
+		# print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}{}\n\n".format(len(generated_dataset), len(generated_labels), self.dir_results, fname_trainingset))
+		# fname_labeles = "generated_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
+		# pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
+		# # np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2])
+		# pickle.dump(np.asarray(generated_labels), open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
+		#
 		return
 	
 	def get_model_dir(self):
@@ -579,7 +549,7 @@ class MultiModalInfoGAN_phase2(object):
 		
 		if not os.path.exists(checkpoint_dir):
 			os.makedirs(checkpoint_dir)
-		
+		print(os.path.join(checkpoint_dir, "MultiModalInfoGAN" + '.model'))
 		self.saver.save(self.sess, os.path.join(checkpoint_dir, "MultiModalInfoGAN" + '.model'), global_step=step)
 	
 	def load(self, checkpoint_dir):
