@@ -87,7 +87,7 @@ class MultiModalInfoGAN(object):
 			self.output_width = 28
 			
 			self.z_dim = z_dim  # dimension of noise-vector
-			self.y_dim = self.len_discrete_code #+ self.len_continuous_code  # dimension of code-vector (label+two features)
+			self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
 			self.c_dim = 1
 			
 			# load mnist
@@ -279,25 +279,27 @@ class MultiModalInfoGAN(object):
 		for epoch in range(start_epoch, self.epoch):
 			# get batch data
 			for idx in range(start_batch_id, self.num_batches):
-				if self.dataset_name != "celebA":
-					batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
-				else:
-					batch_images = self.data_pool.batch()
+				batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
 				
-				discrete_code_probs = self.len_discrete_code * [float(1.0 / self.len_discrete_code - 1)]
-				# discrete_code_probs[self.ignored_lable] = 0.
-				batch_labels = np.random.multinomial(1, discrete_code_probs, size=[self.batch_size])
+				# generate code
+				if self.SUPERVISED == True:
+					batch_labels = self.data_y[idx * self.batch_size:(idx + 1) * self.batch_size]
+				else:
+					batch_labels = np.random.multinomial(1, self.len_discrete_code * [float(1.0 / self.len_discrete_code)],
+					                                     size=[self.batch_size])
+				
+				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
 				
 				# batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
 				
 				# update D network
-				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss], feed_dict={self.x: batch_images, self.y: batch_labels, self.z: batch_z})
+				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss], feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
 				self.writer.add_summary(summary_str, counter)
 				
 				# update G and Q network
 				_, summary_str_g, g_loss, _, summary_str_q, q_loss = self.sess.run([self.g_optim, self.g_sum, self.g_loss, self.q_optim, self.q_sum, self.q_loss],
-				                                                                   feed_dict={self.x: batch_images, self.z: batch_z, self.y: batch_labels})
+				                                                                   feed_dict={self.x: batch_images, self.z: batch_z, self.y: batch_codes})
 				self.writer.add_summary(summary_str_g, counter)
 				self.writer.add_summary(summary_str_q, counter)
 				
@@ -340,7 +342,7 @@ class MultiModalInfoGAN(object):
 		            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
 		
 		""" specified condition, random noise """
-		n_styles = 10  # must be less than or equal to self.batch_size
+		n_styles = self.len_discrete_code  # must be less than or equal to self.batch_size
 		
 		si = np.random.choice(self.batch_size, n_styles)
 		
@@ -372,29 +374,29 @@ class MultiModalInfoGAN(object):
 		""" fixed noise """
 		# assert self.len_continuous_code == 2
 		
-		# c1 = np.linspace(-1, 1, image_frame_dim)
-		# c2 = np.linspace(-1, 1, image_frame_dim)
-		# xv, yv = np.meshgrid(c1, c2)
-		# xv = xv[:image_frame_dim, :image_frame_dim]
-		# yv = yv[:image_frame_dim, :image_frame_dim]
-		#
-		# c1 = xv.flatten()
-		# c2 = yv.flatten()
-		#
-		# z_fixed = np.zeros([self.batch_size, self.z_dim])
-		#
-		# for l in range(self.len_discrete_code):
-		# 	y = np.zeros(self.batch_size, dtype=np.int64) + l  # ones in the discrete_code idx * batch_size
-		# 	y_one_hot = np.zeros((self.batch_size, self.y_dim))
-		# 	y_one_hot[np.arange(self.batch_size), y] = 1
-		# 	# cartesian multiplication of the two latent codes
-		# 	y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
-		# 	y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
-		#
-		# 	samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
-		#
-		# 	save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-		# 	            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2_%d.png' % l)
+		c1 = np.linspace(-1, 1, image_frame_dim)
+		c2 = np.linspace(-1, 1, image_frame_dim)
+		xv, yv = np.meshgrid(c1, c2)
+		xv = xv[:image_frame_dim, :image_frame_dim]
+		yv = yv[:image_frame_dim, :image_frame_dim]
+
+		c1 = xv.flatten()
+		c2 = yv.flatten()
+
+		z_fixed = np.zeros([self.batch_size, self.z_dim])
+
+		for l in range(self.len_discrete_code):
+			y = np.zeros(self.batch_size, dtype=np.int64) + l  # ones in the discrete_code idx * batch_size
+			y_one_hot = np.zeros((self.batch_size, self.y_dim))
+			y_one_hot[np.arange(self.batch_size), y] = 1
+			# cartesian multiplication of the two latent codes
+			y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
+			y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
+
+			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
+
+			save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+			            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2_%d.png' % l)
 	
 	def create_dataset_from_GAN(self, is_confidence=False):
 		
