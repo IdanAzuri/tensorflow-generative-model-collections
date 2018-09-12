@@ -568,9 +568,9 @@ class MultiModalInfoGAN_phase2(object):
 	
 	def get_model_dir(self):
 		if self.wgan_gp:
-			return "wgan_{}_{}_batch{}".format(self.model_name, self.dataset_name, self.batch_size)
+			return "wgan_{}_{}_batch{}".format("MultiModalInfoGAN", self.dataset_name, self.batch_size)
 		else:
-			return "{}_{}_batch{}".format(self.model_name, self.dataset_name, self.batch_size)
+			return "{}_{}_batch{}".format("MultiModalInfoGAN", self.dataset_name, self.batch_size)
 	
 	def save(self, checkpoint_dir, step):
 		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir)
@@ -578,7 +578,7 @@ class MultiModalInfoGAN_phase2(object):
 		if not os.path.exists(checkpoint_dir):
 			os.makedirs(checkpoint_dir)
 		
-		self.saver.save(self.sess, os.path.join(checkpoint_dir, self.model_name + '.model'), global_step=step)
+		self.saver.save(self.sess, os.path.join(checkpoint_dir, "MultiModalInfoGAN" + '.model'), global_step=step)
 	
 	def load(self, checkpoint_dir):
 		import re
