@@ -372,29 +372,29 @@ class MultiModalInfoGAN(object):
 		""" fixed noise """
 		# assert self.len_continuous_code == 2
 		
-		c1 = np.linspace(-1, 1, image_frame_dim)
-		c2 = np.linspace(-1, 1, image_frame_dim)
-		xv, yv = np.meshgrid(c1, c2)
-		xv = xv[:image_frame_dim, :image_frame_dim]
-		yv = yv[:image_frame_dim, :image_frame_dim]
-		
-		c1 = xv.flatten()
-		c2 = yv.flatten()
-		
-		z_fixed = np.zeros([self.batch_size, self.z_dim])
-		
-		for l in range(self.len_discrete_code):
-			y = np.zeros(self.batch_size, dtype=np.int64) + l  # ones in the discrete_code idx * batch_size
-			y_one_hot = np.zeros((self.batch_size, self.y_dim))
-			y_one_hot[np.arange(self.batch_size), y] = 1
-			# cartesian multiplication of the two latent codes
-			y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
-			y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
-			
-			samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
-			
-			save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-			            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2_%d.png' % l)
+		# c1 = np.linspace(-1, 1, image_frame_dim)
+		# c2 = np.linspace(-1, 1, image_frame_dim)
+		# xv, yv = np.meshgrid(c1, c2)
+		# xv = xv[:image_frame_dim, :image_frame_dim]
+		# yv = yv[:image_frame_dim, :image_frame_dim]
+		#
+		# c1 = xv.flatten()
+		# c2 = yv.flatten()
+		#
+		# z_fixed = np.zeros([self.batch_size, self.z_dim])
+		#
+		# for l in range(self.len_discrete_code):
+		# 	y = np.zeros(self.batch_size, dtype=np.int64) + l  # ones in the discrete_code idx * batch_size
+		# 	y_one_hot = np.zeros((self.batch_size, self.y_dim))
+		# 	y_one_hot[np.arange(self.batch_size), y] = 1
+		# 	# cartesian multiplication of the two latent codes
+		# 	y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
+		# 	y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
+		#
+		# 	samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y: y_one_hot})
+		#
+		# 	save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
+		# 	            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2_%d.png' % l)
 	
 	def create_dataset_from_GAN(self, is_confidence=False):
 		
