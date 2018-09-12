@@ -96,6 +96,8 @@ class MultiModalInfoGAN_phase2(object):
 			indiceis_of_9 = np.where(np.argmax(self.data_y, 1) == self.ignored_lable)
 			self.data_y_only9 = self.data_y[indiceis_of_9]
 			self.data_X_only9 = self.data_X[indiceis_of_9]
+			self.data_y = self.data_y_only9
+			self.data_X = self.data_X_only9
 			# indiceis_to_keep = np.where(np.argmax(self.data_y, 1) != self.ignored_lable)
 			# self.data_y = self.data_y[indiceis_to_keep]
 			# self.data_X = self.data_X[indiceis_to_keep]
