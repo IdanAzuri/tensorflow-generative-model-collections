@@ -87,7 +87,7 @@ class MultiModalInfoGAN(object):
 			self.output_width = 28
 			
 			self.z_dim = z_dim  # dimension of noise-vector
-			self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
+			self.y_dim = self.len_discrete_code #+ self.len_continuous_code  # dimension of code-vector (label+two features)
 			self.c_dim = 1
 			
 			# load mnist
@@ -101,47 +101,6 @@ class MultiModalInfoGAN(object):
 			self.data_X = self.data_X[indiceis_to_keep]
 			self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			self.num_batches = len(self.data_X) // self.batch_size
-		# elif dataset_name == 'cifar10':
-		# 	print("IN CIFAR")
-		# 	# parameters
-		# 	self.input_height = 32
-		# 	self.input_width = 32
-		# 	self.output_height = 32
-		# 	self.output_width = 32
-		#
-		# 	self.z_dim = z_dim  # dimension of noise-vector
-		# 	self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
-		# 	self.c_dim = 3
-		# 	# self.data_X, self.data_y, self.test_x, self.test_labels = get_train_test_data()
-		# 	# get number of batches for a single epoch
-		# 	self.num_batches = len(self.data_X) // self.batch_size
-		# elif dataset_name == 'celebA':
-		# 	from data_load import preprocess_fn
-		# 	print("in celeba")
-		# 	img_paths = glob.glob('/Users/idan.a/data/celeba/*.jpg')
-		# 	self.data_pool = utils.DiskImageData(img_paths, batch_size, shape=[218, 178, 3], preprocess_fn=preprocess_fn)
-		# 	self.num_batches = len(self.data_pool) // (batch_size)
-		#
-		# 	# real_ipt = data_pool.batch()
-		# 	# parameters
-		# 	self.input_height = 64
-		# 	self.input_width = 64
-		# 	self.output_height = 32
-		# 	self.output_width = 32
-		#
-		# 	self.z_dim = 128  # dimension of noise-vector
-		# 	self.c_dim = 3
-		# 	self.len_discrete_code = 100  # categorical distribution (i.e. label)
-		# 	self.len_continuous_code = 0  # gaussian distribution (e.g. rotation, thickness)
-		# 	self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
-		# 	sess = utils.session()
-		#
-		# 	# iteration counter
-		# 	it_cnt, update_cnt = utils.counter()
-		#
-		# 	sess.run(tf.global_variables_initializer())
-		# 	sess.run(it_cnt)
-		# 	sess.run(update_cnt)  # get number of batches for a single epoch
 		self.model_dir = self.get_model_dir()
 	
 	def classifier(self, x, is_training=True, reuse=False):
@@ -296,8 +255,6 @@ class MultiModalInfoGAN(object):
 		self.test_labels = np.ones([self.batch_size, self.y_dim])
 		self.test_labels = self.data_y[0:self.batch_size]
 		
-		self.test_codes = np.concatenate((self.test_labels, np.zeros([self.batch_size, self.len_continuous_code])), axis=1)
-		
 		# saver to save model
 		self.saver = tf.train.Saver()
 		
@@ -331,16 +288,16 @@ class MultiModalInfoGAN(object):
 				# discrete_code_probs[self.ignored_lable] = 0.
 				batch_labels = np.random.multinomial(1, discrete_code_probs, size=[self.batch_size])
 				
-				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
+				# batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
 				
 				# update D network
-				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss], feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
+				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss], feed_dict={self.x: batch_images, self.y: batch_labels, self.z: batch_z})
 				self.writer.add_summary(summary_str, counter)
 				
 				# update G and Q network
 				_, summary_str_g, g_loss, _, summary_str_q, q_loss = self.sess.run([self.g_optim, self.g_sum, self.g_loss, self.q_optim, self.q_sum, self.q_loss],
-				                                                                   feed_dict={self.x: batch_images, self.z: batch_z, self.y: batch_codes})
+				                                                                   feed_dict={self.x: batch_images, self.z: batch_z, self.y: batch_labels})
 				self.writer.add_summary(summary_str_g, counter)
 				self.writer.add_summary(summary_str_q, counter)
 				
@@ -413,7 +370,7 @@ class MultiModalInfoGAN(object):
 		            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes_style_by_style.png')
 		
 		""" fixed noise """
-		assert self.len_continuous_code == 2
+		# assert self.len_continuous_code == 2
 		
 		c1 = np.linspace(-1, 1, image_frame_dim)
 		c2 = np.linspace(-1, 1, image_frame_dim)
