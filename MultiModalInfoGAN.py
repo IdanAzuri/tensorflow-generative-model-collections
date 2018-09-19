@@ -300,6 +300,7 @@ class MultiModalInfoGAN(object):
 				# update G and Q network
 				_, summary_str_g, g_loss, _, summary_str_q, q_loss = self.sess.run([self.g_optim, self.g_sum, self.g_loss, self.q_optim, self.q_sum, self.q_loss],
 				                                                                   feed_dict={self.x: batch_images, self.z: batch_z, self.y: batch_codes})
+				
 				self.writer.add_summary(summary_str_g, counter)
 				self.writer.add_summary(summary_str_q, counter)
 				
@@ -568,9 +569,9 @@ class MultiModalInfoGAN(object):
 	
 	def get_model_dir(self):
 		if self.wgan_gp:
-			return "wgan_{}_{}_batch{}".format(self.model_name, self.dataset_name, self.batch_size)
+			return "wgan_{}_{}".format(self.model_name, self.dataset_name)
 		else:
-			return "{}_{}_batch{}".format(self.model_name, self.dataset_name, self.batch_size)
+			return "{}_{}".format(self.model_name, self.dataset_name)
 	
 	def save(self, checkpoint_dir, step):
 		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir)
