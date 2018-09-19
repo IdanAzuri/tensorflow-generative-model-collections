@@ -514,8 +514,8 @@ class MultiModalInfoGAN_phase2(object):
 				print(len(high_confidence_threshold_indices[high_confidence_threshold_indices]))
 		print(str(len(arg_max)) + " were taken")
 		new_label = np.bincount(arg_max).argmax()
-		print("Assinging:{}".format(new_label))
-		# plt.title("old_label=" + str(current_label) + "new_label=" + str(new_label))
+		print("argmax:{}".format(new_label))
+		plt.title("old_label=" + str(current_label) + "new_label=" + str(new_label))
 		# plt.imshow(data_X_for_current_label[0].reshape(28, 28))
 		# plt.show()
 		data_y_updateable[:] = self.ignored_label
@@ -559,7 +559,7 @@ class MultiModalInfoGAN_phase2(object):
 		if not os.path.exists(checkpoint_dir):
 			os.makedirs(checkpoint_dir)
 		
-		self.saver.save(self.sess, os.path.join(checkpoint_dir, "MultiModalInfoGAN" + '.model'), global_step=step)
+		self.saver.save(self.sess, os.path.join(checkpoint_dir, self.model_name + '.model'), global_step=step)
 	
 	def load(self, checkpoint_dir):
 		import re
