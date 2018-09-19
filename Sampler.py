@@ -1,5 +1,4 @@
 import numpy as np
-from hypertools import plot
 
 
 class Sampler(object):
