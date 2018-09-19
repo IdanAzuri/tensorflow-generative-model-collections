@@ -178,7 +178,7 @@ def simplex(dimension=10,number=2, return_values=True):
 
 	
 	if return_values:
-		return res
+		return np.asarray(res)
 	return 0
 
 
