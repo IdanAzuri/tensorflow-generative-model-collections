@@ -284,7 +284,7 @@ class MultiModalInfoGAN_phase2(object):
 				
 				# batch_labels = np.random.multinomial(1, self.len_discrete_code * [float(1.0 / self.len_discrete_code)], size=[self.batch_size])
 				batch_labels = simplex(dimension=self.len_discrete_code, number=self.batch_size)
-				batch_labels = [2.91529568e-01, 5.47097897e-01, 9.21683068e-02, 1.60650195e-02, 7.58631531e-03, 3.82596212e-02, 6.68696731e-04, 8.30287637e-04, 3.12111602e-03]
+				batch_labels = [2.91529568e-01, 5.47097897e-01, 9.21683068e-02, 1.60650195e-02, 7.58631531e-03, 3.82596212e-02, 6.68696731e-04, 8.30287637e-04, 3.12111602e-03]* self.batch_size
 				print("Simplex:{}".format(batch_labels))
 				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
