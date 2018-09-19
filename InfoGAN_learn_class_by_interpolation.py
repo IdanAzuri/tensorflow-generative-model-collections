@@ -91,7 +91,7 @@ class MultiModalInfoGAN_phase2(object):
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
 			# REMOVING 1 DIGIT
 			indiceis_of_9 = np.where(np.argmax(self.data_y, 1) == self.ignored_label)
-			n = 100  # for 2 random indices
+			self.n = 100  # for 2 random indices
 			self.batch_size = min(self.batch_size,n)
 			indiceis_of_9 = np.random.choice(indiceis_of_9[0].shape[0], n, replace=False)
 			self.data_y_only9 = self.data_y[indiceis_of_9]
@@ -554,7 +554,7 @@ class MultiModalInfoGAN_phase2(object):
 			return "{}_{}".format("MultiModalInfoGAN", self.dataset_name)
 	
 	def save(self, checkpoint_dir, step):
-		model_dir="{}_{}".format(self.model_name, self.dataset_name)
+		model_dir="{}_{}_n_{}".format(self.model_name, self.dataset_name,self.n)
 		checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
 		
 		if not os.path.exists(checkpoint_dir):
