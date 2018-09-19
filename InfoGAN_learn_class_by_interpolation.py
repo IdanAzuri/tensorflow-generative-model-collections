@@ -554,7 +554,8 @@ class MultiModalInfoGAN_phase2(object):
 			return "{}_{}".format("MultiModalInfoGAN", self.dataset_name)
 	
 	def save(self, checkpoint_dir, step):
-		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir)
+		model_dir="{}_{}".format(self.model_name, self.dataset_name)
+		checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
 		
 		if not os.path.exists(checkpoint_dir):
 			os.makedirs(checkpoint_dir)
