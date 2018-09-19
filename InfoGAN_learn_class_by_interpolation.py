@@ -93,7 +93,7 @@ class MultiModalInfoGAN_phase2(object):
 			indiceis_of_9 = np.where(np.argmax(self.data_y, 1) == self.ignored_label)
 			self.n = 100  # for 2 random indices
 			self.batch_size = min(self.batch_size,self.n)
-			indiceis_of_9 = np.random.choice(indiceis_of_9[0].shape[0], n, replace=False)
+			indiceis_of_9 = np.random.choice(indiceis_of_9[0].shape[0], self.n, replace=False)
 			self.data_y_only9 = self.data_y[indiceis_of_9]
 			self.data_X_only9 = self.data_X[indiceis_of_9]
 			self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
