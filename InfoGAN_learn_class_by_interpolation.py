@@ -410,7 +410,7 @@ class MultiModalInfoGAN_phase2(object):
 		
 		generated_dataset_random_z_random_c = []
 		generated_labels_random_z_random_c = []
-		label = self.len_discrete_code + 1
+		label = self.ignored_label
 		
 		for i in self.dataset_creation_order:
 			num_iter = max(datasetsize // len(self.dataset_creation_order), 10)
@@ -434,7 +434,6 @@ class MultiModalInfoGAN_phase2(object):
 				for _ in range(num_iter):
 					# z fixed -czrc
 					z_fixed = np.zeros([self.batch_size, self.z_dim])
-					y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
 					y_simplex = simplex(dimension=self.len_discrete_code, number=self.batch_size)
 					y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))), axis=1)
 					y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
