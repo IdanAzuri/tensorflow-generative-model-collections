@@ -45,7 +45,7 @@ def gradient_penalty(real, fake, f):
 
 class MultiModalInfoGAN(object):
 	model_name = "MultiModalInfoGAN"  # name for checkpoint
-	
+
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, seed, len_continuous_code=2, is_wgan_gp=False,
 	             dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True,pref=""):
 		self.ignored_lable = 9
@@ -71,25 +71,25 @@ class MultiModalInfoGAN(object):
 		# train
 		self.learning_rate = 0.0002
 		self.beta1 = 0.5
-		
+
 		# test
 		self.sample_num = 64  # number of generated images to be saved
-		
+
 		# code
 		self.len_discrete_code = 9  # the 10th class will be represnted by the others
 		self.len_continuous_code = len_continuous_code  # gaussian distribution (e.g. rotation, thickness)
-		
+
 		if dataset_name == 'mnist' or dataset_name == 'fashion-mnist':
 			# parameters
 			self.input_height = 28
 			self.input_width = 28
 			self.output_height = 28
 			self.output_width = 28
-			
+
 			self.z_dim = z_dim  # dimension of noise-vector
 			self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
 			self.c_dim = 1
-			
+
 			# load mnist
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
 			# REMOVING 1 DIGIT
@@ -101,8 +101,15 @@ class MultiModalInfoGAN(object):
 			self.data_X = self.data_X[indiceis_to_keep]
 			self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			self.num_batches = len(self.data_X) // self.batch_size
+			# self.placeholder_y = self.get_y_variable()
 		self.model_dir = self.get_model_dir()
-	
+	# def get_y_variable(self):
+	# 	with tf.variable_scope("y_scope",reuse=tf.AUTO_REUSE):
+	# 		self.y = tf.get_variable("y",shape=[self.batch_size, self.y_dim], dtype=tf.float32,
+	# 								 initializer=tf.constant_initializer([-3.20047903, -5.0427742, -0.98672181, 2.69671154, -0.06454577,
+	# 																	  -1.26595652, -6.00577974, 2.06083441, 4.04049683,
+	# 																	  12.83154583] * self.batch_size))
+	# 	return self.y
 	def classifier(self, x, is_training=True, reuse=False):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
 		# Architecture : (64)5c2s-(128)5c2s_BL-FC1024_BL-FC128_BL-FC12S’
@@ -121,9 +128,9 @@ class MultiModalInfoGAN(object):
 		if self.wgan_gp:
 			with tf.variable_scope("wgan_discriminator", reuse=reuse):
 				net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
-				net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
+				net = lrelu((conv2d(net, 128, 4, 4, 2, 2, name='d_conv2')))
 				net = tf.reshape(net, [self.batch_size, -1])
-				net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
+				net = lrelu((linear(net, 1024, scope='d_fc3')))
 				out_logit = linear(net, 1, scope='d_fc4')
 				out = tf.nn.sigmoid(out_logit)
 		else:
@@ -135,7 +142,7 @@ class MultiModalInfoGAN(object):
 				out_logit = linear(net, 1, scope='d_fc4')
 				out = tf.nn.sigmoid(out_logit)
 			
-			return out, out_logit, net
+		return out, out_logit, net
 	
 	def generator(self, z, y, is_training=True, reuse=False):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
@@ -525,7 +532,7 @@ class MultiModalInfoGAN(object):
 			limit = min(len(data_X_for_current_label) // self.len_discrete_code, 2 ** 14)
 			dummy_labels = one_hot_encoder(np.random.randint(0, self.len_discrete_code, size=(limit)))  # no meaning for the labels
 			print(dummy_labels.shape)
-			_, confidence, _, arg_max = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+			_, confidence, _, arg_max, y_conv = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 			if is_confidence:
 				print("confidence:{}".format(confidence))
 				high_confidence_threshold_indices = confidence >= CONFIDENCE_THRESHOLD
@@ -564,7 +571,14 @@ class MultiModalInfoGAN(object):
 		pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
 		# np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2])
 		pickle.dump(np.asarray(generated_labels), open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
-		
+
+
+
+
+		limit = min(len(self.data_X_only9) // self.len_discrete_code, 2)
+		dummy_labels = one_hot_encoder(np.random.randint(0, self.len_discrete_code, size=(limit)))  # no meaning for the labels
+		_, confidence, _, arg_max, y_conv = self.pretrained_classifier.test(self.data_X_only9[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+		print("Feature vector for the ignore label={}".format(y_conv))
 		return
 	
 	def get_model_dir(self):

@@ -170,7 +170,7 @@ def simplex(dimension=10,number=2, return_values=True):
 	if return_values:
 		res = []
 	for i in range(number):
-		v = gen_vector_dilawar(k)
+		v = gen_vector_uniform(k)
 		# v = gen_vector_dilawar( k )
 		if return_values:
 			res.append(v)

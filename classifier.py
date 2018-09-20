@@ -279,12 +279,12 @@ class CNNClassifier():
 	
 	def test(self, test_batch, test_labels, counter=0, is_arg_max=False):
 		if is_arg_max:
-			accuracy, confidence, loss, arg_max = self.sess.run([self.accuracy, self.confidence, self.cross_entropy, self.argmax],
+			accuracy, confidence, loss, arg_max,y_conv = self.sess.run([self.accuracy, self.confidence, self.cross_entropy, self.argmax,self.y_conv],
 				feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
 			print("argmax:{}".format(arg_max))
 			# self.test_writer.add_summary(summary, counter)
 			print('step {}: accuracy:{}, mean_confidence:{}, loss:{}'.format(counter, accuracy, np.mean(confidence), loss))
-			return accuracy, confidence, loss, arg_max
+			return accuracy, confidence, loss, arg_max, y_conv
 		else:
 			accuracy, confidence, loss = self.sess.run([self.accuracy, self.confidence, self.cross_entropy],
 			                                           feed_dict={self.x: test_batch.reshape(-1, 784), self.y_: test_labels, self.keep_prob: 1.})
