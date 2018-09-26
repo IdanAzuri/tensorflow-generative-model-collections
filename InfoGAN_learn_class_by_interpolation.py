@@ -283,7 +283,7 @@ class MultiModalInfoGAN_phase2(object):
         # size=(self.batch_size, self.z_dim))
 
         # saver to save model
-        self.saver = tf.train.Saver()
+        self.saver = tf.train.Saver(tf.trainable_variables())
 
         # summary writer
         self.writer = tf.summary.FileWriter(self.log_dir + '/' + self.model_name, self.sess.graph)
@@ -569,7 +569,7 @@ class MultiModalInfoGAN_phase2(object):
         dummy_labels = one_hot_encoder(
             np.random.randint(0, self.len_discrete_code, size=(limit)))  # no meaning for the labels
         print(dummy_labels.shape)
-        _, confidence, _, arg_max = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784),
+        _, confidence, _, arg_max, y_conv = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784),
                                                                     dummy_labels, is_arg_max=True)
         if is_confidence:
             print("confidence:{}".format(confidence))
@@ -642,11 +642,21 @@ class MultiModalInfoGAN_phase2(object):
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
 
         ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
-        self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
-        counter = int(next(re.finditer("(\d+)(?!.*\d)", ckpt_name)).group(0))
+        # self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
+        # counter = int(next(re.finditer("(\d+)(?!.*\d)", ckpt_name)).group(0))
+
+        reader = tf.train.NewCheckpointReader(os.path.join(checkpoint_dir, ckpt_name))
+        restore_dict = dict()
+        for v in tf.trainable_variables():
+            tensor_name = v.name.split(':')[0]
+            if reader.has_tensor(tensor_name):
+                print('has tensor ', tensor_name)
+                restore_dict[tensor_name] = v
+    
+        restore_dict['y_scope/y'] = self.get_y_variable()
         if ckpt and ckpt.model_checkpoint_path:
             print(" [*] Success to read {}".format(ckpt_name))
-        return False, 0
+            return False, 0
 
     def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P"):
         plt.Figure()
