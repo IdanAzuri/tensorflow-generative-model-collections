@@ -90,7 +90,7 @@ class MultiModalInfoGAN_phase2(object):
 			# load mnist
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
 			# REMOVING 1 DIGIT
-			self.n = 10  # for 2 random indices
+			self.n = 1  # for 2 random indices
 			indiceis_of_9 = np.where(np.argmax(self.data_y, 1) == self.ignored_label)
 			indiceis_of_9 = indiceis_of_9
 			
