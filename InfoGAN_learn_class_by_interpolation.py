@@ -10,7 +10,7 @@ import warnings
 from sklearn.utils import shuffle
 
 # SEED = 88
-from Sampler import simplex
+# from Sampler import simplex
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 from matplotlib.legend_handler import HandlerLine2D
@@ -254,7 +254,7 @@ class MultiModalInfoGAN_phase2(object):
                                                                                                  var_list=d_vars)
         self.g_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.g_loss,
                                                                                                  var_list=g_vars)
-        self.p_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.phase_2_loss,
+        self.p_optim = tf.train.AdamOptimizer(self.learning_rate *5, beta1=self.beta1).minimize(self.phase_2_loss,
                                                                                                  var_list=g_vars)
         # self.q_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
 
@@ -314,15 +314,15 @@ class MultiModalInfoGAN_phase2(object):
                 batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
 
                 # batch_labels = np.random.multinomial(1, self.len_discrete_code * [float(1.0 / self.len_discrete_code)], size=[self.batch_size])
-                batch_labels = simplex(dimension=self.len_discrete_code, number=self.batch_size)
+                # batch_labels = simplex(dimension=self.len_discrete_code, number=self.batch_size)
                 # batch_labels= [  3.33591051e-02,   2.55151040e-02,   1.43349344e-01,   2.23941005e-01,
                 # 			  1.73559226e-01,   1.12081718e-01,   4.80605154e-02,   8.17054566e-02,
                 # 			  1.58428525e-01] * self.batch_size
-                batch_labels = np.asarray(batch_labels).reshape(-1, self.len_discrete_code)
-                print("Simplex:{}".format(batch_labels))
-                batch_codes = np.concatenate(
-                    (batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))),
-                    axis=1)
+                # batch_labels = np.asarray(batch_labels).reshape(-1, self.len_discrete_code)
+                # print("Simplex:{}".format(batch_labels))
+                # batch_codes = np.concatenate(
+                #     (batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))),
+                #     axis=1)
                 batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
 
                 # update D network
@@ -362,13 +362,13 @@ class MultiModalInfoGAN_phase2(object):
         image_frame_dim = int(np.floor(np.sqrt(tot_num_samples)))
 
         """ random noise, random discrete code, fixed continuous code """
-        y_simplex = simplex(dimension=self.len_discrete_code, number=self.batch_size)
-        y_simplex = [3.33591051e-02, 2.55151040e-02, 1.43349344e-01, 2.23941005e-01,
-                     1.73559226e-01, 1.12081718e-01, 4.80605154e-02, 8.17054566e-02,
-                     1.58428525e-01] * self.batch_size
-        y_simplex = np.asarray(y_simplex).reshape(-1, self.len_discrete_code)
-        y_one_hot = np.concatenate(
-            (y_simplex, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
+        # y_simplex = simplex(dimension=self.len_discrete_code, number=self.batch_size)
+        # y_simplex = [3.33591051e-02, 2.55151040e-02, 1.43349344e-01, 2.23941005e-01,
+        #              1.73559226e-01, 1.12081718e-01, 4.80605154e-02, 8.17054566e-02,
+        #              1.58428525e-01] * self.batch_size
+        # y_simplex = np.asarray(y_simplex).reshape(-1, self.len_discrete_code)
+        # y_one_hot = np.concatenate(
+        #     (y_simplex, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
         # y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))), axis=1)
 
         z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
@@ -470,9 +470,9 @@ class MultiModalInfoGAN_phase2(object):
                 for _ in range(num_iter):
                     # clean samples z fixed - czcc
                     z_fixed = np.zeros([self.batch_size, self.z_dim])
-                    y_simplex = simplex(dimension=self.len_discrete_code, number=self.batch_size)
-                    y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))),
-                                               axis=1)
+                    # y_simplex = simplex(dimension=self.len_discrete_code, number=self.batch_size)
+                    # y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))),
+                    #                            axis=1)
                     samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed})
                     generated_dataset_clean_z_clean_c.append(
                         samples.reshape(-1, 28, 28))  # storing generated images and label
@@ -490,11 +490,11 @@ class MultiModalInfoGAN_phase2(object):
                 for _ in range(num_iter):
                     # z fixed -czrc
                     z_fixed = np.zeros([self.batch_size, self.z_dim])
-                    y_simplex = simplex(dimension=self.len_discrete_code, number=self.batch_size)
-                    y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))),
-                                               axis=1)
-                    y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
-                    y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
+                    # y_simplex = simplex(dimension=self.len_discrete_code, number=self.batch_size)
+                    # y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))),
+                    #                            axis=1)
+                    # y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
+                    # y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
                     samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed})
                     generated_dataset_clean_z_random_c.append(
                         samples.reshape(-1, 28, 28))  # storing generated images and label
@@ -512,9 +512,9 @@ class MultiModalInfoGAN_phase2(object):
                 for _ in range(num_iter):
                     # z random c-clean - rzcc
                     z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
-                    y_simplex = simplex(dimension=self.len_discrete_code, number=self.batch_size)
-                    y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))),
-                                               axis=1)
+                    # y_simplex = simplex(dimension=self.len_discrete_code, number=self.batch_size)
+                    # y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))),
+                    #                            axis=1)
                     samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample})
                     generated_dataset_random_z_clean_c.append(
                         samples.reshape(-1, 28, 28))  # storing generated images and label
@@ -531,11 +531,11 @@ class MultiModalInfoGAN_phase2(object):
                 for _ in range(num_iter):
                     # rzrc
                     z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
-                    y_simplex = simplex(dimension=self.len_discrete_code, number=self.batch_size)
-                    y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))),
-                                               axis=1)
-                    y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
-                    y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
+                    # y_simplex = simplex(dimension=self.len_discrete_code, number=self.batch_size)
+                    # y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))),
+                    #                            axis=1)
+                    # y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code] = c1
+                    # y_one_hot[np.arange(image_frame_dim * image_frame_dim), self.len_discrete_code + 1] = c2
                     samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample})
 
                     generated_dataset_random_z_random_c.append(
