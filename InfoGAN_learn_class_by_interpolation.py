@@ -222,6 +222,8 @@ class MultiModalInfoGAN_phase2(object):
         gp = gradient_penalty(self.x, self.x_, self.discriminator)
         self.d_loss = -wd + gp * 10.0
         self.g_loss = -tf.reduce_mean(D_fake_logits)
+        fake_images = self.generator(self.z, self.get_y_variable(), is_training=False, reuse=True)
+        self.phase_2_loss = tf.losses.mean_squared_error(self.x, fake_images)
 
         ## 2. Information Loss
         code_fake, code_logit_fake = self.classifier(input4classifier_fake, is_training=True, reuse=False)
@@ -251,6 +253,8 @@ class MultiModalInfoGAN_phase2(object):
             self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss,
                                                                                                  var_list=d_vars)
         self.g_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.g_loss,
+                                                                                                 var_list=g_vars)
+        self.p_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.phase_2_loss,
                                                                                                  var_list=g_vars)
         # self.q_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
 
@@ -328,7 +332,7 @@ class MultiModalInfoGAN_phase2(object):
                 self.writer.add_summary(summary_str, counter)
 
                 # update G and Q network
-                _, summary_str_g, g_loss = self.sess.run([self.g_optim, self.g_sum, self.g_loss],
+                _, summary_str_g, g_loss,_, phase_2_loss = self.sess.run([self.g_optim, self.g_sum, self.g_loss,self.p_optim,self.phase_2_loss],
                                                          feed_dict={self.x: batch_images, self.z: batch_z
                                                                     })
                 self.writer.add_summary(summary_str_g, counter)
@@ -336,8 +340,8 @@ class MultiModalInfoGAN_phase2(object):
 
                 # display training status
                 counter += 1
-                print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (
-                    epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss,))
+                print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f,phase2_loss: %.8f" % (
+                    epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss,phase_2_loss))
 
             # After an epoch, start_batch_id is set to zero
             # non-zero value is only for the first epoch after loading pre-trained model
