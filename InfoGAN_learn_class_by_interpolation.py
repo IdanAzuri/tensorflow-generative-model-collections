@@ -95,9 +95,9 @@ class MultiModalInfoGAN_phase2(object):
 			indiceis_of_9 = indiceis_of_9
 			
 			self.batch_size = min(self.batch_size, self.n)
-			# indiceis_of_9 = np.random.choice(indiceis_of_9[0].shape[0], self.n, replace=False)
-			self.data_y_only9 = self.data_y[indiceis_of_9][:self.n]
+			# self.data_y_only9 = self.data_y[indiceis_of_9][:self.n]
 			self.data_X_only9 = self.data_X[indiceis_of_9][:self.n]
+			self.data_X_only9 = self.data_X_only9.reshape(-1,28,28)
 			'''
 			import matplotlib
 			matplotlib.use("Agg")
@@ -110,9 +110,9 @@ class MultiModalInfoGAN_phase2(object):
 			plt.imshow(self.data_X_only9[2].reshape(28,28))
 			plt.savefig("9_2.png")
 			'''
-			self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
-			self.data_y = self.data_y_only9
-			self.data_X = self.data_X_only9
+			# self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
+			# self.data_y =  np.tile(self.data_y_only9, (100, 1))
+			self.data_X = np.repeat(self.data_X_only9[None],100,axis=0).reshape(-1,28,28)
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
 		self.model_dir = self.get_model_dir()
