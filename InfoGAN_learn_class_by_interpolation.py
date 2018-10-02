@@ -90,11 +90,11 @@ class MultiModalInfoGAN_phase2(object):
 			# load mnist
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
 			# REMOVING 1 DIGIT
-			self.n = 1  # for 2 random indices
+			self.n = 3  # for 2 random indices
 			indiceis_of_9 = np.where(np.argmax(self.data_y, 1) == self.ignored_label)
 			indiceis_of_9 = indiceis_of_9
 			
-			#self.batch_size = min(self.batch_size, self.n)
+			self.batch_size = min(self.batch_size, self.n * 8)
 			# self.data_y_only9 = self.data_y[indiceis_of_9][:self.n]
 			self.data_X_only9 = self.data_X[indiceis_of_9][:self.n]
 			self.data_X_only9 = self.data_X_only9
@@ -259,24 +259,25 @@ class MultiModalInfoGAN_phase2(object):
 			self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss, var_list=d_vars)
 			self.g_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.g_loss, var_list=g_vars)
 			self.p_optim = tf.train.AdamOptimizer(self.learning_rate * 0.2, beta1=self.beta1).minimize(self.phase_2_loss, var_list=g_vars)
-		# self.q_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
+			self.q_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
 		
 		"""" Testing """
 		# for test
 		self.fake_images = self.generator(self.z, self.get_y_variable(), is_training=False, reuse=True)
 		""" Summary """
-		d_loss_real_sum = tf.summary.scalar("d_loss_real", d_loss_real)
-		d_loss_fake_sum = tf.summary.scalar("d_loss_fake", d_loss_fake)
-		d_loss_sum = tf.summary.scalar("d_loss", self.d_loss)
-		g_loss_sum = tf.summary.scalar("g_loss", self.g_loss)
-		
-		# q_loss_sum = tf.summary.scalar("g_loss", self.q_loss)
-		# q_disc_sum = tf.summary.scalar("q_disc_loss", q_disc_loss)
-		# q_cont_sum = tf.summary.scalar("q_cont_loss", q_cont_loss)
-		
-		# final summary operations
-		self.g_sum = tf.summary.merge([d_loss_fake_sum, g_loss_sum])
-		self.d_sum = tf.summary.merge([d_loss_real_sum, d_loss_sum])
+	
+	# d_loss_real_sum = tf.summary.scalar("d_loss_real", d_loss_real)
+	# d_loss_fake_sum = tf.summary.scalar("d_loss_fake", d_loss_fake)
+	# d_loss_sum = tf.summary.scalar("d_loss", self.d_loss)
+	# g_loss_sum = tf.summary.scalar("g_loss", self.g_loss)
+	
+	# q_loss_sum = tf.summary.scalar("g_loss", self.q_loss)
+	# q_disc_sum = tf.summary.scalar("q_disc_loss", q_disc_loss)
+	# q_cont_sum = tf.summary.scalar("q_cont_loss", q_cont_loss)
+	
+	# final summary operations
+	# self.g_sum = tf.summary.merge([d_loss_fake_sum, g_loss_sum])
+	# self.d_sum = tf.summary.merge([d_loss_real_sum, d_loss_sum])
 	
 	# self.q_sum = tf.summary.merge([q_loss_sum, q_disc_sum, q_cont_sum])
 	
@@ -288,7 +289,7 @@ class MultiModalInfoGAN_phase2(object):
 		self.saver = tf.train.Saver(tf.trainable_variables())
 		
 		# summary writer
-		self.writer = tf.summary.FileWriter(self.log_dir + '/' + self.model_name, self.sess.graph)
+		# self.writer = tf.summary.FileWriter(self.log_dir + '/' + self.model_name, self.sess.graph)
 		
 		# restore check-point if it exits
 		
@@ -323,19 +324,19 @@ class MultiModalInfoGAN_phase2(object):
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
 				print(batch_images.shape)
 				# update D network
-				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss], feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
-				self.writer.add_summary(summary_str, counter)
+				_, d_loss = self.sess.run([self.d_optim, self.d_loss], feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
+				# self.writer.add_summary(summary_str, counter)
 				
 				# update G and Q network
-				_, summary_str_g, g_loss, _, phase_2_loss, predicted_y = self.sess.run([self.g_optim, self.g_sum, self.g_loss, self.p_optim, self.phase_2_loss, self.y],
-																					   feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
-				self.writer.add_summary(summary_str_g, counter)
+				_, g_loss, _, phase_2_loss, _, q_loss, predicted_y = self.sess.run([self.g_optim, self.g_loss, self.p_optim, self.phase_2_loss, self.q_optim, self.q_loss, self.y],
+																				   feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
+				# self.writer.add_summary(summary_str_g, counter)
 				# self.writer.add_summary(summary_str_q, counter)
 				
 				# display training status
 				counter += 1
-				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f,phase2_loss: %.8f" % (
-					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss, phase_2_loss))
+				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f,phase2_loss: %.8f, q_loss: %.8f" % (
+					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss, phase_2_loss, q_loss))
 				print("predicted y: {}".format(predicted_y))
 			
 			# After an epoch, start_batch_id is set to zero
@@ -376,31 +377,30 @@ class MultiModalInfoGAN_phase2(object):
 		n_styles = self.len_discrete_code  # must be less than or equal to self.batch_size
 		
 		si = np.random.choice(self.batch_size, n_styles)
-
-	
+		
 		""" fixed noise """
 		# assert self.len_continuous_code == 2
-	
+		
 		c1 = np.linspace(-1, 1, image_frame_dim)
 		c2 = np.linspace(-1, 1, image_frame_dim)
 		xv, yv = np.meshgrid(c1, c2)
 		xv = xv[:image_frame_dim, :image_frame_dim]
 		yv = yv[:image_frame_dim, :image_frame_dim]
-	
+		
 		c1 = xv.flatten()
 		c2 = yv.flatten()
-	
+		
 		z_fixed = np.zeros([self.batch_size, self.z_dim])
-	
+		
 		y_one_hot = np.zeros((self.batch_size, self.len_continuous_code))
 		# cartesian multiplication of the two latent codes
 		y_one_hot[np.arange(image_frame_dim * image_frame_dim), 0] = c1
 		y_one_hot[np.arange(image_frame_dim * image_frame_dim), 1] = c2
-
+		
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y_continuous: y_one_hot})
-
+		
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-		            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2.png')
+					check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2.png')
 	
 	def create_dataset_from_GAN(self, is_confidence=False):
 		
