@@ -94,10 +94,10 @@ class MultiModalInfoGAN_phase2(object):
 			indiceis_of_9 = np.where(np.argmax(self.data_y, 1) == self.ignored_label)
 			indiceis_of_9 = indiceis_of_9
 			
-			self.batch_size = min(self.batch_size, self.n)
+			#self.batch_size = min(self.batch_size, self.n)
 			# self.data_y_only9 = self.data_y[indiceis_of_9][:self.n]
 			self.data_X_only9 = self.data_X[indiceis_of_9][:self.n]
-			self.data_X_only9 = self.data_X_only9.reshape(-1,28,28)
+			self.data_X_only9 = self.data_X_only9
 			'''
 			import matplotlib
 			matplotlib.use("Agg")
@@ -112,7 +112,7 @@ class MultiModalInfoGAN_phase2(object):
 			'''
 			# self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			# self.data_y =  np.tile(self.data_y_only9, (100, 1))
-			self.data_X = np.repeat(self.data_X_only9[None], self.n * 100, axis=0).reshape(-1, 28, 28)
+			self.data_X = np.repeat(self.data_X_only9[None], self.n * 100, axis=0).reshape(-1, 28, 28,1)
 			print("self.data_X shpae {}".format(self.data_X.shape))
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
@@ -309,7 +309,8 @@ class MultiModalInfoGAN_phase2(object):
 		for epoch in range(start_epoch, self.epoch):
 			# get batch data
 			for idx in range(start_batch_id, max(self.num_batches, 1)):
-				batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size].reshape(-1, 28, 28)
+				batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
+				batch_images = batch_images.reshape(-1, 28, 28,1)
 				
 				# batch_labels = np.random.multinomial(1, self.len_discrete_code * [float(1.0 / self.len_discrete_code)], size=[self.batch_size])
 				# batch_labels = simplex(dimension=self.len_discrete_code, number=self.batch_size)
@@ -320,7 +321,7 @@ class MultiModalInfoGAN_phase2(object):
 				# print("Simplex:{}".format(batch_labels))
 				batch_chitinous_codes =  np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
-				
+				print(batch_images.shape)
 				# update D network
 				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss], feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
 				self.writer.add_summary(summary_str, counter)
