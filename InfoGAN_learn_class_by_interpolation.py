@@ -112,7 +112,7 @@ class MultiModalInfoGAN_phase2(object):
 			'''
 			# self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			# self.data_y =  np.tile(self.data_y_only9, (100, 1))
-			self.data_X = np.repeat(self.data_X_only9[None], self.n * 100, axis=0).reshape(-1, 28, 28,1)
+			self.data_X = np.repeat(self.data_X_only9[None], self.n * 10, axis=0).reshape(-1, 28, 28,1)
 			print("self.data_X shpae {}".format(self.data_X.shape))
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
