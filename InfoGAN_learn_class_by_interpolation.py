@@ -258,7 +258,7 @@ class MultiModalInfoGAN_phase2(object):
 		with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
 			self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss, var_list=d_vars)
 			self.g_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.g_loss, var_list=g_vars)
-			self.p_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.phase_2_loss, var_list=g_vars)
+			self.p_optim = tf.train.AdamOptimizer(self.learning_rate * 0.2, beta1=self.beta1).minimize(self.phase_2_loss, var_list=g_vars)
 		# self.q_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
 		
 		"""" Testing """
