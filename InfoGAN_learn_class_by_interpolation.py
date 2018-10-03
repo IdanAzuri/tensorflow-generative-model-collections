@@ -12,6 +12,7 @@ from sklearn.utils import shuffle
 
 # SEED = 88
 # from Sampler import simplex
+from Sampler import MultivariateGaussianSampler
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 from matplotlib.legend_handler import HandlerLine2D
@@ -43,11 +44,13 @@ def gradient_penalty(real, fake, f):
 class MultiModalInfoGAN_phase2(object):
 	model_name = "MultiModalInfoGAN_phase2"  # name for checkpoint
 	
-	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, seed, len_continuous_code=2, is_wgan_gp=False,
-				 dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True, pref=""):
+	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, seed,
+	             is_wgan_gp=False,
+	             dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True, pref=""):
 		self.pref = pref
 		self.ignored_label = 9
 		print("saving to results dir={}".format(result_dir))
+		self.seed = seed
 		np.random.seed(seed)
 		self.test_size = 3000
 		self.wgan_gp = is_wgan_gp
@@ -68,13 +71,13 @@ class MultiModalInfoGAN_phase2(object):
 		# train
 		self.learning_rate = 0.0002
 		self.beta1 = 0.5
-		
+		self.sampler_with_big_sigma= MultivariateGaussianSampler(mu=0.8, sigma=0.5, n_distributions=3)
 		# test
 		self.sample_num = 64  # number of generated images to be saved
 		
 		# code
 		self.len_discrete_code = 9  # the 10th class will be represnted by the others
-		self.len_continuous_code = len_continuous_code  # gaussian distribution (e.g. rotation, thickness)
+		self.len_continuous_code = 2  # gaussian distribution (e.g. rotation, thickness)
 		
 		if dataset_name == 'mnist' or dataset_name == 'fashion-mnist':
 			# parameters
@@ -83,18 +86,18 @@ class MultiModalInfoGAN_phase2(object):
 			self.output_height = 28
 			self.output_width = 28
 			
-			self.z_dim = z_dim  # dimension of noise-vector
-			self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
+			self.z_dim = 62#z_dim  # dimension of noise-vector
+			self.y_dim = 11#self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
 			self.c_dim = 1
 			
 			# load mnist
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
 			# REMOVING 1 DIGIT
-			self.n = 3  # for 2 random indices
+			self.n = 1  # for 2 random indices
 			indiceis_of_9 = np.where(np.argmax(self.data_y, 1) == self.ignored_label)
 			indiceis_of_9 = indiceis_of_9
 			
-			self.batch_size = min(self.batch_size, self.n * 8)
+			self.batch_size = self.batch_size#min(self.batch_size, self.n * 4)
 			# self.data_y_only9 = self.data_y[indiceis_of_9][:self.n]
 			self.data_X_only9 = self.data_X[indiceis_of_9][:self.n]
 			self.data_X_only9 = self.data_X_only9
@@ -112,8 +115,7 @@ class MultiModalInfoGAN_phase2(object):
 			'''
 			# self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			# self.data_y =  np.tile(self.data_y_only9, (100, 1))
-			self.data_X = np.repeat(self.data_X_only9[None], self.n * 10, axis=0).reshape(-1, 28, 28,1)
-			print("self.data_X shpae {}".format(self.data_X.shape))
+			self.data_X = np.repeat(self.data_X_only9[None], self.n * 64, axis=0).reshape(-1, 28, 28, 1)
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
 		self.model_dir = self.get_model_dir()
@@ -151,31 +153,36 @@ class MultiModalInfoGAN_phase2(object):
 				out = tf.nn.sigmoid(out_logit)
 		
 		return out, out_logit, net
-	
+
 	def generator(self, z, y, is_training=True, reuse=False):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
 		# Architecture : FC1024_BR-FC7x7x128_BR-(64)4dc2s_BR-(1)4dc2s_S
 		with tf.variable_scope("generator", reuse=reuse):
 			# merge noise and code
 			z = concat([z, y], 1)
-			
+
 			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
 			net = lrelu(bn(linear(net, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
 			net = tf.reshape(net, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
 			net = lrelu(
 				bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training, scope='g_bn3'))
-			
+
 			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
 			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
-			
+
 			return out
 	
 	def get_y_variable(self):
 		with tf.variable_scope("y_scope", reuse=tf.AUTO_REUSE):
-			self.y = tf.get_variable("y", shape=[self.batch_size, self.y_dim], dtype=tf.float32,
-									 initializer=tf.contrib.layers.xavier_initializer(uniform=True, seed=None, dtype=tf.float32))
-		return self.y
-	
+			y = tf.get_variable("y", dtype=tf.float32,
+			                    initializer=np.asanyarray([1.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]*64,dtype=np.float32).reshape(-1,11))
+
+		return y
+	# def get_y_variable(self):
+	# 	with tf.variable_scope("y_scope", reuse=tf.AUTO_REUSE):
+	# 		self.y = tf.get_variable("y", shape=[self.batch_size, self.y_dim], dtype=tf.float32,
+	# 		                         initializer=tf.contrib.layers.xavier_initializer(uniform=True, seed=None, dtype=tf.float32))
+	# 	return self.y
 	def build_model(self):
 		# some parameters
 		image_dims = [self.input_height, self.input_width, self.c_dim]
@@ -191,10 +198,6 @@ class MultiModalInfoGAN_phase2(object):
 		
 		# Variable
 		# labels
-		# self.y = tf.get_variable("y", dtype=tf.float32,
-		#                          initializer=tf.tf.constant_initializer([-3.20047903, -5.0427742, -0.98672181, 2.69671154, -0.06454577,
-		#                                                   -1.26595652, -6.00577974, 2.06083441, 4.04049683,
-		#                                                   12.83154583] * bs))
 		
 		self.y = self.get_y_variable()
 		
@@ -206,6 +209,7 @@ class MultiModalInfoGAN_phase2(object):
 		D_real, D_real_logits, _ = self.discriminator(self.x, is_training=True, reuse=False)
 		
 		# output of D for fake images
+		print(self.get_y_variable())
 		self.x_ = self.generator(self.z, self.get_y_variable(), is_training=True, reuse=False)
 		D_fake, D_fake_logits, input4classifier_fake = self.discriminator(self.x_, is_training=True, reuse=True)
 		
@@ -252,13 +256,14 @@ class MultiModalInfoGAN_phase2(object):
 		t_vars = tf.trainable_variables()
 		d_vars = [var for var in t_vars if 'd_' in var.name]
 		g_vars = [var for var in t_vars if 'g_' in var.name]
-		q_vars = [var for var in t_vars if ('d_' in var.name) or ('c_' in var.name) or ('g_' in var.name)]
+		p_vars = [var for var in t_vars if 'y' in var.name]
+		q_vars = [var for var in t_vars if ('d_' in var.name) or ('c_' in var.name)]
 		
 		# optimizers
 		with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
 			self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss, var_list=d_vars)
-			self.g_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.g_loss, var_list=g_vars)
-			self.p_optim = tf.train.AdamOptimizer(self.learning_rate * 0.2, beta1=self.beta1).minimize(self.phase_2_loss, var_list=g_vars)
+			self.g_optim = tf.train.AdamOptimizer(self.learning_rate ,beta1=self.beta1).minimize(self.g_loss, var_list=g_vars)
+			self.p_optim = tf.train.AdamOptimizer(self.learning_rate*0.5, beta1=self.beta1).minimize(self.phase_2_loss, var_list=p_vars)
 			self.q_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
 		
 		"""" Testing """
@@ -286,8 +291,7 @@ class MultiModalInfoGAN_phase2(object):
 		tf.global_variables_initializer().run()
 		
 		# saver to save model
-		self.saver = tf.train.Saver(tf.trainable_variables())
-		
+
 		# summary writer
 		# self.writer = tf.summary.FileWriter(self.log_dir + '/' + self.model_name, self.sess.graph)
 		
@@ -311,7 +315,7 @@ class MultiModalInfoGAN_phase2(object):
 			# get batch data
 			for idx in range(start_batch_id, max(self.num_batches, 1)):
 				batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
-				batch_images = batch_images.reshape(-1, 28, 28,1)
+				batch_images = batch_images.reshape(-1, 28, 28, 1)
 				
 				# batch_labels = np.random.multinomial(1, self.len_discrete_code * [float(1.0 / self.len_discrete_code)], size=[self.batch_size])
 				# batch_labels = simplex(dimension=self.len_discrete_code, number=self.batch_size)
@@ -320,23 +324,22 @@ class MultiModalInfoGAN_phase2(object):
 				# 			  1.58428525e-01] * self.batch_size
 				# batch_labels = np.asarray(batch_labels).reshape(-1, self.len_discrete_code)
 				# print("Simplex:{}".format(batch_labels))
-				batch_chitinous_codes =  np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))
-				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
-				print(batch_images.shape)
+				batch_chitinous_codes = np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))
+				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, 5)
 				# update D network
-				_, d_loss = self.sess.run([self.d_optim, self.d_loss], feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
+				# _, d_loss = self.sess.run([self.d_optim, self.d_loss], feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
 				# self.writer.add_summary(summary_str, counter)
 				
 				# update G and Q network
-				_, g_loss, _, phase_2_loss, _, q_loss, predicted_y = self.sess.run([self.g_optim, self.g_loss, self.p_optim, self.phase_2_loss, self.q_optim, self.q_loss, self.y],
-																				   feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
-				# self.writer.add_summary(summary_str_g, counter)
-				# self.writer.add_summary(summary_str_q, counter)
+
+				_, q_loss,_, predicted_y = self.sess.run([self.q_optim, self.q_loss,self.p_optim, self.get_y_variable()],
+					feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
+
 				
 				# display training status
 				counter += 1
-				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f,phase2_loss: %.8f, q_loss: %.8f" % (
-					epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss, phase_2_loss, q_loss))
+				# print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f" % (
+				# 	epoch, idx, self.num_batches, time.time() - start_time, d_loss))
 				print("predicted y: {}".format(predicted_y))
 			
 			# After an epoch, start_batch_id is set to zero
@@ -347,7 +350,8 @@ class MultiModalInfoGAN_phase2(object):
 			# self.save(self.checkpoint_dir, counter)
 			
 			# show temporal results
-			self.visualize_results(epoch)
+			if epoch % 100 == 0:
+				self.visualize_results(epoch)
 		# plotting
 		self.create_dataset_from_GAN()
 	
@@ -366,12 +370,13 @@ class MultiModalInfoGAN_phase2(object):
 		# y_one_hot = np.concatenate(
 		#     (y_simplex, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
 		# y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))), axis=1)
-		batch_chitinous_codes =  np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))
+
+		batch_chitinous_codes = np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))
 		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y_continuous: batch_chitinous_codes})  # samples_for_test.append(samples)
 		
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-					check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
+		            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_all_classes.png')
 		
 		""" specified condition, random noise """
 		n_styles = self.len_discrete_code  # must be less than or equal to self.batch_size
@@ -396,11 +401,10 @@ class MultiModalInfoGAN_phase2(object):
 		# cartesian multiplication of the two latent codes
 		y_one_hot[np.arange(image_frame_dim * image_frame_dim), 0] = c1
 		y_one_hot[np.arange(image_frame_dim * image_frame_dim), 1] = c2
-		
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y_continuous: y_one_hot})
 		
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-					check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class_c1c2.png')
+		            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class.png')
 	
 	def create_dataset_from_GAN(self, is_confidence=False):
 		
@@ -439,13 +443,13 @@ class MultiModalInfoGAN_phase2(object):
 					# y_simplex = simplex(dimension=self.len_discrete_code, number=self.batch_size)
 					# y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))),
 					#                            axis=1)
-					batch_chitinous_codes =  np.zeros((self.batch_size, self.len_continuous_code))
+					batch_chitinous_codes = np.zeros((self.batch_size, self.len_continuous_code))
 					samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y_continuous: batch_chitinous_codes})
 					generated_dataset_clean_z_clean_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
 					generated_labels_clean_z_clean_c += [label] * self.batch_size
 					if _ == 1:
 						save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-									check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_czcc' + '_label_%d.png' % label)
+						            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_czcc' + '_label_%d.png' % label)
 			
 			generated_dataset += generated_dataset_clean_z_clean_c
 			generated_labels += generated_labels_clean_z_clean_c
@@ -457,7 +461,7 @@ class MultiModalInfoGAN_phase2(object):
 					# y_simplex = simplex(dimension=self.len_discrete_code, number=self.batch_size)
 					# y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))),
 					#                            axis=1)
-					batch_chitinous_codes =  np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))
+					batch_chitinous_codes = np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))
 					batch_chitinous_codes[np.arange(image_frame_dim * image_frame_dim), 0] = c1
 					batch_chitinous_codes[np.arange(image_frame_dim * image_frame_dim), 1] = c2
 					samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y_continuous: batch_chitinous_codes})
@@ -465,7 +469,7 @@ class MultiModalInfoGAN_phase2(object):
 					generated_labels_clean_z_random_c += [label] * self.batch_size
 					if _ == 1:
 						save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-									check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_czrc' + '_label_%d.png' % label)
+						            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_czrc' + '_label_%d.png' % label)
 			
 			generated_dataset += generated_dataset_clean_z_random_c
 			generated_labels += generated_labels_clean_z_random_c
@@ -477,13 +481,13 @@ class MultiModalInfoGAN_phase2(object):
 					# y_simplex = simplex(dimension=self.len_discrete_code, number=self.batch_size)
 					# y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))),
 					#                            axis=1)
-					batch_chitinous_codes =  np.zeros((self.batch_size, self.len_continuous_code))
+					batch_chitinous_codes = np.zeros((self.batch_size, self.len_continuous_code))
 					samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y_continuous: batch_chitinous_codes})
 					generated_dataset_random_z_clean_c.append(samples.reshape(-1, 28, 28))  # storing generated images and label
 					generated_labels_random_z_clean_c += [label] * self.batch_size
 					if _ == 1:
 						save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-									check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzcc' + '_label_%d.png' % label)
+						            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzcc' + '_label_%d.png' % label)
 				generated_dataset += generated_dataset_random_z_clean_c
 				generated_labels += generated_labels_random_z_clean_c
 			# print("adding rzcc")
@@ -491,7 +495,7 @@ class MultiModalInfoGAN_phase2(object):
 				for _ in range(num_iter):
 					# rzrc
 					z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
-					batch_chitinous_codes =  np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))
+					batch_chitinous_codes = np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))
 					batch_chitinous_codes[np.arange(image_frame_dim * image_frame_dim), 0] = c1
 					batch_chitinous_codes[np.arange(image_frame_dim * image_frame_dim), 1] = c2
 					samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y_continuous: batch_chitinous_codes})
@@ -500,7 +504,7 @@ class MultiModalInfoGAN_phase2(object):
 					generated_labels_random_z_random_c += [label] * self.batch_size
 					if _ == 1:
 						save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
-									check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzrc' + '_label_%d.png' % label)
+						            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_type_rzrc' + '_label_%d.png' % label)
 				
 				generated_dataset += generated_dataset_random_z_random_c
 				generated_labels += generated_labels_random_z_random_c
@@ -526,7 +530,6 @@ class MultiModalInfoGAN_phase2(object):
 		
 		limit = min(len(self.data_X) // self.len_discrete_code, 2 ** 14)
 		dummy_labels = one_hot_encoder(np.random.randint(0, self.len_discrete_code, size=(limit)))  # no meaning for the labels
-		print(dummy_labels.shape)
 		_, confidence, _, arg_max, y_conv = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels, is_arg_max=True)
 		if is_confidence:
 			print("confidence:{}".format(confidence))
@@ -551,21 +554,20 @@ class MultiModalInfoGAN_phase2(object):
 			params = "mu_{}_sigma_{}_ndist_{}_WGAN".format(self.sampler.mu, self.sampler.sigma, self.sampler.n_distributions)
 		else:
 			params = "mu_{}_sigma_{}_ndist_{}".format(self.sampler.mu, self.sampler.sigma, self.sampler.n_distributions)
-		
-		fname_trainingset_edited = "edited_phase2_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-		fname_labeles_edited = "edited_phase2_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-		generated_dataset = np.asarray(generated_dataset).reshape(-1, 784)
-		generated_dataset, data_y_all = shuffle(generated_dataset, data_y_all, random_state=0)
-		pickle.dump(generated_dataset, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
-		output_path = open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb')
-		pickle.dump(data_y_all, output_path)
-		
-		fname_trainingset = "generated_phase2_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-		print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}{}\n\n".format(len(generated_dataset), len(generated_labels), self.dir_results, fname_trainingset))
-		fname_labeles = "generated_phase2_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-		pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
-		# np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2])
-		pickle.dump(np.asarray(generated_labels), open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
+
+			fname_trainingset_edited = "edited_phase2_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
+			fname_labeles_edited = "edited_phase2_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
+			generated_dataset = np.asarray(generated_dataset).reshape(-1, 784)
+			generated_dataset, data_y_all = shuffle(generated_dataset, data_y_all, random_state=0)
+			pickle.dump(generated_dataset, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
+			output_path = open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb')
+			pickle.dump(data_y_all, output_path)
+			
+			fname_trainingset = "generated_phase2_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
+			print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}{}\n\n".format(len(generated_dataset), len(generated_labels), self.dir_results, fname_trainingset))
+			fname_labeles = "generated_phase2_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
+			pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
+			pickle.dump(np.asarray(generated_labels), open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
 		
 		return
 	
@@ -586,26 +588,46 @@ class MultiModalInfoGAN_phase2(object):
 	
 	def load(self, checkpoint_dir):
 		print(" [*] Reading checkpoints... {}".format(os.path.join(checkpoint_dir, self.model_dir)))
+
 		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir)
-		
 		ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
-		
-		ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
-		# self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
-		# counter = int(next(re.finditer("(\d+)(?!.*\d)", ckpt_name)).group(0))
-		
-		reader = tf.train.NewCheckpointReader(os.path.join(checkpoint_dir, ckpt_name))
-		restore_dict = dict()
-		for v in tf.trainable_variables():
-			tensor_name = v.name.split(':')[0]
-			if reader.has_tensor(tensor_name):
-				restore_dict[tensor_name] = v
-		
-		restore_dict['y_scope/y'] = self.get_y_variable()
 		if ckpt and ckpt.model_checkpoint_path:
-			print(" [*] Success to read {}".format(ckpt_name))
-			return False, 0
-	
+			ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
+			# self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
+			# counter = int(next(re.finditer("(\d+)(?!.*\d)", ckpt_name)).group(0))
+
+			reader = tf.train.NewCheckpointReader(os.path.join(checkpoint_dir, ckpt_name))
+			restore_dict = dict()
+			for v in tf.trainable_variables():
+				tensor_name = v.name.split(':')[0]
+				if reader.has_tensor(tensor_name):
+					restore_dict[tensor_name] = v
+
+			# restore_dict['y_scope/y'] = self.get_y_variable()
+			self.saver = tf.train.Saver(restore_dict)
+			self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
+		else:
+			self.saver = tf.train.Saver()
+		print(" [*] Success to read from {}".format(ckpt_name))
+		return False, 0
+
+
+	# def load(self, checkpoint_dir):
+	# 	import re
+	# 	print(" [*] Reading checkpoints...")
+	# 	checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir, self.model_name)
+	#
+	# 	ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
+	# 	if ckpt and ckpt.model_checkpoint_path:
+	# 		ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
+	# 		self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
+	# 		counter = int(next(re.finditer("(\d+)(?!.*\d)", ckpt_name)).group(0))
+	# 		print(" [*] Success to read {}".format(ckpt_name))
+	# 		return True, counter
+	# 	else:
+	# 		print(" [*] Failed to find a checkpoint")
+	# 		return False, 0
+
 	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P"):
 		plt.Figure()
 		plt.title('{} {} score'.format(self.dataset_name, name_of_measure), fontsize=18)
@@ -626,44 +648,3 @@ class MultiModalInfoGAN_phase2(object):
 		plt.savefig(name_figure)
 		plt.close()
 		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
-
-
-def plot_from_pkl():
-	import numpy as np
-	
-	import pickle
-	plt.Figure(figsize=(15, 15))
-	dir = '/Users/idan.a/results_21_5/'
-	plt.title('Wgan Confidence Score Different Sampling Method', fontsize=14)
-	a = pickle.load(open(dir + "WGAN_GP_fashion-mnist_MultiModalUniformSample_confidence.pkl", "rb"))
-	b = pickle.load(open(dir + "WGAN_GP_fashion-mnist_MultivariateGaussianSampler_confidence.pkl", "rb"))
-	c = pickle.load(open(dir + "WGAN_GP_fashion-mnist_UniformSample_confidence.pkl", "rb"))
-	d = pickle.load(open(dir + "WGAN_GP_fashion-mnist_GaussianSample_confidence.pkl", "rb"))
-	# plt.plot(a, np.arange(len(a)), 'r--',  b,np.arange(len(b)), 'b--',  c,np.arange(len(c)),'g^',d,np.arange(len(d)),"y--")
-	a_range = np.arange(len(a))
-	b_range = np.arange(len(b))
-	c_range = np.arange(len(c))
-	d_range = np.arange(len(d))
-	aa, = plt.plot(a_range, a, color='b', marker="P", label="Multimodal Uniform Sample", linewidth=1)
-	bb, = plt.plot(b_range, b, color='g', marker='p', label="Multimodal Gaussian Sample", linewidth=1)
-	cc, = plt.plot(c_range, c, color='r', marker='^', label="Uniform Sample", linewidth=1)
-	dd, = plt.plot(d_range, d, color='y', marker="o", label="Gaussian Sample", linewidth=1)
-	mean_line = plt.plot(c_range, np.ones_like(d_range) * 0.92, label='Benchmark', linestyle='--')
-	
-	# plt.legend(handler_map={aa: HandlerLine2D(numpoints=1)})
-	plt.legend([aa, bb, cc, dd], ["Multimodal Uniform ", "Multimodal Gaussian", "Uniform", "Gaussian"],
-			   handler_map={aa: HandlerLine2D(numpoints=1), bb: HandlerLine2D(numpoints=1), cc: HandlerLine2D(numpoints=1), dd: HandlerLine2D(numpoints=1)
-		
-							}, loc='lower right')
-	# plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
-	plt.xlabel("Epoch")
-	plt.ylabel("Confidence Score")
-	# plt.axis("auto")
-	plt.grid(True)
-	plt.show()
-	plt.savefig("all_plots_fashion_mnist_WGAN.png")
-	plt.close()
-
-
-if __name__ == '__main__':
-	plot_from_pkl()

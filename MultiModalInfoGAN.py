@@ -103,13 +103,7 @@ class MultiModalInfoGAN(object):
 			self.num_batches = len(self.data_X) // self.batch_size
 			# self.placeholder_y = self.get_y_variable()
 		self.model_dir = self.get_model_dir()
-	def get_y_variable(self):
-		with tf.variable_scope("y_scope",reuse=tf.AUTO_REUSE):
-			self.y = tf.get_variable("y",shape=[self.batch_size, self.y_dim], dtype=tf.float32,
-									 initializer=tf.constant_initializer([-3.20047903, -5.0427742, -0.98672181, 2.69671154, -0.06454577,
-																		  -1.26595652, -6.00577974, 2.06083441, 4.04049683,
-																		  12.83154583] * self.batch_size),trainable=True)
-		return self.y
+
 	def classifier(self, x, is_training=True, reuse=False):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
 		# Architecture : (64)5c2s-(128)5c2s_BL-FC1024_BL-FC128_BL-FC12S’
@@ -183,6 +177,7 @@ class MultiModalInfoGAN(object):
 		D_real, D_real_logits, _ = self.discriminator(self.x, is_training=True, reuse=False)
 		
 		# output of D for fake images
+		print(self.y)
 		self.x_ = self.generator(self.z, self.y, is_training=True, reuse=False)
 		D_fake, D_fake_logits, input4classifier_fake = self.discriminator(self.x_, is_training=True, reuse=True)
 		
