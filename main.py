@@ -106,6 +106,7 @@ def main():
 	n_distributions = args.ndist
 	seed = args.seed
 	sampler_method = UniformSample()
+	sampler = "{}_{}".format(title_prefix, sampler)
 	if sampler == 'multi-uniform':
 		sampler_method = MultiModalUniformSample()
 	elif sampler == 'multi-gaussian':
