@@ -255,7 +255,7 @@ class MultiModalInfoGAN_phase2(object):
 		# divide trainable variables into a group for D and a group for G
 		t_vars = tf.trainable_variables()
 		d_vars = [var for var in t_vars if 'd_' in var.name]
-		g_vars = [var for var in t_vars if 'g_' in var.name]
+		g_vars = [var for var in t_vars if 'y' in var.name] #updating only the y, when g_ is const
 		p_vars = [var for var in t_vars if 'y' in var.name]
 		q_vars = [var for var in t_vars if ('d_' in var.name) or ('c_' in var.name)]
 		
@@ -327,20 +327,20 @@ class MultiModalInfoGAN_phase2(object):
 				batch_chitinous_codes = np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))
 				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, 5)
 				# update D network
-				# _, d_loss = self.sess.run([self.d_optim, self.d_loss], feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
+				_, d_loss = self.sess.run([self.d_optim, self.d_loss], feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
 				# self.writer.add_summary(summary_str, counter)
 				
 				# update G and Q network
 
-				_, q_loss,_, predicted_y = self.sess.run([self.q_optim, self.q_loss,self.p_optim, self.get_y_variable()],
+				_, q_loss,_,g_loss, predicted_y = self.sess.run([self.q_optim, self.q_loss,self.g_optim,self.g_loss, self.get_y_variable()],
 					feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
 
 				
 				# display training status
 				counter += 1
-				# print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f" % (
-				# 	epoch, idx, self.num_batches, time.time() - start_time, d_loss))
-				print("predicted y: {}".format(predicted_y))
+				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f,g_loss: %.8f" % (
+					epoch, idx, self.num_batches, time.time() - start_time, d_loss,g_loss))
+				# print("predicted y: {}".format(predicted_y))
 			
 			# After an epoch, start_batch_id is set to zero
 			# non-zero value is only for the first epoch after loading pre-trained model
