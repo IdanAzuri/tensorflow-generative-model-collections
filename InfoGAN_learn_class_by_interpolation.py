@@ -262,8 +262,8 @@ class MultiModalInfoGAN_phase2(object):
 		# optimizers
 		with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
 			self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss, var_list=d_vars)
-			self.g_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.g_loss, var_list=g_vars)
-			self.p_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.phase_2_loss, var_list=g_vars)
+			self.g_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.g_loss, var_list=g_vars)
+			self.p_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.phase_2_loss, var_list=p_vars)
 			self.q_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
 		
 		"""" Testing """
@@ -331,9 +331,9 @@ class MultiModalInfoGAN_phase2(object):
 				# self.writer.add_summary(summary_str, counter)
 				
 				# update G and Q network
-
-				_, q_loss,_,g_loss, predicted_y = self.sess.run([self.q_optim, self.q_loss,self.g_optim,self.g_loss, self.get_y_variable()],
-					feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
+				
+				_, q_loss, _, g_loss, _, predicted_y = self.sess.run([self.q_optim, self.q_loss, self.g_optim, self.g_loss, self.p_optim, self.get_y_variable()],
+				                                                     feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
 
 				
 				# display training status
