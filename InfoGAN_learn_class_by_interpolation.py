@@ -9,10 +9,10 @@ import warnings
 
 from sklearn.utils import shuffle
 
-
 # SEED = 88
 # from Sampler import simplex
 from Sampler import MultivariateGaussianSampler
+
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 from matplotlib.legend_handler import HandlerLine2D
@@ -86,8 +86,8 @@ class MultiModalInfoGAN_phase2(object):
 			self.output_height = 28
 			self.output_width = 28
 			
-			self.z_dim = 62#z_dim  # dimension of noise-vector
-			self.y_dim = 11#self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
+			self.z_dim = z_dim  # dimension of noise-vector
+			self.y_dim = self.len_discrete_code + self.len_continuous_code  # dimension of code-vector (label+two features)
 			self.c_dim = 1
 			
 			# load mnist
@@ -172,17 +172,18 @@ class MultiModalInfoGAN_phase2(object):
 
 			return out
 	
-	def get_y_variable(self):
-		with tf.variable_scope("y_scope", reuse=tf.AUTO_REUSE):
-			y = tf.get_variable("y", dtype=tf.float32,
-			                    initializer=np.asanyarray([1.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]*64,dtype=np.float32).reshape(-1,11))
-
-		return y
 	# def get_y_variable(self):
 	# 	with tf.variable_scope("y_scope", reuse=tf.AUTO_REUSE):
-	# 		self.y = tf.get_variable("y", shape=[self.batch_size, self.y_dim], dtype=tf.float32,
-	# 		                         initializer=tf.contrib.layers.xavier_initializer(uniform=True, seed=None, dtype=tf.float32))
-	# 	return self.y
+	# 		y = tf.get_variable("y", dtype=tf.float32,
+	# 		                    initializer=np.asanyarray([1.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]*64,dtype=np.float32).reshape(-1,11))
+	#
+	# 	return y
+	def get_y_variable(self):
+		with tf.variable_scope("y_scope", reuse=tf.AUTO_REUSE):
+			self.y = tf.get_variable("y", shape=[self.batch_size, self.y_dim], dtype=tf.float32,
+			                         initializer=tf.contrib.layers.xavier_initializer(uniform=True, seed=None, dtype=tf.float32))
+		return self.y
+	
 	def build_model(self):
 		# some parameters
 		image_dims = [self.input_height, self.input_width, self.c_dim]
@@ -209,7 +210,6 @@ class MultiModalInfoGAN_phase2(object):
 		D_real, D_real_logits, _ = self.discriminator(self.x, is_training=True, reuse=False)
 		
 		# output of D for fake images
-		print(self.get_y_variable())
 		self.x_ = self.generator(self.z, self.get_y_variable(), is_training=True, reuse=False)
 		D_fake, D_fake_logits, input4classifier_fake = self.discriminator(self.x_, is_training=True, reuse=True)
 		
@@ -262,8 +262,8 @@ class MultiModalInfoGAN_phase2(object):
 		# optimizers
 		with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
 			self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss, var_list=d_vars)
-			self.g_optim = tf.train.AdamOptimizer(self.learning_rate ,beta1=self.beta1).minimize(self.g_loss, var_list=g_vars)
-			self.p_optim = tf.train.AdamOptimizer(self.learning_rate*0.5, beta1=self.beta1).minimize(self.phase_2_loss, var_list=p_vars)
+			self.g_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.g_loss, var_list=g_vars)
+			self.p_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.phase_2_loss, var_list=g_vars)
 			self.q_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
 		
 		"""" Testing """
