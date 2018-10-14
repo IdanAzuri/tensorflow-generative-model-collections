@@ -332,7 +332,7 @@ class MultiModalInfoGAN_phase2(object):
 				
 				# update G and Q network
 
-				_, q_loss,g_loss, predicted_y = self.sess.run([self.q_optim, self.q_loss,self.g_loss, self.get_y_variable()],
+				_, q_loss,g_loss, _,predicted_y = self.sess.run([self.q_optim, self.q_loss,self.g_loss, self.p_optim,self.get_y_variable()],
 					feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
 
 				
