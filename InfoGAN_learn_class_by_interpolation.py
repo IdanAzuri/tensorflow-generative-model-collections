@@ -99,18 +99,13 @@ class MultiModalInfoGAN_phase2(object):
 			self.batch_size = self.batch_size#min(self.batch_size, self.n * 4)
 			# self.data_y_only9 = self.data_y[indiceis_of_9][:self.n]
 			self.data_X_only9 = self.data_X[indiceis_of_9][:self.n]
-			'''
 			import matplotlib
 			matplotlib.use("Agg")
 			import matplotlib.pyplot as plt
 
-			plt.imshow(self.data_X_only9[0].reshape(28,28))
-			plt.savefig("9_0.png")
-			plt.imshow(self.data_X_only9[1].reshape(28,28))
-			plt.savefig("9_1.png")
-			plt.imshow(self.data_X_only9[2].reshape(28,28))
-			plt.savefig("9_2.png")
-			'''
+			# plt.imshow(self.data_X_only9[0].reshape(28,28))
+			# plt.savefig("9_0.png")
+
 			# self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			# self.data_y =  np.tile(self.data_y_only9, (100, 1))
 			self.data_X = np.repeat(self.data_X_only9[None], self.n * 128, axis=0).reshape(-1, 28, 28, 1)
@@ -261,7 +256,7 @@ class MultiModalInfoGAN_phase2(object):
 		# optimizers
 		with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
 			self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss, var_list=d_vars)
-			regularization = self.phase_2_loss * 0.001
+			regularization = self.phase_2_loss * 0.01
 			self.g_optim = tf.train.AdamOptimizer(self.learning_rate , beta1=self.beta1).minimize(self.g_loss + regularization, var_list=g_vars)
 			# self.p_optim = tf.train.AdamOptimizer(self.learning_rate * 0.2, beta1=self.beta1).minimize(self.phase_2_loss, var_list=p_vars)
 			self.q_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
@@ -332,7 +327,7 @@ class MultiModalInfoGAN_phase2(object):
 				
 				# update G and Q network
 
-				_, q_loss,g_loss, _,predicted_y = self.sess.run([self.q_optim, self.q_loss,self.g_loss, self.p_optim,self.get_y_variable()],
+				_, q_loss,g_loss, predicted_y = self.sess.run([self.q_optim, self.q_loss,self.g_loss,self.get_y_variable()],
 					feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
 
 				
@@ -565,6 +560,12 @@ class MultiModalInfoGAN_phase2(object):
 			
 			fname_trainingset = "generated_phase2_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 			print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}{}\n\n".format(len(generated_dataset), len(generated_labels), self.dir_results, fname_trainingset))
+			plt.imshow(generated_labels[0].reshape(28,28))
+			plt.savefig("9_0.png")
+			plt.imshow(generated_labels[100].reshape(28,28))
+			plt.savefig("9_1.png")
+			plt.imshow(generated_labels[200].reshape(28,28))
+			plt.savefig("9_2.png")
 			fname_labeles = "generated_phase2_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 			pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
 			pickle.dump(np.asarray(generated_labels), open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
@@ -606,9 +607,10 @@ class MultiModalInfoGAN_phase2(object):
 			# restore_dict['y_scope/y'] = self.get_y_variable()
 			self.saver = tf.train.Saver(restore_dict)
 			self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
+			print(" [*] Success to read from {}".format(ckpt_name))
 		else:
+			print(" [*!] Failed to load the model")
 			self.saver = tf.train.Saver()
-		print(" [*] Success to read from {}".format(ckpt_name))
 		return False, 0
 
 

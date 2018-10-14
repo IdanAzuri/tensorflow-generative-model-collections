@@ -494,6 +494,19 @@ def classify_1_missing_digit():
 	# data_y = pickle.load(open(pkl_label_path, 'rb'))
 
 	data_X= pickle.load(open(pkl_path_digit, 'rb'))
+	
+	import matplotlib
+	matplotlib.use("Agg")
+	import matplotlib.pyplot as plt
+	
+	plt.imshow(data_X[0].reshape(28,28))
+	plt.savefig("9_0.png")
+	plt.imshow(data_X[100].reshape(28,28))
+	plt.savefig("9_1.png")
+	plt.imshow(data_X[200].reshape(28,28))
+	plt.savefig("9_2.png")
+	
+	
 	data_y= pickle.load(open(pkl_label_path_digit, 'rb'))
 	# data_X = np.concatenate(data_X,data_X_9)
 	# data_y = np.concatenate(data_y,data_y_9)
