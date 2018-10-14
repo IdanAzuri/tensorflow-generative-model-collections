@@ -157,7 +157,7 @@ class MultiModalInfoGAN_phase2(object):
 		# Architecture : FC1024_BR-FC7x7x128_BR-(64)4dc2s_BR-(1)4dc2s_S
 		with tf.variable_scope("generator", reuse=reuse):
 			# merge noise and code
-			y = tf.nn.softmax(y)
+			# y = tf.nn.softmax(y)
 			z = concat([z, y], 1)
 
 			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
