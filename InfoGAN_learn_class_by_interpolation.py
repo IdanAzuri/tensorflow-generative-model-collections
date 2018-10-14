@@ -92,15 +92,13 @@ class MultiModalInfoGAN_phase2(object):
 			
 			# load mnist
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
-			# REMOVING 1 DIGIT
-			self.n = 1  # for 2 random indices
+
+
+			self.n = 1
 			indiceis_of_9 = np.where(np.argmax(self.data_y, 1) == self.ignored_label)
-			indiceis_of_9 = indiceis_of_9
-			
 			self.batch_size = self.batch_size#min(self.batch_size, self.n * 4)
 			# self.data_y_only9 = self.data_y[indiceis_of_9][:self.n]
 			self.data_X_only9 = self.data_X[indiceis_of_9][:self.n]
-			self.data_X_only9 = self.data_X_only9
 			'''
 			import matplotlib
 			matplotlib.use("Agg")
@@ -115,7 +113,7 @@ class MultiModalInfoGAN_phase2(object):
 			'''
 			# self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			# self.data_y =  np.tile(self.data_y_only9, (100, 1))
-			self.data_X = np.repeat(self.data_X_only9[None], self.n * 64, axis=0).reshape(-1, 28, 28, 1)
+			self.data_X = np.repeat(self.data_X_only9[None], self.n * 128, axis=0).reshape(-1, 28, 28, 1)
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
 		self.model_dir = self.get_model_dir()
@@ -159,6 +157,7 @@ class MultiModalInfoGAN_phase2(object):
 		# Architecture : FC1024_BR-FC7x7x128_BR-(64)4dc2s_BR-(1)4dc2s_S
 		with tf.variable_scope("generator", reuse=reuse):
 			# merge noise and code
+			y = tf.nn.softmax(y)
 			z = concat([z, y], 1)
 
 			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
@@ -257,13 +256,14 @@ class MultiModalInfoGAN_phase2(object):
 		d_vars = [var for var in t_vars if 'd_' in var.name]
 		g_vars = [var for var in t_vars if 'y' in var.name] #updating only the y, when g_ is const
 		p_vars = [var for var in t_vars if 'y' in var.name]
-		q_vars = [var for var in t_vars if ('d_' in var.name) or ('c_' in var.name)]
+		q_vars = [var for var in t_vars if ('d_' in var.name) or ('c_' in var.name) or ('y_' in var.name)]
 		
 		# optimizers
 		with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
 			self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss, var_list=d_vars)
-			self.g_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.g_loss, var_list=g_vars)
-			self.p_optim = tf.train.AdamOptimizer(self.learning_rate * 5, beta1=self.beta1).minimize(self.phase_2_loss, var_list=g_vars)
+			regularization = self.phase_2_loss * 0.001
+			self.g_optim = tf.train.AdamOptimizer(self.learning_rate , beta1=self.beta1).minimize(self.g_loss + regularization, var_list=g_vars)
+			# self.p_optim = tf.train.AdamOptimizer(self.learning_rate * 0.2, beta1=self.beta1).minimize(self.phase_2_loss, var_list=p_vars)
 			self.q_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
 		
 		"""" Testing """
@@ -332,14 +332,14 @@ class MultiModalInfoGAN_phase2(object):
 				
 				# update G and Q network
 
-				_, q_loss,_,g_loss, predicted_y = self.sess.run([self.q_optim, self.q_loss,self.g_optim,self.g_loss, self.get_y_variable()],
+				_, q_loss,g_loss, predicted_y = self.sess.run([self.q_optim, self.q_loss,self.g_loss, self.get_y_variable()],
 					feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
 
 				
 				# display training status
 				counter += 1
-				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f,g_loss: %.8f" % (
-					epoch, idx, self.num_batches, time.time() - start_time, d_loss,g_loss))
+				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f,g_loss: %.8f,,q_loss: %.8f" % (
+					epoch, idx, self.num_batches, time.time() - start_time, d_loss,g_loss,q_loss))
 				# print("predicted y: {}".format(predicted_y))
 			
 			# After an epoch, start_batch_id is set to zero
@@ -395,13 +395,13 @@ class MultiModalInfoGAN_phase2(object):
 		c1 = xv.flatten()
 		c2 = yv.flatten()
 		
-		z_fixed = np.zeros([self.batch_size, self.z_dim])
+		# z_fixed = np.zeros([self.batch_size, self.z_dim])
 		
 		y_one_hot = np.zeros((self.batch_size, self.len_continuous_code))
 		# cartesian multiplication of the two latent codes
 		y_one_hot[np.arange(image_frame_dim * image_frame_dim), 0] = c1
 		y_one_hot[np.arange(image_frame_dim * image_frame_dim), 1] = c2
-		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_fixed, self.y_continuous: y_one_hot})
+		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y_continuous: y_one_hot})
 		
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
 		            check_folder(self.result_dir + '/' + self.model_dir) + '/' + self.model_name + '_epoch%03d' % epoch + '_test_class.png')

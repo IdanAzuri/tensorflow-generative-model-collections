@@ -109,7 +109,7 @@ class CNNClassifier():
 	def __init__(self, classifier_name, pkl_fname=None, data_X=None, data_y=None, test_X=None, test_y=None, save_model=False,seed=88):
 		self.seed=seed
 		self.is_save_model = save_model
-		self.num_epochs = 50
+		self.num_epochs = 500
 		self.classifier_name = classifier_name
 		self.log_dir = 'logs/{}/'.format(classifier_name)
 		self.batch_size = 64
@@ -235,9 +235,10 @@ class CNNClassifier():
 	def train(self, confidence_in_train=False, confidence_thresh=0.9):
 		use_confidence = not confidence_in_train
 		start_batch_id = 0  # int(1000 / self.batch_size)
-		self.num_batches = min(len(self.train_X) // self.batch_size, 4000)
+		self.num_batches = max(len(self.train_X) // self.batch_size, 1)
+
 		if self.fname is not None:
-			print("START TRAINING:{}".format(self.fname))
+			print("START TRAINING:{}, {}".format(self.fname,self.num_batches))
 		start_time = time.time()
 		for epoch in range(self.num_epochs):
 			for i in range(start_batch_id, self.num_batches):
@@ -246,7 +247,8 @@ class CNNClassifier():
 				# plt.title(y_batch[0])
 				# plt.imshow(X_batch[0].reshape(28, 28))
 				# plt.show()
-				if i % self.num_batches - 1 == 0:
+				print("i={}, batch={}".format(i, self.num_batches))
+				if i % self.num_batches == 0:
 					self.test_y, self.test_X = shuffle(self.test_y, self.test_X, random_state=self.seed)
 					accuracy, confidence, loss = self.test(self.test_X.reshape(-1, 784), self.test_y.reshape(-1, 10), epoch * i)
 					# summary, _ = self.sess.run([self.merged, self.train_step],
@@ -468,6 +470,7 @@ def main():
 
 def classify_1_missing_digit():
 	# parse arguments
+	ignored_label = 9
 	args = parse_args()
 	if args is None:
 		exit()
@@ -481,35 +484,36 @@ def classify_1_missing_digit():
 	seed = args.seed
 	pref = args.pref
 	dir_results = 'classifier_results_seed_{}'.format(seed)
-	pkl_label_path = "{}{}/edited_labels_{}.pkl".format(dir, dir_results, fname)
-	pkl_path = "{}{}/edited_training_set_{}.pkl".format(dir, dir_results, fname)
+	# pkl_label_path = "{}{}/edited_labels_{}.pkl".format(dir, dir_results, fname)
+	# pkl_path = "{}{}/edited_training_set_{}.pkl".format(dir, dir_results, fname)
 
 	pkl_label_path_digit = "{}{}/edited_phase2_labels_{}.pkl".format(dir, dir_results, fname)
 	pkl_path_digit = "{}{}/edited_phase2_training_set_{}.pkl".format(dir, dir_results, fname)
 
-	data_X = pickle.load(open(pkl_path, 'rb'))
-	data_y = pickle.load(open(pkl_label_path, 'rb'))
+	# data_X = pickle.load(open(pkl_path, 'rb'))
+	# data_y = pickle.load(open(pkl_label_path, 'rb'))
 
-	data_X_9 = pickle.load(open(pkl_path_digit, 'rb'))
-	data_y_9 = pickle.load(open(pkl_label_path_digit, 'rb'))
-	data_X = np.concatenate(data_X,data_X_9)
-	data_y = np.concatenate(data_y,data_y_9)
+	data_X= pickle.load(open(pkl_path_digit, 'rb'))
+	data_y= pickle.load(open(pkl_label_path_digit, 'rb'))
+	# data_X = np.concatenate(data_X,data_X_9)
+	# data_y = np.concatenate(data_y,data_y_9)
 	data_X_real, data_y_real = load_mnist(original_dataset_name)
 
 
-	X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real, test_size=0.2, random_state=seed)
-	# print("X_train_real={}, data_X={}, y_test_real={}, y_test={}".format(len(X_train_real), len(data_X), len(y_test_real), len(data_y)))
-	# len_dataX = min(len(X_train_real), len(data_X))
-	# data_X = data_X[:len_dataX]
-	# data_y = data_y[:len_dataX]
-	# X_train = np.append(data_X, X_train_real).reshape(-1, 784)
-	# y_train = np.append(data_y, y_train_real.reshape(-1, 10)).reshape(-1, 10)
-	# X_test = np.append(X_test_real, X_test).reshape(-1, 784)
-	# y_test = np.append(y_test_real.reshape(-1, 10), y_test).reshape(-1, 10)
+	# X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real, test_size=0.2, random_state=seed)
+
+
+
+
+
+	test_indiceis_of_9 = np.where(np.argmax(data_y_real, 1) == ignored_label)
+	X_test_real = data_X_real[test_indiceis_of_9][10:1010]
+	y_test_real = data_y_real[test_indiceis_of_9][10:1010]
+
 	data_X, data_y = shuffle(data_X, data_y, random_state=seed)
 	c = CNNClassifier("custom", pkl_fname=fname, data_X=data_X, data_y=data_y, test_X=X_test_real, test_y=y_test_real,seed=seed,save_model=False)
 	accuracy_list=c.train(confidence_in_train=confidence_in_train)
-	c.plot_train_test_loss("accuracy_gan_no_prior", accuracy_list)
+	c.plot_train_test_loss("accuracy_baseline_missing_digit", accuracy_list)
 
 def main_to_train_classifier():
 	# parse arguments
@@ -528,7 +532,39 @@ def main_to_train_classifier():
 	c.train(confidence_in_train=confidence_in_train)
 	c.test(X_test, y_test)
 
+def classify_1_missing_digit_baseline():
+	# parse arguments
+	ignored_label = 9
+	args = parse_args()
+	if args is None:
+		exit()
+	fname = args.fname
+	original_dataset_name = args.original
+	confidence_in_train = args.use_confidence
+	seed = args.seed
 
+	data_X_real, data_y_real = load_mnist(original_dataset_name)
+
+
+	X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real, test_size=0.2, random_state=seed)
+
+	train_indiceis_of_9 = np.where(np.argmax(y_train_real, 1) == ignored_label)
+	X_train_real = X_train_real[train_indiceis_of_9][0]
+	X_train_real= np.repeat(X_train_real[None], 64, axis=0).reshape(-1, 28, 28, 1)
+	y_train_real = np.repeat(y_train_real[0], 64, axis=0).reshape(64, 10)
+
+	# X_train_real = np.repeat(X_train_real[None], 10, axis=0).reshape(-1, 28, 28, 1)
+
+	# print(X_train_real.shape)
+
+
+	test_indiceis_of_9 = np.where(np.argmax(y_test_real, 1) == ignored_label)
+	X_test_real = X_test_real[test_indiceis_of_9]
+	y_test_real = y_test_real[test_indiceis_of_9]
+	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_real, data_y=y_train_real, test_X=X_test_real, test_y=y_test_real,seed=seed,save_model=False)
+	accuracy_list=c.train(confidence_in_train=confidence_in_train)
+	c.plot_train_test_loss("accuracy_baseline_missing_digit", accuracy_list)
 if __name__ == '__main__':
+	# classify_1_missing_digit_baseline()
 	classify_1_missing_digit()
 	# main_to_train_classifier()
