@@ -108,7 +108,7 @@ class MultiModalInfoGAN_phase2(object):
 
 			# self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			# self.data_y =  np.tile(self.data_y_only9, (100, 1))
-			self.data_X = np.repeat(self.data_X_only9[None], self.n * 128, axis=0).reshape(-1, 28, 28, 1)
+			self.data_X = np.repeat(self.data_X_only9[None], self.n * 1280, axis=0).reshape(-1, 28, 28, 1)
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
 		self.model_dir = self.get_model_dir()
@@ -549,27 +549,25 @@ class MultiModalInfoGAN_phase2(object):
 			params = "mu_{}_sigma_{}_ndist_{}_WGAN".format(self.sampler.mu, self.sampler.sigma, self.sampler.n_distributions)
 		else:
 			params = "mu_{}_sigma_{}_ndist_{}".format(self.sampler.mu, self.sampler.sigma, self.sampler.n_distributions)
+		fname_trainingset_edited = "edited_phase2_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
+		fname_labeles_edited = "edited_phase2_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
+		generated_dataset = np.asarray(generated_dataset).reshape(-1, 784)
+		generated_dataset, data_y_all = shuffle(generated_dataset, data_y_all, random_state=0)
+		pickle.dump(generated_dataset, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
+		output_path = open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb')
+		pickle.dump(data_y_all, output_path)
 
-			fname_trainingset_edited = "edited_phase2_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-			fname_labeles_edited = "edited_phase2_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-			generated_dataset = np.asarray(generated_dataset).reshape(-1, 784)
-			generated_dataset, data_y_all = shuffle(generated_dataset, data_y_all, random_state=0)
-			pickle.dump(generated_dataset, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
-			output_path = open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb')
-			pickle.dump(data_y_all, output_path)
-			
-			fname_trainingset = "generated_phase2_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-			print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}{}\n\n".format(len(generated_dataset), len(generated_labels), self.dir_results, fname_trainingset))
-			plt.imshow(generated_dataset[0].reshape(28,28))
-			plt.savefig("9_0.png")
-			plt.imshow(generated_dataset[100].reshape(28,28))
-			plt.savefig("9_1.png")
-			plt.imshow(generated_dataset[200].reshape(28,28))
-			plt.savefig("9_2.png")
-			fname_labeles = "generated_phase2_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-			pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
-			pickle.dump(np.asarray(generated_labels), open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
-		
+		fname_trainingset = "generated_phase2_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
+		print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}{}\n\n".format(len(generated_dataset), len(generated_labels), self.dir_results, fname_trainingset))
+		plt.imshow(generated_dataset[0].reshape(28,28))
+		plt.savefig("9_0.png")
+		plt.imshow(generated_dataset[100].reshape(28,28))
+		plt.savefig("9_1.png")
+		plt.imshow(generated_dataset[200].reshape(28,28))
+		plt.savefig("9_2.png")
+		fname_labeles = "generated_phase2_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
+		pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
+		pickle.dump(np.asarray(generated_labels), open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
 		return
 	
 	def get_model_dir(self):
