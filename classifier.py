@@ -247,7 +247,6 @@ class CNNClassifier():
 				# plt.title(y_batch[0])
 				# plt.imshow(X_batch[0].reshape(28, 28))
 				# plt.show()
-				print("i={}, batch={}".format(i, self.num_batches))
 				if i % self.num_batches == 0:
 					self.test_y, self.test_X = shuffle(self.test_y, self.test_X, random_state=self.seed)
 					accuracy, confidence, loss = self.test(self.test_X.reshape(-1, 784), self.test_y.reshape(-1, 10), epoch * i)
@@ -490,41 +489,65 @@ def classify_1_missing_digit():
 	pkl_label_path_digit = "{}{}/edited_phase2_labels_{}.pkl".format(dir, dir_results, fname)
 	pkl_path_digit = "{}{}/edited_phase2_training_set_{}.pkl".format(dir, dir_results, fname)
 
-	# data_X = pickle.load(open(pkl_path, 'rb'))
-	# data_y = pickle.load(open(pkl_label_path, 'rb'))
+	# data_X_generated_9 = pickle.load(open(pkl_path, 'rb'))
+	# data_y_generated_9 = pickle.load(open(pkl_label_path, 'rb'))
 
-	data_X= pickle.load(open(pkl_path_digit, 'rb'))
+	data_X_generated_9= pickle.load(open(pkl_path_digit, 'rb'))
 	
 	import matplotlib
 	matplotlib.use("Agg")
 	import matplotlib.pyplot as plt
 	
-	plt.imshow(data_X[0].reshape(28,28))
-	plt.savefig("9_0.png")
-	plt.imshow(data_X[100].reshape(28,28))
-	plt.savefig("9_1.png")
-	plt.imshow(data_X[200].reshape(28,28))
-	plt.savefig("9_2.png")
 	
 	
-	data_y= pickle.load(open(pkl_label_path_digit, 'rb'))
-	# data_X = np.concatenate(data_X,data_X_9)
-	# data_y = np.concatenate(data_y,data_y_9)
+	data_y_generated_9= pickle.load(open(pkl_label_path_digit, 'rb'))
 	data_X_real, data_y_real = load_mnist(original_dataset_name)
 
 
-	# X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real, test_size=0.2, random_state=seed)
+	# X_train_real, X_test_all, y_train_real, y_test_all = train_test_split(data_X_real, data_y_real, test_size=0.2, random_state=seed)
+	# 
+	# plt.imshow(data_X_generated_9[0].reshape(28,28))
+	# plt.title("label:{}".format(data_y_generated_9[0]))
+	# plt.savefig("9_0.png")
+	# plt.title("label:{}".format(data_y_generated_9[100]))
+	# plt.imshow(data_X_generated_9[100].reshape(28,28))
+	# plt.savefig("9_1.png")
+	# plt.title("label:{}".format(data_y_generated_9[200]))
+	# plt.imshow(data_X_generated_9[200].reshape(28,28))
+	# plt.savefig("9_2.png")
 
 
 
 
-
-	test_indiceis_of_9 = np.where(np.argmax(data_y_real, 1) == ignored_label)
-	X_test_real = data_X_real[test_indiceis_of_9][10:1010]
-	y_test_real = data_y_real[test_indiceis_of_9][10:1010]
-
-	data_X, data_y = shuffle(data_X, data_y, random_state=seed)
-	c = CNNClassifier("custom", pkl_fname=fname, data_X=data_X, data_y=data_y, test_X=X_test_real, test_y=y_test_real,seed=seed,save_model=False)
+	indiceis_of_9 = np.where(np.argmax(data_y_real, 1) == ignored_label)
+	X_test_9 = data_X_real[indiceis_of_9][10:1010]
+	y_test_9 = data_y_real[indiceis_of_9][10:1010]
+	
+	indiceis_of_rest = np.where(np.argmax(data_y_real, 1) != ignored_label)
+	X_train_real_rest = data_X_real[indiceis_of_rest][0:50000]
+	X_train_real_rest=X_train_real_rest.reshape((-1,784))
+	X_test_real_rest = data_X_real[indiceis_of_rest][50000:60000]
+	
+	y_train_real_rest = data_y_real[indiceis_of_rest][0:50000]
+	y_test_real_rest= data_y_real[indiceis_of_rest][50000:60000]
+	
+	X_train_all = np.concatenate([data_X_generated_9,X_train_real_rest])
+	y_train_all = np.concatenate([data_y_generated_9,y_train_real_rest])
+	
+	X_test_all = np.concatenate([X_test_9,X_test_real_rest])
+	y_test_all = np.concatenate([y_test_9,y_test_real_rest])
+	
+	plt.imshow(X_test_all[0].reshape(28,28))
+	plt.savefig("9_0test.png")
+	plt.imshow(X_test_all[100].reshape(28,28))
+	plt.savefig("9_1test.png")
+	plt.imshow(X_test_all[200].reshape(28,28))
+	plt.savefig("9_2test.png")
+	print(y_test_all[0])
+	print(y_test_all[100])
+	print(y_test_all[200])
+	
+	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_all, data_y=y_train_all, test_X=X_test_all, test_y=y_test_all,seed=seed,save_model=False)
 	accuracy_list=c.train(confidence_in_train=confidence_in_train)
 	c.plot_train_test_loss("accuracy_baseline_missing_digit", accuracy_list)
 

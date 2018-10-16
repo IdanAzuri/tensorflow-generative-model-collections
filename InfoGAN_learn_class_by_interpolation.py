@@ -539,7 +539,7 @@ class MultiModalInfoGAN_phase2(object):
 		plt.title("old_label=" + str(current_label) + "new_label=" + str(new_label))
 		# plt.imshow(data_X_for_current_label[0].reshape(28, 28))
 		# plt.show()
-		data_y_updateable[:] = self.ignored_label
+		data_y_updateable[:] = current_label
 		print(np.bincount(arg_max))
 		data_y_all = one_hot_encoder(data_y_updateable)
 		order_str = '_'.join(self.dataset_creation_order)
