@@ -27,6 +27,8 @@ from __future__ import print_function
 import matplotlib
 
 
+NUM_CLASSES = 10
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
@@ -63,7 +65,7 @@ CONFIDENCE_THRESHOLD = 0.98
 
 def one_hot_encoder(data):
 	data = data.astype(np.int32)
-	onehot = np.zeros((len(data), 10))
+	onehot = np.zeros((len(data), NUM_CLASSES))
 	onehot[np.arange(len(data)), data] = 1
 	
 	return onehot
@@ -157,8 +159,8 @@ class CNNClassifier():
 			self.b_conv2 = bias_variable([64])
 			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT // 4) * int(self.IMAGE_HEIGHT // 4) * 64, 1024])
 			self.b_fc1 = bias_variable([1024])
-			self.W_fc2 = weight_variable([1024, 10])
-			self.b_fc2 = bias_variable([10])
+			self.W_fc2 = weight_variable([1024, NUM_CLASSES])
+			self.b_fc2 = bias_variable([NUM_CLASSES])
 		
 		self._create_model()
 	
@@ -193,7 +195,7 @@ class CNNClassifier():
 	
 	def _create_model(self):
 		self.x = tf.placeholder(tf.float32, [None, self.IMAGE_HEIGHT * self.IMAGE_WIDTH], name="data")
-		self.y_ = tf.placeholder(tf.float32, [None, 10], name="labels")
+		self.y_ = tf.placeholder(tf.float32, [None, NUM_CLASSES], name="labels")
 		self.keep_prob = tf.placeholder(tf.float32, name="dropout")
 		# Build the graph for the deep net
 		self.y_conv = self._deepcnn(self.x, self.keep_prob)
@@ -249,7 +251,7 @@ class CNNClassifier():
 				# plt.show()
 				if i % self.num_batches == 0:
 					self.test_y, self.test_X = shuffle(self.test_y, self.test_X, random_state=self.seed)
-					accuracy, confidence, loss = self.test(self.test_X.reshape(-1, 784), self.test_y.reshape(-1, 10), epoch * i)
+					accuracy, confidence, loss = self.test(self.test_X.reshape(-1, 784), self.test_y.reshape(-1, NUM_CLASSES), epoch * i)
 					# summary, _ = self.sess.run([self.merged, self.train_step],
 					#                            feed_dict={self.x: X_batch, self.y_: y_batch, self.keep_prob: 1.})
 					# self.train_writer.add_summary(summary, i)
@@ -586,8 +588,10 @@ def classify_1_missing_digit_baseline():
 
 	train_indiceis_of_9 = np.where(np.argmax(y_train_real, 1) == ignored_label)
 	X_train_real = X_train_real[train_indiceis_of_9][0]
-	X_train_real= np.repeat(X_train_real[None], 64, axis=0).reshape(-1, 28, 28, 1)
-	y_train_real = np.repeat(y_train_real[0], 64, axis=0).reshape(64, 10)
+	y_train_real = y_train_real[train_indiceis_of_9][0]
+	y_train_real = y_train_real.reshape(1,NUM_CLASSES)
+	# X_train_real= np.repeat(X_train_real[None], 64, axis=0).reshape(-1, 28, 28, 1)
+	# y_train_real = np.repeat(y_train_real[0], 64, axis=0).reshape(64, 10)
 
 	# X_train_real = np.repeat(X_train_real[None], 10, axis=0).reshape(-1, 28, 28, 1)
 
@@ -601,6 +605,7 @@ def classify_1_missing_digit_baseline():
 	accuracy_list=c.train(confidence_in_train=confidence_in_train)
 	c.plot_train_test_loss("accuracy_baseline_missing_digit", accuracy_list)
 if __name__ == '__main__':
-	# classify_1_missing_digit_baseline()
-	classify_1_missing_digit()
+	classify_1_missing_digit_baseline()
+	# TODO BUILD SIMPLE CLASSIFIER FOR 9/NOT 9 where not 9 are other digits
+	# classify_1_missing_digit()
 	# main_to_train_classifier()
