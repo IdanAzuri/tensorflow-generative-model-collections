@@ -27,7 +27,6 @@ from __future__ import print_function
 import matplotlib
 
 
-NUM_CLASSES = 10
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -108,7 +107,8 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-	def __init__(self, classifier_name, pkl_fname=None, data_X=None, data_y=None, test_X=None, test_y=None, save_model=False,seed=88):
+	def __init__(self, classifier_name, pkl_fname=None, data_X=None, data_y=None, test_X=None, test_y=None, save_model=False,seed=88,num_classes=10):
+		self.num_classes=num_classes
 		self.seed=seed
 		self.is_save_model = save_model
 		self.num_epochs = 500
@@ -159,8 +159,8 @@ class CNNClassifier():
 			self.b_conv2 = bias_variable([64])
 			self.W_fc1 = weight_variable([int(self.IMAGE_HEIGHT // 4) * int(self.IMAGE_HEIGHT // 4) * 64, 1024])
 			self.b_fc1 = bias_variable([1024])
-			self.W_fc2 = weight_variable([1024, NUM_CLASSES])
-			self.b_fc2 = bias_variable([NUM_CLASSES])
+			self.W_fc2 = weight_variable([1024, self.num_classes])
+			self.b_fc2 = bias_variable([self.num_classes])
 		
 		self._create_model()
 	
@@ -195,7 +195,7 @@ class CNNClassifier():
 	
 	def _create_model(self):
 		self.x = tf.placeholder(tf.float32, [None, self.IMAGE_HEIGHT * self.IMAGE_WIDTH], name="data")
-		self.y_ = tf.placeholder(tf.float32, [None, NUM_CLASSES], name="labels")
+		self.y_ = tf.placeholder(tf.float32, [None, self.num_classes], name="labels")
 		self.keep_prob = tf.placeholder(tf.float32, name="dropout")
 		# Build the graph for the deep net
 		self.y_conv = self._deepcnn(self.x, self.keep_prob)
@@ -251,7 +251,7 @@ class CNNClassifier():
 				# plt.show()
 				if i % self.num_batches == 0:
 					self.test_y, self.test_X = shuffle(self.test_y, self.test_X, random_state=self.seed)
-					accuracy, confidence, loss = self.test(self.test_X.reshape(-1, 784), self.test_y.reshape(-1, NUM_CLASSES), epoch * i)
+					accuracy, confidence, loss = self.test(self.test_X.reshape(-1, 784), self.test_y.reshape(-1, self.num_classes), epoch * i)
 					# summary, _ = self.sess.run([self.merged, self.train_step],
 					#                            feed_dict={self.x: X_batch, self.y_: y_batch, self.keep_prob: 1.})
 					# self.train_writer.add_summary(summary, i)
@@ -570,7 +570,7 @@ def main_to_train_classifier():
 	c.train(confidence_in_train=confidence_in_train)
 	c.test(X_test, y_test)
 
-def classify_1_missing_digit_baseline():
+def classify_1_missing_digit_baseline(num_classes=10):
 	# parse arguments
 	ignored_label = 9
 	args = parse_args()
@@ -589,8 +589,8 @@ def classify_1_missing_digit_baseline():
 	
 	#9s
 	train_indiceis_of_9 = np.where(np.argmax(y_train_real, 1) == ignored_label)
-	data_X_9 = X_train_real[train_indiceis_of_9][:100]
-	data_y_9 = y_train_real[train_indiceis_of_9][:100]
+	data_X_9 = X_train_real[train_indiceis_of_9][:1]
+	data_y_9 = y_train_real[train_indiceis_of_9][:1]
 	
 	test_indiceis_of_9 = np.where(np.argmax(y_test_real, 1) == ignored_label)
 	X_test_9 = X_test_real[test_indiceis_of_9]
@@ -624,10 +624,68 @@ def classify_1_missing_digit_baseline():
 
 
 	print("Train size={}, test size={}".format(X_test_real.shape,X_train_real.shape))
-	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_all, data_y=y_train_all, test_X=X_test_all, test_y=y_test_all.reshape(-1,NUM_CLASSES),seed=seed,save_model=False)
+	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_all, data_y=y_train_all, test_X=X_test_all, test_y=y_test_all.reshape(-1,num_classes),seed=seed,save_model=False,num_classes=num_classes)
 	accuracy_list=c.train(confidence_in_train=confidence_in_train)
-	c.plot_train_test_loss("accuracy_baseline_missing_digit", accuracy_list)
+	c.plot_train_test_loss("accuracy_baseline_missing_digit_10classes", accuracy_list)
+
+def classify_1_missing_digit_baseline_2classes(num_classes=2):
+	# parse arguments
+	ignored_label = 9
+	args = parse_args()
+	if args is None:
+		exit()
+	fname = args.fname
+	original_dataset_name = args.original
+	confidence_in_train = args.use_confidence
+	seed = args.seed
+
+	data_X_real, data_y_real = load_mnist(original_dataset_name)
+
+
+	X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real, test_size=0.2, random_state=seed)
+
+
+	#9s
+	train_indiceis_of_9 = np.where(np.argmax(y_train_real, 1) == ignored_label)
+	data_X_9 = X_train_real[train_indiceis_of_9][:1]
+	data_y_9 = y_train_real[train_indiceis_of_9][:1]
+
+	test_indiceis_of_9 = np.where(np.argmax(y_test_real, 1) == ignored_label)
+	X_test_9 = X_test_real[test_indiceis_of_9]
+	y_test_9 = y_test_real[test_indiceis_of_9]
+
+	#rest
+	train_indiceis_of_rest = np.where(np.argmax(y_train_real, 1) == 8)
+	X_train_real_rest = X_train_real[train_indiceis_of_rest][0:6000]
+	y_train_real_rest = y_train_real[train_indiceis_of_rest][0:6000]
+
+	test_indiceis_of_rest = np.where(np.argmax(y_test_real, 1) == 8)
+	X_test_real_rest = X_test_real[test_indiceis_of_rest]
+	y_test_real_rest= y_test_real[test_indiceis_of_rest]
+
+	X_train_all = np.concatenate([data_X_9,X_train_real_rest])
+	y_train_all = np.concatenate([data_y_9,y_train_real_rest])
+
+	X_test_all = np.concatenate([X_test_9,X_test_real_rest])
+	y_test_all = np.concatenate([y_test_9,y_test_real_rest])
+
+
+
+
+	# X_train_real= np.repeat(X_train_real[None], 64, axis=0).reshape(-1, 28, 28, 1)
+	# y_train_real = np.repeat(y_train_real[0], 64, axis=0).reshape(64, 10)
+
+	# X_train_real = np.repeat(X_train_real[None], 10, axis=0).reshape(-1, 28, 28, 1)
+
+	# print(X_train_real.shape)
+
+
+
+	print("\n\nTrain size={},{}, test size={},{}\n\n".format(y_test_real.shape,X_test_real.shape,X_train_real.shape,y_train_real.shape))
+	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_all, data_y=y_train_all, test_X=X_test_all, test_y=y_test_all.reshape(-1,num_classes),seed=seed,save_model=False,num_classes=num_classes)
+	accuracy_list=c.train(confidence_in_train=confidence_in_train)
+	c.plot_train_test_loss("accuracy_baseline_missing_digit_2classes", accuracy_list)
 if __name__ == '__main__':
 	# classify_1_missing_digit_baseline()
-	classify_1_missing_digit_baseline()
+	classify_1_missing_digit_baseline_2classes()
 	# main_to_train_classifier()
