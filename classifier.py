@@ -485,14 +485,10 @@ def classify_1_missing_digit():
 	seed = args.seed
 	pref = args.pref
 	dir_results = 'classifier_results_seed_{}'.format(seed)
-	# pkl_label_path = "{}{}/edited_labels_{}.pkl".format(dir, dir_results, fname)
-	# pkl_path = "{}{}/edited_training_set_{}.pkl".format(dir, dir_results, fname)
 
 	pkl_label_path_digit = "{}{}/edited_phase2_labels_{}.pkl".format(dir, dir_results, fname)
 	pkl_path_digit = "{}{}/edited_phase2_training_set_{}.pkl".format(dir, dir_results, fname)
 
-	# data_X_generated_9 = pickle.load(open(pkl_path, 'rb'))
-	# data_y_generated_9 = pickle.load(open(pkl_label_path, 'rb'))
 
 	data_X_generated_9= pickle.load(open(pkl_path_digit, 'rb'))
 	
@@ -505,49 +501,43 @@ def classify_1_missing_digit():
 	data_y_generated_9= pickle.load(open(pkl_label_path_digit, 'rb'))
 	data_X_real, data_y_real = load_mnist(original_dataset_name)
 
+	X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real, test_size=0.2, random_state=seed)
 
-	# X_train_real, X_test_all, y_train_real, y_test_all = train_test_split(data_X_real, data_y_real, test_size=0.2, random_state=seed)
-	# 
-	# plt.imshow(data_X_generated_9[0].reshape(28,28))
-	# plt.title("label:{}".format(data_y_generated_9[0]))
-	# plt.savefig("9_0.png")
-	# plt.title("label:{}".format(data_y_generated_9[100]))
-	# plt.imshow(data_X_generated_9[100].reshape(28,28))
-	# plt.savefig("9_1.png")
-	# plt.title("label:{}".format(data_y_generated_9[200]))
-	# plt.imshow(data_X_generated_9[200].reshape(28,28))
-	# plt.savefig("9_2.png")
+	train_indiceis_of_9 = np.where(np.argmax(y_train_real, 1) == ignored_label)
+	data_X_9 = X_train_real[train_indiceis_of_9][:5].reshape(-1,28,28,1)
+	data_y_9 = y_train_real[train_indiceis_of_9][:5].reshape(-1,10)
+	test_indiceis_of_9 = np.where(np.argmax(y_test_real, 1) == ignored_label)
+	X_test_9 = X_test_real[test_indiceis_of_9]
+	y_test_9 = y_test_real[test_indiceis_of_9]
 
+	#rest
+	train_indiceis_of_rest = np.where(np.argmax(y_train_real, 1) == 8)
+	X_train_real_rest = X_train_real[train_indiceis_of_rest][0:6000]
+	y_train_real_rest = y_train_real[train_indiceis_of_rest][0:6000]
 
+	test_indiceis_of_rest = np.where(np.argmax(y_test_real, 1) == 8)
+	X_test_real_rest = X_test_real[test_indiceis_of_rest]
+	y_test_real_rest= y_test_real[test_indiceis_of_rest]
 
+	X_train_all = np.concatenate([data_X_9.reshape(-1,784),data_X_generated_9[:1000].reshape(-1,784),X_train_real_rest.reshape(-1,784)])
+	y_train_all = np.concatenate([data_y_9,data_y_generated_9[:1000],y_train_real_rest])
 
-	indiceis_of_9 = np.where(np.argmax(data_y_real, 1) == ignored_label)
-	X_test_9 = data_X_real[indiceis_of_9][10:1010]
-	y_test_9 = data_y_real[indiceis_of_9][10:1010]
-	
-	indiceis_of_rest = np.where(np.argmax(data_y_real, 1) != ignored_label)
-	X_train_real_rest = data_X_real[indiceis_of_rest][0:50000]
-	X_train_real_rest=X_train_real_rest.reshape((-1,784))
-	X_test_real_rest = data_X_real[indiceis_of_rest][50000:60000]
-	
-	y_train_real_rest = data_y_real[indiceis_of_rest][0:50000]
-	y_test_real_rest= data_y_real[indiceis_of_rest][50000:60000]
-	
-	X_train_all = np.concatenate([data_X_generated_9,X_train_real_rest])
-	y_train_all = np.concatenate([data_y_generated_9,y_train_real_rest])
-	
 	X_test_all = np.concatenate([X_test_9,X_test_real_rest])
 	y_test_all = np.concatenate([y_test_9,y_test_real_rest])
+
+
+
+
 	
-	plt.imshow(X_test_all[0].reshape(28,28))
-	plt.savefig("9_0test.png")
-	plt.imshow(X_test_all[100].reshape(28,28))
-	plt.savefig("9_1test.png")
-	plt.imshow(X_test_all[200].reshape(28,28))
-	plt.savefig("9_2test.png")
-	print(y_test_all[0])
-	print(y_test_all[100])
-	print(y_test_all[200])
+	# plt.imshow(X_test_all[0].reshape(28,28))
+	# plt.savefig("9_0test.png")
+	# plt.imshow(X_test_all[100].reshape(28,28))
+	# plt.savefig("9_1test.png")
+	# plt.imshow(X_test_all[200].reshape(28,28))
+	# plt.savefig("9_2test.png")
+	# print(y_test_all[0])
+	# print(y_test_all[100])
+	# print(y_test_all[200])
 	
 	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_all, data_y=y_train_all, test_X=X_test_all, test_y=y_test_all,seed=seed,save_model=False)
 	accuracy_list=c.train(confidence_in_train=confidence_in_train)
@@ -628,7 +618,7 @@ def classify_1_missing_digit_baseline(num_classes=10):
 	accuracy_list=c.train(confidence_in_train=confidence_in_train)
 	c.plot_train_test_loss("accuracy_baseline_missing_digit_10classes", accuracy_list)
 
-def classify_1_missing_digit_baseline_2classes(num_classes=2):
+def classify_1_missing_digit_baseline_2classes(num_classes=10):
 	# parse arguments
 	ignored_label = 9
 	args = parse_args()
@@ -647,8 +637,12 @@ def classify_1_missing_digit_baseline_2classes(num_classes=2):
 
 	#9s
 	train_indiceis_of_9 = np.where(np.argmax(y_train_real, 1) == ignored_label)
-	data_X_9 = X_train_real[train_indiceis_of_9][:1]
-	data_y_9 = y_train_real[train_indiceis_of_9][:1]
+	data_X_9 = X_train_real[train_indiceis_of_9][0:10].reshape(-1,28,28,1)
+	data_y_9 = y_train_real[train_indiceis_of_9][0:10].reshape(-1,10)
+
+	repeat = 20
+	data_X_9= np.repeat(data_X_9[None], repeat, axis=0).reshape(-1, 28, 28, 1)
+	data_y_9 = np.repeat(data_y_9[None], repeat, axis=0).reshape(-1, 10)
 
 	test_indiceis_of_9 = np.where(np.argmax(y_test_real, 1) == ignored_label)
 	X_test_9 = X_test_real[test_indiceis_of_9]
@@ -672,8 +666,7 @@ def classify_1_missing_digit_baseline_2classes(num_classes=2):
 
 
 
-	# X_train_real= np.repeat(X_train_real[None], 64, axis=0).reshape(-1, 28, 28, 1)
-	# y_train_real = np.repeat(y_train_real[0], 64, axis=0).reshape(64, 10)
+
 
 	# X_train_real = np.repeat(X_train_real[None], 10, axis=0).reshape(-1, 28, 28, 1)
 
@@ -681,11 +674,11 @@ def classify_1_missing_digit_baseline_2classes(num_classes=2):
 
 
 
-	print("\n\nTrain size={},{}, test size={},{}\n\n".format(y_test_real.shape,X_test_real.shape,X_train_real.shape,y_train_real.shape))
+	print("\n\nTrain size={},{}, test size={},{}\n\n".format(X_train_all.shape,y_train_all.shape,X_test_all.shape,y_test_all.shape))
 	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_all, data_y=y_train_all, test_X=X_test_all, test_y=y_test_all.reshape(-1,num_classes),seed=seed,save_model=False,num_classes=num_classes)
 	accuracy_list=c.train(confidence_in_train=confidence_in_train)
 	c.plot_train_test_loss("accuracy_baseline_missing_digit_2classes", accuracy_list)
 if __name__ == '__main__':
 	# classify_1_missing_digit_baseline()
 	classify_1_missing_digit_baseline_2classes()
-	# main_to_train_classifier()
+	# classify_1_missing_digit()
