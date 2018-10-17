@@ -599,13 +599,13 @@ def classify_1_missing_digit_baseline():
 
 
 	test_indiceis_of_9 = np.where(np.argmax(y_test_real, 1) == ignored_label)
-	X_test_real = X_test_real[test_indiceis_of_9]
-	y_test_real = y_test_real[test_indiceis_of_9]
-	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_real, data_y=y_train_real, test_X=X_test_real, test_y=y_test_real,seed=seed,save_model=False)
+	X_test_real = X_test_real[test_indiceis_of_9][100].reshape(-1,784)
+	y_test_real = y_test_real[test_indiceis_of_9][100]
+	print("Train size={}, test size={}".format(X_test_real.shape,X_train_real.shape))
+	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_real, data_y=y_train_real, test_X=X_test_real, test_y=y_test_real.reshape(-1,NUM_CLASSES),seed=seed,save_model=False)
 	accuracy_list=c.train(confidence_in_train=confidence_in_train)
 	c.plot_train_test_loss("accuracy_baseline_missing_digit", accuracy_list)
 if __name__ == '__main__':
+	# classify_1_missing_digit_baseline()
 	classify_1_missing_digit_baseline()
-	# TODO BUILD SIMPLE CLASSIFIER FOR 9/NOT 9 where not 9 are other digits
-	# classify_1_missing_digit()
 	# main_to_train_classifier()
