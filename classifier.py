@@ -585,24 +585,46 @@ def classify_1_missing_digit_baseline():
 
 
 	X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real, test_size=0.2, random_state=seed)
-
+	
+	
+	#9s
 	train_indiceis_of_9 = np.where(np.argmax(y_train_real, 1) == ignored_label)
-	X_train_real = X_train_real[train_indiceis_of_9][0]
-	y_train_real = y_train_real[train_indiceis_of_9][0]
-	y_train_real = y_train_real.reshape(1,NUM_CLASSES)
+	data_X_9 = X_train_real[train_indiceis_of_9][:100]
+	data_y_9 = y_train_real[train_indiceis_of_9][:100]
+	
+	test_indiceis_of_9 = np.where(np.argmax(y_test_real, 1) == ignored_label)
+	X_test_9 = X_test_real[test_indiceis_of_9]
+	y_test_9 = y_test_real[test_indiceis_of_9]
+	
+	#rest
+	train_indiceis_of_rest = np.where(np.argmax(y_train_real, 1) != ignored_label)
+	X_train_real_rest = X_train_real[train_indiceis_of_rest][0:8000]
+	y_train_real_rest = y_train_real[train_indiceis_of_rest][0:8000]
+	
+	test_indiceis_of_rest = np.where(np.argmax(y_test_real, 1) != ignored_label)
+	X_test_real_rest = X_test_real[test_indiceis_of_rest]
+	y_test_real_rest= y_test_real[test_indiceis_of_rest]
+	
+	X_train_all = np.concatenate([data_X_9,X_train_real_rest])
+	y_train_all = np.concatenate([data_y_9,y_train_real_rest])
+	
+	X_test_all = np.concatenate([X_test_9,X_test_real_rest])
+	y_test_all = np.concatenate([y_test_9,y_test_real_rest])
+
+
+
+
 	# X_train_real= np.repeat(X_train_real[None], 64, axis=0).reshape(-1, 28, 28, 1)
 	# y_train_real = np.repeat(y_train_real[0], 64, axis=0).reshape(64, 10)
 
 	# X_train_real = np.repeat(X_train_real[None], 10, axis=0).reshape(-1, 28, 28, 1)
 
 	# print(X_train_real.shape)
+	
 
 
-	test_indiceis_of_9 = np.where(np.argmax(y_test_real, 1) == ignored_label)
-	X_test_real = X_test_real[test_indiceis_of_9][100].reshape(-1,784)
-	y_test_real = y_test_real[test_indiceis_of_9][100]
 	print("Train size={}, test size={}".format(X_test_real.shape,X_train_real.shape))
-	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_real, data_y=y_train_real, test_X=X_test_real, test_y=y_test_real.reshape(-1,NUM_CLASSES),seed=seed,save_model=False)
+	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_all, data_y=y_train_all, test_X=X_test_all, test_y=y_test_all.reshape(-1,NUM_CLASSES),seed=seed,save_model=False)
 	accuracy_list=c.train(confidence_in_train=confidence_in_train)
 	c.plot_train_test_loss("accuracy_baseline_missing_digit", accuracy_list)
 if __name__ == '__main__':
