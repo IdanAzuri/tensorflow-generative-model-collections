@@ -24,17 +24,16 @@ https://www.tensorflow.org/get_started/mnist/pros
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-import matplotlib
 
+import matplotlib
+import sklearn
 
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import os
 import time
 import warnings
 from sklearn.model_selection import train_test_split
-from ops import bn
 
 
 LEARNING_RATE = 1e-5
@@ -60,11 +59,36 @@ np.random.seed(517)
 CONFIDENCE_THRESHOLD = 0.98
 
 
+def confusion_matrix_op(logits, labels, num_classes):
+	"""Creates the operation to build the confusion matrix between the
+	predictions and the labels. The number of classes are required to build
+	the matrix correctly.
+	Args:
+		logits: a [batch_size, 1,1, num_classes] tensor or
+				a [batch_size, num_classes] tensor
+		labels: a [batch_size] tensor
+	Returns:
+		confusion_matrix_op: the confusion matrix tf op
+	"""
+	with tf.variable_scope('confusion_matrix'):
+		# handle fully convolutional classifiers
+		logits_shape = logits.shape
+		if len(logits_shape) == 4 and logits_shape[1:3] == [1, 1]:
+			top_k_logits = tf.squeeze(logits, [1, 2])
+		else:
+			top_k_logits = logits
+		
+		# Extract the predicted label (top-1)
+		_, top_predicted_label = tf.nn.top_k(top_k_logits, k=1, sorted=False)
+		# (batch_size, k) -> k = 1 -> (batch_size)
+		top_predicted_label = tf.squeeze(top_predicted_label, axis=1)
+		
+		return tf.confusion_matrix(labels, top_predicted_label, num_classes=num_classes)
 # losses
 
 def one_hot_encoder(data):
 	data = data.astype(np.int32)
-	onehot = np.zeros((len(data), NUM_CLASSES))
+	onehot = np.zeros((len(data), 10))
 	onehot[np.arange(len(data)), data] = 1
 	
 	return onehot
@@ -214,6 +238,7 @@ class CNNClassifier():
 		correct_prediction = tf.equal(tf.argmax(self.y_conv, 1), tf.argmax(self.y_, 1))
 		correct_prediction = tf.cast(correct_prediction, tf.float32)
 		self.accuracy = tf.reduce_mean(correct_prediction)
+		
 		# tf.summary.scalar('accuracy', self.accuracy)
 		
 		# self.confidence = tf.cast(tf.reduce_mean(tf.reduce_max(tf.nn.softmax(self.y_conv), axis=-1), axis=0), tf.float32)
@@ -251,7 +276,7 @@ class CNNClassifier():
 				# plt.show()
 				if i % self.num_batches == 0:
 					self.test_y, self.test_X = shuffle(self.test_y, self.test_X, random_state=self.seed)
-					accuracy, confidence, loss = self.test(self.test_X.reshape(-1, 784), self.test_y.reshape(-1, self.num_classes), epoch * i)
+					confusion, accuracy, confidence, loss = self.test(self.test_X.reshape(-1, 784), self.test_y.reshape(-1, self.num_classes), epoch * i)
 					# summary, _ = self.sess.run([self.merged, self.train_step],
 					#                            feed_dict={self.x: X_batch, self.y_: y_batch, self.keep_prob: 1.})
 					# self.train_writer.add_summary(summary, i)
@@ -259,6 +284,7 @@ class CNNClassifier():
 					print('epoch{}: step{}/{}'.format(epoch, i, self.num_batches))
 					print("time: %4.4f" % (time.time() - start_time))
 					print('accuracy:{}, mean_confidence:{}, loss:{}'.format(accuracy, np.mean(confidence), loss))
+					print("confusion: {}".format(confusion))
 					self.accuracy_list.append(accuracy)
 				else:
 					if not use_confidence:
@@ -282,18 +308,25 @@ class CNNClassifier():
 	
 	def test(self, test_batch, test_labels, counter=0, is_arg_max=False):
 		if is_arg_max:
-			accuracy, confidence, loss, arg_max,y_conv = self.sess.run([self.accuracy, self.confidence, self.cross_entropy, self.argmax,self.y_conv],
-				feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
+			accuracy, confidence, loss, arg_max, y_conv = self.sess.run([self.accuracy, self.confidence, self.cross_entropy, self.argmax],
+			                                                            feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
 			print("argmax:{}".format(arg_max))
 			# self.test_writer.add_summary(summary, counter)
 			print('step {}: accuracy:{}, mean_confidence:{}, loss:{}'.format(counter, accuracy, np.mean(confidence), loss))
 			return accuracy, confidence, loss, arg_max, y_conv
 		else:
-			accuracy, confidence, loss = self.sess.run([self.accuracy, self.confidence, self.cross_entropy],
-			                                           feed_dict={self.x: test_batch.reshape(-1, 784), self.y_: test_labels, self.keep_prob: 1.})
+			accuracy, confidence, loss, y_conv, y_labels, argmax = self.sess.run([self.accuracy, self.confidence, self.cross_entropy, self.y_conv, self.y_, self.argmax],
+			                                                               feed_dict={self.x: test_batch.reshape(-1, 784), self.y_: test_labels, self.keep_prob: 1.})
+			# confusion=tf.confusion_matrix(np.argmax(y_labels,axis=1), y_conv, num_classes=10)
+			# confusion = confusion_matrix_op(y_conv,np.argmax(y_labels,axis=1),num_classes=10)
+			y_conv_indices = np.argmax(y_conv, axis=1)
+			predicted_onehot=np.zeros((len(y_conv),10))
+			predicted_onehot[np.arange(len(y_conv)),y_conv_indices] = 1
+			# predicted_onehot[np.arange(len(y_labels)), y_labels] = 1
+			confusion = sklearn.metrics.confusion_matrix(np.argmax(y_labels,axis=1),y_conv_indices, labels=None, sample_weight=None)
 			# self.test_writer.add_summary(summary, counter)
 			# print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
-			return accuracy, confidence, loss
+			return accuracy, confidence, loss, confusion
 	
 	def save_model(self):
 		
@@ -494,9 +527,6 @@ def classify_1_missing_digit():
 	
 	import matplotlib
 	matplotlib.use("Agg")
-	import matplotlib.pyplot as plt
-	
-	
 	
 	data_y_generated_9= pickle.load(open(pkl_label_path_digit, 'rb'))
 	data_X_real, data_y_real = load_mnist(original_dataset_name)
@@ -679,6 +709,5 @@ def classify_1_missing_digit_baseline_2classes(num_classes=10):
 	accuracy_list=c.train(confidence_in_train=confidence_in_train)
 	c.plot_train_test_loss("accuracy_baseline_missing_digit_2classes", accuracy_list)
 if __name__ == '__main__':
-	# classify_1_missing_digit_baseline()
-	classify_1_missing_digit_baseline_2classes()
+	classify_1_missing_digit_baseline()  # classify_1_missing_digit_baseline_2classes()
 	# classify_1_missing_digit()
