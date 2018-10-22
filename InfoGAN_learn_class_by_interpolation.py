@@ -159,7 +159,7 @@ class MultiModalInfoGAN_phase2(object):
 			net = lrelu(bn(linear(net, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
 			net = tf.reshape(net, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
 			net = lrelu(
-				bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training, scope='g_bn3'))
+				bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_retrain_dc3'), is_training=is_training, scope='g_retrain_bn3'))
 
 			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
 			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
@@ -215,18 +215,17 @@ class MultiModalInfoGAN_phase2(object):
 		self.g_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_fake_logits, labels=tf.ones_like(D_fake)))
 		if self.wgan_gp:
 			d_loss_real = - tf.reduce_mean(D_real_logits)
-		d_loss_fake = tf.reduce_mean(D_fake_logits)
+			d_loss_fake = tf.reduce_mean(D_fake_logits)
 		
-		self.d_loss = d_loss_real + d_loss_fake
-		
-		# get loss for generator
-		self.g_loss = - d_loss_fake
-		wd = tf.reduce_mean(D_real_logits) - tf.reduce_mean(D_fake_logits)
-		gp = gradient_penalty(self.x, self.x_, self.discriminator)
-		self.d_loss = -wd + gp * 10.0
-		self.g_loss = -tf.reduce_mean(D_fake_logits)
-		fake_images = self.generator(self.z, self.get_y_variable(), is_training=False, reuse=True)
-		self.phase_2_loss = tf.losses.mean_squared_error(self.x, fake_images)
+			self.d_loss = d_loss_real + d_loss_fake
+			# get loss for generator
+			self.g_loss = - d_loss_fake
+			wd = tf.reduce_mean(D_real_logits) - tf.reduce_mean(D_fake_logits)
+			gp = gradient_penalty(self.x, self.x_, self.discriminator)
+			self.d_loss = -wd + gp * 10.0
+			self.g_loss = -tf.reduce_mean(D_fake_logits)
+		self.fake_images = self.generator(self.z, self.get_y_variable(), is_training=False, reuse=True)
+		self.phase_2_loss = tf.losses.mean_squared_error(self.x, self.fake_images)
 		
 		## 2. Information Loss
 		code_fake, code_logit_fake = self.classifier(input4classifier_fake, is_training=True, reuse=False)
@@ -249,7 +248,7 @@ class MultiModalInfoGAN_phase2(object):
 		# divide trainable variables into a group for D and a group for G
 		t_vars = tf.trainable_variables()
 		d_vars = [var for var in t_vars if 'd_' in var.name]
-		g_vars = [var for var in t_vars if 'y' in var.name] #updating only the y, when g_ is const
+		g_vars = [var for var in t_vars if( 'g_retrain' in var.name) or ('y_' in var.name)] #updating only the y, when g_ is const
 		p_vars = [var for var in t_vars if 'y' in var.name]
 		q_vars = [var for var in t_vars if ('d_' in var.name) or ('c_' in var.name) or ('y_' in var.name)]
 		
@@ -261,9 +260,6 @@ class MultiModalInfoGAN_phase2(object):
 			# self.p_optim = tf.train.AdamOptimizer(self.learning_rate * 0.2, beta1=self.beta1).minimize(self.phase_2_loss, var_list=p_vars)
 			self.q_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
 		
-		"""" Testing """
-		# for test
-		self.fake_images = self.generator(self.z, self.get_y_variable(), is_training=False, reuse=True)
 		""" Summary """
 	
 	# d_loss_real_sum = tf.summary.scalar("d_loss_real", d_loss_real)

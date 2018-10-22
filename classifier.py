@@ -276,7 +276,7 @@ class CNNClassifier():
 				# plt.show()
 				if i % self.num_batches == 0:
 					self.test_y, self.test_X = shuffle(self.test_y, self.test_X, random_state=self.seed)
-					confusion, accuracy, confidence, loss = self.test(self.test_X.reshape(-1, 784), self.test_y.reshape(-1, self.num_classes), epoch * i)
+					accuracy, confidence, loss,confusion = self.test(self.test_X.reshape(-1, 784), self.test_y.reshape(-1, self.num_classes), epoch * i)
 					# summary, _ = self.sess.run([self.merged, self.train_step],
 					#                            feed_dict={self.x: X_batch, self.y_: y_batch, self.keep_prob: 1.})
 					# self.train_writer.add_summary(summary, i)
@@ -354,7 +354,7 @@ class CNNClassifier():
 		plt.title('{} {} score'.format(self.fname, name_of_measure), fontsize=18)
 		x_range = np.linspace(1, len(array) - 1, len(array))
 		
-		measure, = plt.plot(x_range, array, color=color, marker=marker, label=name_of_measure, linewidth=2)
+		measure = plt.plot(x_range, array, color=color, marker=marker, label=name_of_measure, linewidth=2)
 		plt.legend(handler_map={measure: HandlerLine2D(numpoints=1)})
 		plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
 		plt.yscale('linear')

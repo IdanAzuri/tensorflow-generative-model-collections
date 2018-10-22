@@ -149,7 +149,7 @@ class MultiModalInfoGAN(object):
 			net = lrelu(bn(linear(net, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
 			net = tf.reshape(net, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
 			net = lrelu(
-				bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training, scope='g_bn3'))
+				bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_retrain_dc3'), is_training=is_training, scope='g_retrain_bn3'))
 			
 			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
 			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
@@ -667,3 +667,6 @@ def plot_from_pkl():
 
 if __name__ == '__main__':
 	plot_from_pkl()
+#TODO try to freeze the first part of the generator and train the last 2 layers of the generator (use renaming of the weights name...)
+#TODO consider re-implement in pytourch based on https://github.com/sagiebenaim/OneShotTranslation/blob/master/drawing_and_style_transfer/models/ost.py
+#TODO maybe to use ResNet as it used in Liors Wolf work
