@@ -250,13 +250,13 @@ class MultiModalInfoGAN_phase2(object):
 		d_vars = [var for var in t_vars if 'd_' in var.name]
 		g_vars = [var for var in t_vars if( 'g_retrain' in var.name) or ('y_' in var.name)] #updating only the y, when g_ is const
 		p_vars = [var for var in t_vars if 'y' in var.name]
-		q_vars = [var for var in t_vars if ('d_' in var.name) or ('c_' in var.name) or ('y_' in var.name)]
+		q_vars = [var for var in t_vars if ('d_' in var.name) or ('c_' in var.name)]
 		
 		# optimizers
 		with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
 			self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss, var_list=d_vars)
 			regularization = self.phase_2_loss * 0.01
-			self.g_optim = tf.train.AdamOptimizer(self.learning_rate , beta1=self.beta1).minimize(self.g_loss + regularization, var_list=g_vars)
+			self.g_optim = tf.train.AdamOptimizer(self.learning_rate *5, beta1=self.beta1).minimize(self.g_loss + regularization, var_list=g_vars)
 			# self.p_optim = tf.train.AdamOptimizer(self.learning_rate * 0.2, beta1=self.beta1).minimize(self.phase_2_loss, var_list=p_vars)
 			self.q_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
 		
@@ -323,7 +323,7 @@ class MultiModalInfoGAN_phase2(object):
 				
 				# update G and Q network
 
-				_, q_loss,g_loss, predicted_y = self.sess.run([self.q_optim, self.q_loss,self.g_loss,self.get_y_variable()],
+				_,_, q_loss,g_loss, predicted_y = self.sess.run([self.g_optim,self.q_optim, self.q_loss,self.g_loss,self.get_y_variable()],
 					feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
 
 				
