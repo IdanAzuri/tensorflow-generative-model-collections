@@ -155,11 +155,11 @@ class MultiModalInfoGAN_phase2(object):
 			# y = tf.nn.softmax(y)
 			z = concat([z, y], 1)
 
-			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
-			net = lrelu(bn(linear(net, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
+			net = lrelu(bn(linear(z, 1024, scope='g_retrain_fc1'), is_training=is_training, scope='g_retrain_bn1'))
+			net = lrelu(bn(linear(net, 128 * self.input_height // 4 * self.input_width // 4, scope='g_retrain_fc2'), is_training=is_training, scope='g_retrain_bn2'))
 			net = tf.reshape(net, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
 			net = lrelu(
-				bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_retrain_dc3'), is_training=is_training, scope='g_retrain_bn3'))
+				bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training, scope='g_retrain_bn3'))
 
 			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
 			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
@@ -256,7 +256,7 @@ class MultiModalInfoGAN_phase2(object):
 		with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
 			self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss, var_list=d_vars)
 			regularization = self.phase_2_loss * 0.0
-			self.g_optim = tf.train.AdamOptimizer(self.learning_rate *5, beta1=self.beta1).minimize(self.g_loss + regularization, var_list=g_vars)
+			self.g_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.g_loss + regularization, var_list=g_vars)
 			# self.p_optim = tf.train.AdamOptimizer(self.learning_rate * 0.2, beta1=self.beta1).minimize(self.phase_2_loss, var_list=p_vars)
 			self.q_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
 		
