@@ -354,7 +354,7 @@ class CNNClassifier():
 		plt.title('{} {} score'.format(self.fname, name_of_measure), fontsize=18)
 		x_range = np.linspace(1, len(array) - 1, len(array))
 		
-		measure, = plt.plot(x_range, array, color=color, marker=marker, label=name_of_measure, linewidth=2)
+		measure = plt.plot(x_range, array, color=color, marker=marker, label=name_of_measure, linewidth=2)
 		plt.legend(handler_map={measure: HandlerLine2D(numpoints=1)})
 		plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
 		plt.yscale('linear')
@@ -377,7 +377,7 @@ class CNNClassifier():
 		mean = np.mean(array, axis=0)
 		x_range = np.linspace(1, len(mean) - 1, len(mean))
 		
-		measure, = plt.plot(x_range, mean, color=color, marker=marker, label=name_of_measure, linewidth=2)
+		measure = plt.plot(x_range, mean, color=color, marker=marker, label=name_of_measure, linewidth=2)
 		plt.legend(handler_map={measure: HandlerLine2D(numpoints=1)})
 		plt.legend(bbox_to_anchor=(1.05, 1), loc=0, borderaxespad=0.)
 		plt.yscale('linear')
@@ -542,14 +542,14 @@ def classify_1_missing_digit():
 	
 	#rest
 	train_indiceis_of_rest = np.where(np.argmax(y_train_real, 1) != 9)
-	X_train_real_rest = X_train_real[train_indiceis_of_rest][0:24000]
-	y_train_real_rest = y_train_real[train_indiceis_of_rest][0:24000]
+	X_train_real_rest = X_train_real[train_indiceis_of_rest][0:6000]
+	y_train_real_rest = y_train_real[train_indiceis_of_rest][0:6000]
 	
 	test_indiceis_of_rest = np.where(np.argmax(y_test_real, 1) != 9)
 	X_test_real_rest = X_test_real[test_indiceis_of_rest]
 	y_test_real_rest= y_test_real[test_indiceis_of_rest]
 	
-	X_train_all = np.concatenate([data_X_9.reshape(-1,784),data_X_generated_9[:1000].reshape(-1,784),X_train_real_rest.reshape(-1,784)])
+	X_train_all = np.concatenate([data_X_9.reshape(-1,784),data_X_generated_9[:1    000].reshape(-1,784),X_train_real_rest.reshape(-1,784)])
 	y_train_all = np.concatenate([data_y_9,data_y_generated_9[:1000],y_train_real_rest])
 	
 	X_test_all = np.concatenate([X_test_9,X_test_real_rest])
