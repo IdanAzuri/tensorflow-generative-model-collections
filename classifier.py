@@ -276,7 +276,7 @@ class CNNClassifier():
 				# plt.show()
 				if i % self.num_batches == 0:
 					self.test_y, self.test_X = shuffle(self.test_y, self.test_X, random_state=self.seed)
-					confusion, accuracy, confidence, loss = self.test(self.test_X.reshape(-1, 784), self.test_y.reshape(-1, self.num_classes), epoch * i)
+					accuracy, confidence, loss, confusion = self.test(self.test_X.reshape(-1, 784), self.test_y.reshape(-1, self.num_classes), epoch * i)
 					# summary, _ = self.sess.run([self.merged, self.train_step],
 					#                            feed_dict={self.x: X_batch, self.y_: y_batch, self.keep_prob: 1.})
 					# self.train_writer.add_summary(summary, i)
@@ -324,6 +324,10 @@ class CNNClassifier():
 			predicted_onehot[np.arange(len(y_conv)),y_conv_indices] = 1
 			# predicted_onehot[np.arange(len(y_labels)), y_labels] = 1
 			confusion = sklearn.metrics.confusion_matrix(np.argmax(y_labels,axis=1),y_conv_indices, labels=None, sample_weight=None)
+			sum_of_rest = np.diag(confusion[:-1]).sum()/ confusion[0:-1,0:-1].sum()
+			sum_of_9 = np.diag(confusion)[-1]/confusion[-1:-1,-1:-1].sum()
+			print(confusion[-1:-1,-1:-1].sum())
+			print("8_classes accuracy:{}, 1_shot_accuracy:{}".format(sum_of_rest,sum_of_9))
 			# self.test_writer.add_summary(summary, counter)
 			# print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
 			return accuracy, confidence, loss, confusion
@@ -521,7 +525,6 @@ def classify_1_missing_digit():
 	
 	pkl_label_path_digit = "{}{}/edited_phase2_labels_{}.pkl".format(dir, dir_results, fname)
 	pkl_path_digit = "{}{}/edited_phase2_training_set_{}.pkl".format(dir, dir_results, fname)
-	print("\n\n\n blablablabla {} blbalbalbal\n\n\n".format(pkl_path_digit))
 	
 	data_X_generated_9= pickle.load(open(pkl_path_digit, 'rb'))
 	
@@ -549,7 +552,7 @@ def classify_1_missing_digit():
 	X_test_real_rest = X_test_real[test_indiceis_of_rest]
 	y_test_real_rest= y_test_real[test_indiceis_of_rest]
 	
-	X_train_all = np.concatenate([data_X_9.reshape(-1,784),data_X_generated_9[:1    000].reshape(-1,784),X_train_real_rest.reshape(-1,784)])
+	X_train_all = np.concatenate([data_X_9.reshape(-1,784),data_X_generated_9[:1000].reshape(-1,784),X_train_real_rest.reshape(-1,784)])
 	y_train_all = np.concatenate([data_y_9,data_y_generated_9[:1000],y_train_real_rest])
 	
 	X_test_all = np.concatenate([X_test_9,X_test_real_rest])
