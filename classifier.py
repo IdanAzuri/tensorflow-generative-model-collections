@@ -325,7 +325,7 @@ class CNNClassifier():
 			# predicted_onehot[np.arange(len(y_labels)), y_labels] = 1
 			confusion = sklearn.metrics.confusion_matrix(np.argmax(y_labels,axis=1),y_conv_indices, labels=None, sample_weight=None)
 			sum_of_rest = np.diag(confusion[:-1]).sum()/ confusion[0:-1,0:-1].sum()
-			sum_of_9 = np.diag(confusion)[-1]/confusion[-1:-1,-1:-1].sum()
+			sum_of_9 = np.diag(confusion)[-1]/(confusion[-1:-1,-1:-1]).sum()
 			print(confusion[-1:-1,-1:-1].sum())
 			print("8_classes accuracy:{}, 1_shot_accuracy:{}".format(sum_of_rest,sum_of_9))
 			# self.test_writer.add_summary(summary, counter)
