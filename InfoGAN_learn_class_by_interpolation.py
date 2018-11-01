@@ -6,6 +6,7 @@ from __future__ import print_function
 import pickle
 import time
 import warnings
+from functools import reduce
 
 from sklearn.utils import shuffle
 
@@ -39,6 +40,19 @@ def gradient_penalty(real, fake, f):
 	slopes = tf.sqrt(tf.reduce_sum(tf.square(gradients), axis=1))
 	gp = tf.reduce_mean(tf.square(slopes - 1.))
 	return gp
+
+def gram_matrix(v):
+	assert isinstance(v, tf.Tensor)
+	return tf.matmul(v, v, transpose_b=True)
+	# v.get_shape().assert_has_rank(4)
+	#
+	# dim = v.get_shape().as_list()
+	# v = tf.reshape(v, [dim[1] * dim[2], dim[3]])
+	# if dim[1] * dim[2] < dim[3]:
+	# 	return tf.matmul(v, v, transpose_b=True)
+	# else:
+	# 	return tf.matmul(v, v, transpose_a=True)
+
 
 
 class MultiModalInfoGAN_phase2(object):
@@ -155,15 +169,34 @@ class MultiModalInfoGAN_phase2(object):
 			# y = tf.nn.softmax(y)
 			z = concat([z, y], 1)
 
-			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
-			net = lrelu(bn(linear(net, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
-			net = tf.reshape(net, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
-			net = lrelu(
-				bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training, scope='g_bn3'))
+			self.layer1= lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
+			self.layer2 = lrelu(bn(linear(self.layer1, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
+			self.layer3 = tf.reshape(self.layer2, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
+			self.layer4 = lrelu(
+				bn(deconv2d(self.layer3, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training, scope='g_bn3'))
 
-			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
+			out = tf.nn.sigmoid(deconv2d(self.layer4, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
 			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
 
+			return out
+		
+	def fake_generator(self, z, y, is_training=True, reuse=False):
+		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
+		# Architecture : FC1024_BR-FC7x7x128_BR-(64)4dc2s_BR-(1)4dc2s_S
+		with tf.variable_scope("fake_generator", reuse=reuse):
+			# merge noise and code
+			# y = tf.nn.softmax(y)
+			z = concat([tf.reshape(z,(self.batch_size,-1)),y],1)
+			
+			self.layer1_fake = lrelu(bn(linear(z, 1024, scope='fake_g_fc1'), is_training=is_training, scope='fake_g_bn1'))
+			self.layer2_fake = lrelu(bn(linear(self.layer1, 128 * self.input_height // 4 * self.input_width // 4, scope='fake_g_fc2'), is_training=is_training, scope='fake_g_bn2'))
+			self.layer3_fake = tf.reshape(self.layer2, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
+			self.layer4_fake = lrelu(
+				bn(deconv2d(self.layer3, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='fake_g_dc3'), is_training=is_training, scope='fake_g_bn3'))
+			
+			out = tf.nn.sigmoid(deconv2d(self.layer4, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='fake_g_dc4'))
+			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
+			
 			return out
 	
 	# def get_y_variable(self):
@@ -227,6 +260,22 @@ class MultiModalInfoGAN_phase2(object):
 		self.fake_images = self.generator(self.z, self.get_y_variable(), is_training=False, reuse=True)
 		self.phase_2_loss = tf.losses.mean_squared_error(self.x, self.fake_images)
 		
+		#Tryign gram
+		self.x_2 = self.fake_generator(self.x, self.get_y_variable(), is_training=True, reuse=False)
+		var_pool = [self.layer1,self.layer2,self.layer3,self.layer4]
+		sty_pool = [self.layer1_fake,self.layer2_fake,self.layer3_fake,self.layer4_fake]
+		factor = 1000
+		style_cost_array = []
+		len = var_pool.__len__()
+		for i in range(len):
+			dim = var_pool[i].get_shape().as_list()
+			size = reduce(lambda x, y: x * y, dim)
+			G1 = gram_matrix(var_pool[i])
+			G2 = gram_matrix(sty_pool[i])
+			layer_gram_lost = tf.nn.l2_loss(G1 - G2)
+			style_cost_array.append(layer_gram_lost)
+		self.gram_loss = reduce(lambda x, y: x + y, style_cost_array) / len * factor
+		
 		## 2. Information Loss
 		code_fake, code_logit_fake = self.classifier(input4classifier_fake, is_training=True, reuse=False)
 		# discrete code : categorical
@@ -248,14 +297,14 @@ class MultiModalInfoGAN_phase2(object):
 		# divide trainable variables into a group for D and a group for G
 		t_vars = tf.trainable_variables()
 		d_vars = [var for var in t_vars if 'd_' in var.name]
-		g_vars = [var for var in t_vars if( 'g_retrain' in var.name) or ('y_' in var.name)] #updating only the y, when g_ is const
+		g_vars = [var for var in t_vars if( 'g_' in var.name) or ('y_' in var.name)] #updating only the y, when g_ is const
 		p_vars = [var for var in t_vars if 'y' in var.name]
 		q_vars = [var for var in t_vars if ('d_' in var.name) or ('c_' in var.name)]
 		
 		# optimizers
 		with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
 			self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss, var_list=d_vars)
-			regularization = self.phase_2_loss * 0.0
+			regularization = self.phase_2_loss * 0 + self.gram_loss * 1e-3
 			self.g_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.g_loss + regularization, var_list=g_vars)
 			# self.p_optim = tf.train.AdamOptimizer(self.learning_rate * 0.2, beta1=self.beta1).minimize(self.phase_2_loss, var_list=p_vars)
 			self.q_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
@@ -521,22 +570,22 @@ class MultiModalInfoGAN_phase2(object):
 		
 		limit = min(len(self.data_X) // self.len_discrete_code, 2 ** 14)
 		dummy_labels = one_hot_encoder(np.random.randint(0, self.len_discrete_code, size=(limit)))  # no meaning for the labels
-		_, confidence, _, arg_max, y_conv = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels, is_arg_max=True)
-		if is_confidence:
-			print("confidence:{}".format(confidence))
-			high_confidence_threshold_indices = confidence >= CONFIDENCE_THRESHOLD
-			if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
-				arg_max = arg_max[high_confidence_threshold_indices]
-				print("The length of high confidence:")
-				print(len(high_confidence_threshold_indices[high_confidence_threshold_indices]))
-		print(str(len(arg_max)) + " were taken")
-		new_label = np.bincount(arg_max).argmax()
-		print("argmax:{}".format(new_label))
-		plt.title("old_label=" + str(current_label) + "new_label=" + str(new_label))
+		accuracy, confidence, loss, confusion = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels)
+		# if is_confidence:
+		# 	print("confidence:{}".format(confidence))
+		# 	high_confidence_threshold_indices = confidence >= CONFIDENCE_THRESHOLD
+		# 	if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
+		# 		arg_max = arg_max[high_confidence_threshold_indices]
+		# 		print("The length of high confidence:")
+		# 		print(len(high_confidence_threshold_indices[high_confidence_threshold_indices]))
+		# print(str(len(arg_max)) + " were taken")
+		# new_label = np.bincount(arg_max).argmax()
+		# print("argmax:{}".format(new_label))
+		plt.title("old_label=" + str(current_label))
 		# plt.imshow(data_X_for_current_label[0].reshape(28, 28))
 		# plt.show()
 		data_y_updateable[:] = current_label
-		print(np.bincount(arg_max))
+		# print(np.bincount(arg_max))
 		data_y_all = one_hot_encoder(data_y_updateable)
 		order_str = '_'.join(self.dataset_creation_order)
 		if not os.path.exists(self.dir_results):
