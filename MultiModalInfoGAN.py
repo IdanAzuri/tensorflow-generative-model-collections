@@ -280,7 +280,7 @@ class MultiModalInfoGAN(object):
 		start_time = time.time()
 		for epoch in range(start_epoch, self.epoch):
 			# get batch data
-			for idx in range(start_batch_id, self.num_batches):
+			for idx in range(3):#start_batch_id, self.num_batches):
 				batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
 				
 				# generate code
@@ -527,7 +527,7 @@ class MultiModalInfoGAN(object):
 			limit = min(len(data_X_for_current_label) // self.len_discrete_code, 2 ** 14)
 			dummy_labels = one_hot_encoder(np.random.randint(0, self.len_discrete_code, size=(limit)))  # no meaning for the labels
 			print(dummy_labels.shape)
-			_, confidence, _, arg_max, y_conv = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+			_, confidence, _, arg_max = self.pretrained_classifier.test(data_X_for_current_label[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 			if is_confidence:
 				print("confidence:{}".format(confidence))
 				high_confidence_threshold_indices = confidence >= CONFIDENCE_THRESHOLD
@@ -572,8 +572,7 @@ class MultiModalInfoGAN(object):
 
 		limit = min(len(self.data_X_only9) // self.len_discrete_code, 2)
 		dummy_labels = one_hot_encoder(np.random.randint(0, self.len_discrete_code, size=(limit)))  # no meaning for the labels
-		_, confidence, _, arg_max, y_conv = self.pretrained_classifier.test(self.data_X_only9[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
-		print("Feature vector for the ignore label={}".format(y_conv))
+		_, confidence, _, arg_max = self.pretrained_classifier.test(self.data_X_only9[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
 		return
 	
 	def get_model_dir(self):
