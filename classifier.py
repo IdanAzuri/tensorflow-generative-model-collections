@@ -145,7 +145,8 @@ class CNNClassifier():
 		self.c_dim = 1
 		self.accuracy_list = []
 		self.loss_list = []
-		self.confidence_list = []
+		self.confussion_list_8classes = []
+		self.confussion_list_1_shot = []
 		self.IMAGE_WIDTH = 28
 		self.IMAGE_HEIGHT = 28
 		self.fname = pkl_fname
@@ -325,9 +326,12 @@ class CNNClassifier():
 			# predicted_onehot[np.arange(len(y_labels)), y_labels] = 1
 			confusion = sklearn.metrics.confusion_matrix(np.argmax(y_labels,axis=1),y_conv_indices, labels=None, sample_weight=None)
 			sum_of_rest = np.diag(confusion[:-1]).sum()/ confusion[0:-1,0:-1].sum()
-			sum_of_9 = np.diag(confusion)[-1]/(confusion[-1:-1,-1:-1]).sum()
+			sum_of_9 = np.diag(confusion)[-1]/confusion[-1,:].sum()
+			
 			print(confusion[-1:-1,-1:-1].sum())
 			print("8_classes accuracy:{}, 1_shot_accuracy:{}".format(sum_of_rest,sum_of_9))
+			self.confussion_list_8classes.append(sum_of_rest)
+			self.confussion_list_1_shot.append(sum_of_9)
 			# self.test_writer.add_summary(summary, counter)
 			# print('step {}: accuracy:{}, confidence:{}, loss:{}'.format(counter, accuracy, confidence, loss))
 			return accuracy, confidence, loss, confusion
@@ -504,7 +508,7 @@ def main():
 	data_X, data_y = shuffle(data_X, data_y, random_state=seed)
 	c = CNNClassifier("custom", pkl_fname=fname, data_X=data_X, data_y=data_y, test_X=X_test_real, test_y=y_test_real,seed=seed,save_model=False)
 	accuracy_list=c.train(confidence_in_train=confidence_in_train)
-	c.plot_train_test_loss("accuracy_gan_no_prior", accuracy_list)
+	
 
 def classify_1_missing_digit():
 	# parse arguments
@@ -574,7 +578,10 @@ def classify_1_missing_digit():
 	
 	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_all, data_y=y_train_all, test_X=X_test_all, test_y=y_test_all,seed=seed,save_model=False)
 	accuracy_list=c.train(confidence_in_train=confidence_in_train)
-	c.plot_train_test_loss("accuracy_baseline_missing_digit", accuracy_list)
+	# c.plot_train_test_loss("accuracy_baseline_missing_digit", accuracy_list)
+	c.plot_train_test_loss("accuracy_gan_no_prior", accuracy_list)
+	c.plot_train_test_loss("accuracy_1_shot", c.confussion_list_1_shot)
+	c.plot_train_test_loss("accuracy_8_classes", c.confussion_list_8classes)
 
 def main_to_train_classifier():
 	# parse arguments
@@ -649,7 +656,7 @@ def classify_1_missing_digit_baseline(num_classes=10):
 	print("Train size={}, test size={}".format(X_test_real.shape,X_train_real.shape))
 	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_all, data_y=y_train_all, test_X=X_test_all, test_y=y_test_all.reshape(-1,num_classes),seed=seed,save_model=False,num_classes=num_classes)
 	accuracy_list=c.train(confidence_in_train=confidence_in_train)
-	c.plot_train_test_loss("accuracy_baseline_missing_digit_10classes", accuracy_list)
+	# c.plot_train_test_loss("accuracy_baseline_missing_digit_10classes", accuracy_list)
 
 def classify_1_missing_digit_baseline_2classes(num_classes=10):
 	# parse arguments
