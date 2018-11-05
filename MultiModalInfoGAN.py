@@ -252,7 +252,7 @@ class MultiModalInfoGAN(object):
 		tf.global_variables_initializer().run()
 		
 		# graph inputs for visualize training results
-		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)  # np.random.uniform(-1, 1,
+		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.sampler.n_distributions)  # np.random.uniform(-1, 1,
 		# size=(self.batch_size, self.z_dim))
 		self.test_labels = np.ones([self.batch_size, self.y_dim])
 		self.test_labels = self.data_y[0:self.batch_size]
@@ -293,7 +293,7 @@ class MultiModalInfoGAN(object):
 				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
 				
 				# batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
-				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
+				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.sampler.n_distributions)
 				
 				# update D network
 				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss], feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
@@ -338,7 +338,7 @@ class MultiModalInfoGAN(object):
 		y = np.random.choice(self.len_discrete_code, self.batch_size)
 		y_one_hot = np.zeros((self.batch_size, self.y_dim))
 		y_one_hot[np.arange(self.batch_size), y] = 1
-		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
+		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.sampler.n_distributions)
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})  # samples_for_test.append(samples)
 		
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
@@ -471,7 +471,7 @@ class MultiModalInfoGAN(object):
 				if i == 'rzcc':
 					for _ in range(num_iter):
 						# z random c-clean - rzcc
-						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
+						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.sampler.n_distributions)
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
 						y_one_hot = np.zeros((self.batch_size, self.y_dim))
 						y_one_hot[np.arange(self.batch_size), y] = 1
@@ -487,7 +487,7 @@ class MultiModalInfoGAN(object):
 				if i == 'rzrc':
 					for _ in range(num_iter):
 						# rzrc
-						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.len_discrete_code)
+						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.sampler.n_distributions)
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
 						
 						y_one_hot = np.zeros((self.batch_size, self.y_dim))
