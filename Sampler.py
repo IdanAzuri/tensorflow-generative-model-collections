@@ -7,54 +7,54 @@ class Sampler(object):
 		self.mu = mu
 		self.n_distributions = n_distributions
 	
-	def get_sample(self, dimension, batch_size, n_distributions):
+	def get_sample(self, dimension, batch_size):
 		pass
 
 
 class MultivariateGaussianSampler(Sampler):
-	def get_sample(self, batch_size, embedding_dim, n_distributions):
-		current_dist_states_indices = np.random.randint(0, n_distributions - 1, batch_size)
-		mean_vec = np.linspace(-self.mu, self.mu, n_distributions)
-		cov_mat = np.eye(n_distributions) * self.sigma  # np.random.randint(1, 5, n_distributions)  # this is diagonal beacuse we want iid
+	def get_sample(self, batch_size, embedding_dim):
+		current_dist_states_indices = np.random.randint(0, self.n_distributions - 1, batch_size)
+		mean_vec = np.linspace(-self.mu, self.mu, self.n_distributions)
+		cov_mat = np.eye(self.n_distributions) * self.sigma  # np.random.randint(1, 5, n_distributions)  # this is diagonal beacuse we want iid
 		
 		result_vec = np.zeros((batch_size, embedding_dim))
 		# create multimodal matrix
 		matrix_sample = np.random.multivariate_normal(mean_vec, cov_mat, size=batch_size * embedding_dim)
 		# matrix_sample from the multimodal matrix
 		for i in range(batch_size):
-			tmp = matrix_sample.reshape(embedding_dim, n_distributions, batch_size)
+			tmp = matrix_sample.reshape(embedding_dim, self.n_distributions, batch_size)
 			result_vec[i] = tmp[:, current_dist_states_indices[i], i]
 		return np.asarray(result_vec, dtype=np.float32)
 
 
 class MultivariateGaussianTruncatedSampler(Sampler):
-	def get_sample(self, batch_size, embedding_dim, n_distributions):
-		current_dist_states_indices = np.random.randint(0, n_distributions - 1, batch_size)
-		mean_vec = np.linspace(-self.mu, self.mu, n_distributions)
-		cov_mat = np.eye(n_distributions) * self.sigma  # np.random.randint(1, 5, n_distributions)  # this is diagonal beacuse we want iid
+	def get_sample(self, batch_size, embedding_dim):
+		current_dist_states_indices = np.random.randint(0, self.n_distributions - 1, batch_size)
+		mean_vec = np.linspace(-self.mu, self.mu, self.n_distributions)
+		cov_mat = np.eye(self.n_distributions) * self.sigma  # np.random.randint(1, 5, n_distributions)  # this is diagonal beacuse we want iid
 		
 		result_vec = np.zeros((batch_size, embedding_dim))
 		# create multimodal matrix
 		matrix_sample = np.random.multivariate_normal(mean_vec, cov_mat, size=batch_size * embedding_dim)
 		# matrix_sample from the multimodal matrix
 		for i in range(batch_size):
-			tmp = matrix_sample.reshape(embedding_dim, n_distributions, batch_size)
+			tmp = matrix_sample.reshape(embedding_dim, self.n_distributions, batch_size)
 			result_vec[i] = tmp[:, current_dist_states_indices[i], i]
 		return np.asarray(result_vec, dtype=np.float32)
 
 
 class UniformSample(Sampler):
-	def get_sample(self, batch_size, embedding_dim, n_distributions):
+	def get_sample(self, batch_size, embedding_dim):
 		return np.random.uniform(-1, 1, size=(batch_size, embedding_dim)).astype(np.float32)
 
 
 class GaussianSample(Sampler):
-	def get_sample(self, batch_size, embedding_dim, n_distributions):
+	def get_sample(self, batch_size, embedding_dim):
 		return np.random.normal(loc=self.mu, scale=self.sigma, size=(batch_size, embedding_dim)).astype(np.float32)
 
 
 class TruncatedGaussianSample(Sampler):
-	def get_sample(self, batch_size, embedding_dim, n_distributions):
+	def get_sample(self, batch_size, embedding_dim):
 		import scipy.stats
 		lower = -1
 		upper = 1
@@ -66,9 +66,9 @@ class TruncatedGaussianSample(Sampler):
 
 
 class MultiModalUniformSample(Sampler):
-	def get_sample(self, batch_size, embedding_dim, n_distributions):
-		means = np.linspace(-0.1, 0.1, n_distributions)
-		rand = np.random.randint(0, n_distributions - 1, batch_size)
+	def get_sample(self, batch_size, embedding_dim):
+		means = np.linspace(-0.1, 0.1, self.n_distributions)
+		rand = np.random.randint(0, self.n_distributions - 1, batch_size)
 		current_dist_states_indices = means[rand]
 		result_vec = np.zeros((batch_size, embedding_dim))
 		for i in range(batch_size):
@@ -77,12 +77,12 @@ class MultiModalUniformSample(Sampler):
 
 
 class MultimodelGaussianTF(Sampler):
-	def get_sample(self, batch_size, embedding_dim, n_distributions):
+	def get_sample(self, batch_size, embedding_dim):
 		import tensorflow as tf
 		tfd = tf.contrib.distributions
-		mu = np.arange(n_distributions, dtype=np.float32)
-		sigma = np.ones(n_distributions, dtype=np.float32)
-		bimix_gauss = tfd.Mixture(cat=tfd.Categorical(probs=np.ones(n_distributions, dtype=np.float32) / n_distributions),
+		mu = np.arange(self.n_distributions, dtype=np.float32)
+		sigma = np.ones(self.n_distributions, dtype=np.float32)
+		bimix_gauss = tfd.Mixture(cat=tfd.Categorical(probs=np.ones(self.n_distributions, dtype=np.float32) / self.n_distributions),
 		                          components=[tfd.Normal(loc=m, scale=s) for m, s in zip(mu, sigma)])
 		return bimix_gauss.sample(embedding_dim * batch_size)
 

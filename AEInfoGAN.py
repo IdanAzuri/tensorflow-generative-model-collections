@@ -463,7 +463,7 @@ class AEMultiModalInfoGAN(object):
 		y_one_hot[np.arange(self.batch_size), y] = 1
 
 		# z_sample = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
-		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim)
 		_, ae_loss, ae_summ, embedding_test = self.sess.run([self.ae_optim, self.ae_loss, self.ae_sum, self.embedding],
 		                                                    feed_dict={self.x: self.test_batch_images})
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: embedding_test, self.y: y_one_hot})

@@ -164,7 +164,7 @@ class WGAN_GP(object):
 
 		# graph inputs for visualize training results
 		# self.sample_z = np.random.uniform(-1, 1, size=(self.batch_size , self.z_dim))
-		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim)
 
 		# saver to save model
 		self.saver = tf.train.Saver()
@@ -201,7 +201,7 @@ class WGAN_GP(object):
 
 				# update G network
 				if (counter - 1) % self.disc_iters == 0:
-					batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+					batch_z = self.sampler.get_sample(self.batch_size, self.z_dim)
 					_, summary_str, g_loss = self.sess.run([self.g_optim, self.g_sum, self.g_loss], feed_dict={self.z: batch_z})
 					self.writer.add_summary(summary_str, counter)
 
@@ -244,7 +244,7 @@ class WGAN_GP(object):
 			y_one_hot = np.zeros((self.batch_size, self.y_dim))
 			y_one_hot[:, y] = 1
 			for i in range(self.test_size // self.batch_size):
-				z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+				z_sample = self.sampler.get_sample(self.batch_size, self.z_dim)
 				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample})
 				generated_dataset.append(samples)  # stroting generated images and label
 				generated_labels.append(c + 1)
@@ -266,7 +266,7 @@ class WGAN_GP(object):
 		# samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample})
 		samples_for_test = []
 		for i in range(self.test_size // self.batch_size):
-			sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+			sample_z = self.sampler.get_sample(self.batch_size, self.z_dim)
 			samples = self.sess.run(self.fake_images, feed_dict={self.z: sample_z})
 			samples_for_test.append(samples)
 		samples_for_test = np.asarray(samples_for_test)

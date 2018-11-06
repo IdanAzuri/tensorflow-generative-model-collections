@@ -360,7 +360,7 @@ class MultiModalInfoGAN_phase2(object):
 				# batch_labels = np.asarray(batch_labels).reshape(-1, self.len_discrete_code)
 				# print("Simplex:{}".format(batch_labels))
 				batch_chitinous_codes = np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))
-				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.sampler.n_distributions)
+				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim)
 				# update D network
 				_, d_loss = self.sess.run([self.d_optim, self.d_loss], feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
 				# self.writer.add_summary(summary_str, counter)
@@ -407,7 +407,7 @@ class MultiModalInfoGAN_phase2(object):
 		# y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))), axis=1)
 		
 		batch_chitinous_codes = np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))
-		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.sampler.n_distributions)
+		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim)
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y_continuous: batch_chitinous_codes})  # samples_for_test.append(samples)
 		
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
@@ -519,7 +519,7 @@ class MultiModalInfoGAN_phase2(object):
 				if i == 'rzcc':
 					for _ in range(num_iter):
 						# z random c-clean - rzcc
-						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.sampler.n_distributions)
+						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim)
 						batch_chitinous_codes = np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))
 						batch_chitinous_codes[np.arange(image_frame_dim * image_frame_dim), 0] = c1
 						batch_chitinous_codes[np.arange(image_frame_dim * image_frame_dim), 1] = c2

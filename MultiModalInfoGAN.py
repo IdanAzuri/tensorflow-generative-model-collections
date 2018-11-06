@@ -98,10 +98,6 @@ class MultiModalInfoGAN(object):
 		self.model_dir = self.get_model_dir()
 
 	def classifier(self, x, is_training=True, reuse=False):
-		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
-		# Architecture : (64)5c2s-(128)5c2s_BL-FC1024_BL-FC128_BL-FC12S’
-		# All layers except the last two layers are shared by discriminator
-		# Number of nodes in the last layer is reduced by half. It gives better results.
 		with tf.variable_scope("classifier", reuse=reuse):
 			net = bn(lrelu(linear(x, 64, scope='c_fc1')), is_training=is_training, scope='c_bn1')
 			out_logit = linear(net, self.y_dim, scope='c_fc2')
@@ -182,9 +178,7 @@ class MultiModalInfoGAN(object):
 		if self.wgan_gp:
 			d_loss_real = - tf.reduce_mean(D_real_logits)
 			d_loss_fake = tf.reduce_mean(D_fake_logits)
-			
 			self.d_loss = d_loss_real + d_loss_fake
-			
 			# get loss for generator
 			self.g_loss = - d_loss_fake
 			wd = tf.reduce_mean(D_real_logits) - tf.reduce_mean(D_fake_logits)
@@ -239,20 +233,8 @@ class MultiModalInfoGAN(object):
 		self.q_sum = tf.summary.merge([q_loss_sum, q_disc_sum, q_cont_sum])
 	
 	def train(self):
-		
-		# initialize all variables
 		tf.global_variables_initializer().run()
-		
-		# graph inputs for visualize training results
-		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.sampler.n_distributions)  # np.random.uniform(-1, 1,
-		# size=(self.batch_size, self.z_dim))
-		# self.test_labels = np.ones([self.batch_size, self.y_dim])
-		# self.test_labels = self.data_y[0:self.batch_size]
-		
-		# saver to save model
 		self.saver = tf.train.Saver(tf.trainable_variables())
-		
-		# summary writer
 		self.writer = tf.summary.FileWriter(self.log_dir + '/' + self.model_name, self.sess.graph)
 		
 		# restore check-point if it exits
@@ -268,7 +250,6 @@ class MultiModalInfoGAN(object):
 			counter = 1
 			print(" [!] Load failed...")
 		
-		# loop for epoch
 		start_time = time.time()
 		for epoch in range(start_epoch, self.epoch):
 			# get batch data
@@ -285,7 +266,7 @@ class MultiModalInfoGAN(object):
 				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
 				
 				# batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
-				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.sampler.n_distributions)
+				batch_z = self.sampler.get_sample(self.batch_size, self.z_dim)
 				
 				# update D network
 				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss], feed_dict={self.x: batch_images, self.y: batch_codes, self.z: batch_z})
@@ -329,7 +310,7 @@ class MultiModalInfoGAN(object):
 		y = np.random.choice(self.len_discrete_code, self.batch_size)
 		y_one_hot = np.zeros((self.batch_size, self.y_dim))
 		y_one_hot[np.arange(self.batch_size), y] = 1
-		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.sampler.n_distributions)
+		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim)
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})  # samples_for_test.append(samples)
 		
 		save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
@@ -462,7 +443,7 @@ class MultiModalInfoGAN(object):
 				if i == 'rzcc':
 					for _ in range(num_iter):
 						# z random c-clean - rzcc
-						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.sampler.n_distributions)
+						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim)
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
 						y_one_hot = np.zeros((self.batch_size, self.y_dim))
 						y_one_hot[np.arange(self.batch_size), y] = 1
@@ -478,7 +459,7 @@ class MultiModalInfoGAN(object):
 				if i == 'rzrc':
 					for _ in range(num_iter):
 						# rzrc
-						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.sampler.n_distributions)
+						z_sample = self.sampler.get_sample(self.batch_size, self.z_dim)
 						y = np.zeros(self.batch_size, dtype=np.int64) + label  # ones in the discrete_code idx * batch_size
 						
 						y_one_hot = np.zeros((self.batch_size, self.y_dim))

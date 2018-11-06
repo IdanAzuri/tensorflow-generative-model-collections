@@ -165,7 +165,7 @@ class WGAN(object):
 
 		# graph inputs for visualize training results
 		# self.sample_z = np.random.uniform(-1, 1, size=(self.batch_size , self.z_dim))
-		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim)
 
 		# saver to save model
 		self.saver = tf.train.Saver()
@@ -244,7 +244,7 @@ class WGAN(object):
 			y_one_hot = np.zeros((self.batch_size, self.y_dim))
 			y_one_hot[:, y] = 1
 			for i in range(self.test_size // self.batch_size):
-				z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+				z_sample = self.sampler.get_sample(self.batch_size, self.z_dim)
 				samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
 				generated_dataset.append(samples)  # stroting generated images and label
 				generated_labels.append(c + 1)
@@ -266,7 +266,7 @@ class WGAN(object):
 		# samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample})
 		samples_for_test = []
 		for i in range(self.test_size // self.batch_size):
-			sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+			sample_z = self.sampler.get_sample(self.batch_size, self.z_dim)
 			samples = self.sess.run(self.fake_images, feed_dict={self.z: sample_z})
 			samples_for_test.append(samples)
 		samples_for_test = np.asarray(samples_for_test)

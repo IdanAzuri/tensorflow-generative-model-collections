@@ -1,7 +1,7 @@
 import os
 
 import tensorflow as tf
-
+import argparse
 from ACGAN import ACGAN
 ## GAN Variants
 from AEInfoGAN import AEMultiModalInfoGAN
@@ -29,7 +29,8 @@ from utils import show_all_variables
 
 def parse_args():
 	desc = "Tensorflow implementation of GAN collections"
-	parser = argparse.ArgumentParser(description=desc)
+	
+	parser = argparse.ArgumentParser(desc)
 	
 	parser.add_argument('--gan_type', type=str, default='GAN',
 	                    choices=['GAN', 'CGAN', 'infoGAN', 'WGAN', 'WGAN_GP', 'MultiModalInfoGAN', 'AEMultiModalInfoGAN', 'MultiModalInfoGAN_phase2'], help='The type of GAN',

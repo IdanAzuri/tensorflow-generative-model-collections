@@ -182,7 +182,7 @@ class infoGAN(object):
 
 		# graph inputs for visualize training results
 		
-		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim)
 		self.test_labels = self.data_y[0:self.batch_size]
 		self.test_codes = np.concatenate((self.test_labels, np.zeros([self.batch_size, self.len_continuous_code])), axis=1)
 
@@ -222,7 +222,7 @@ class infoGAN(object):
 
 				batch_codes = np.concatenate((batch_labels, np.random.uniform(-1, 1, size=(self.batch_size, 2))), axis=1)
 
-				batch_z  = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+				batch_z  = self.sampler.get_sample(self.batch_size, self.z_dim)
 				
 				# update D network
 				_, summary_str, d_loss = self.sess.run([self.d_optim, self.d_sum, self.d_loss],
@@ -273,7 +273,7 @@ class infoGAN(object):
 		y_one_hot[np.arange(self.batch_size), y] = 1
 
 		
-		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, 10)
+		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim)
 		
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y: y_one_hot})
 
