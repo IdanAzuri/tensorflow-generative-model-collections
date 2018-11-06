@@ -99,7 +99,7 @@ class MultiModalInfoGAN(object):
 
 	def classifier(self, x, is_training=True, reuse=False):
 		with tf.variable_scope("classifier", reuse=reuse):
-			net = bn(lrelu(linear(x, 64, scope='c_fc1')), is_training=is_training, scope='c_bn1')
+			net = lrelu(bn(linear(x, 64, scope='c_fc1'), is_training=is_training, scope='c_bn1'))
 			out_logit = linear(net, self.y_dim, scope='c_fc2')
 			out = tf.nn.softmax(out_logit)
 			
@@ -119,9 +119,9 @@ class MultiModalInfoGAN(object):
 		else:
 			with tf.variable_scope("discriminator", reuse=reuse):
 				net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
-				net = bn(lrelu(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2')), is_training=is_training, scope='d_bn2')
+				net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
 				net = tf.reshape(net, [self.batch_size, -1])
-				net = bn(lrelu(linear(net, 1024, scope='d_fc3')), is_training=is_training, scope='d_bn3')
+				net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
 				out_logit = linear(net, 1, scope='d_fc4')
 				out = tf.nn.sigmoid(out_logit)
 			
@@ -134,13 +134,14 @@ class MultiModalInfoGAN(object):
 			# merge noise and code
 			z = concat([z, y], 1)
 			
-			self.layer1= bn(lrelu(linear(z, 1024, scope='g_fc1')), is_training=is_training, scope='g_bn1')
-			self.layer2 = bn(lrelu(linear(self.layer1, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2')), is_training=is_training, scope='g_bn2')
-			self.layer3 = tf.reshape(self.layer2, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
-			self.layer4 = bn(lrelu(
-				deconv2d(self.layer3, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3')), is_training=is_training, scope='g_bn3')
+			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
+			net = lrelu(bn(linear(net, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
+			net = tf.reshape(net, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
+			net = lrelu(
+				bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_n_dc3'), is_training=is_training, scope='g_bn3'))
 			
-			out = tf.nn.sigmoid(deconv2d(self.layer4, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
+			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
+			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
 			
 			return out
 	
