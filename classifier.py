@@ -84,6 +84,8 @@ def confusion_matrix_op(logits, labels, num_classes):
 		top_predicted_label = tf.squeeze(top_predicted_label, axis=1)
 		
 		return tf.confusion_matrix(labels, top_predicted_label, num_classes=num_classes)
+
+
 # losses
 
 def one_hot_encoder(data):
@@ -131,9 +133,9 @@ def variable_summaries(var, name):
 
 
 class CNNClassifier():
-	def __init__(self, classifier_name, pkl_fname=None, data_X=None, data_y=None, test_X=None, test_y=None, save_model=False,seed=88,num_classes=10):
-		self.num_classes=num_classes
-		self.seed=seed
+	def __init__(self, classifier_name, pkl_fname=None, data_X=None, data_y=None, test_X=None, test_y=None, save_model=False, seed=88, num_classes=10):
+		self.num_classes = num_classes
+		self.seed = seed
 		self.is_save_model = save_model
 		self.num_epochs = 500
 		self.classifier_name = classifier_name
@@ -191,7 +193,6 @@ class CNNClassifier():
 	
 	def set_log_dir(self, log_dir_name):
 		self.log_dir = "logs/{}".format(log_dir_name)
-	
 	
 	def _deepcnn(self, x, keep_prob):
 		x_image = tf.reshape(x, [-1, self.IMAGE_WIDTH, self.IMAGE_HEIGHT, self.c_dim])
@@ -266,7 +267,7 @@ class CNNClassifier():
 		self.num_batches = max(len(self.train_X) // self.batch_size, 1)
 		
 		if self.fname is not None:
-			print("START TRAINING:{}, {}".format(self.fname,self.num_batches))
+			print("START TRAINING:{}, {}".format(self.fname, self.num_batches))
 		start_time = time.time()
 		for epoch in range(self.num_epochs):
 			for i in range(start_batch_id, self.num_batches):
@@ -291,7 +292,7 @@ class CNNClassifier():
 					if not use_confidence:
 						self.train_step.run(session=self.sess, feed_dict={self.x: X_batch, self.y_: y_batch, self.keep_prob: self.dropout_prob})
 					else:
-						accuracy, confidence, loss = self.test(X_batch, y_batch, epoch * i)
+						accuracy, confidence, loss, confusion = self.test(X_batch, y_batch, epoch * i)
 						high_confidence_threshold_indices = confidence >= confidence_thresh
 						if len(high_confidence_threshold_indices[high_confidence_threshold_indices]) > 0:
 							_ = self.sess.run([self.train_step], feed_dict={self.x: X_batch[high_confidence_threshold_indices], self.y_: y_batch[high_confidence_threshold_indices],
@@ -310,7 +311,7 @@ class CNNClassifier():
 	def test(self, test_batch, test_labels, counter=0, is_arg_max=False):
 		if is_arg_max:
 			accuracy, confidence, loss, arg_max = self.sess.run([self.accuracy, self.confidence, self.cross_entropy, self.argmax],
-			                                                            feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
+			                                                    feed_dict={self.x: test_batch, self.y_: test_labels, self.keep_prob: 1.})
 			print("argmax:{}".format(arg_max))
 			# self.test_writer.add_summary(summary, counter)
 			print('step {}: accuracy:{}, mean_confidence:{}, loss:{}'.format(counter, accuracy, np.mean(confidence), loss))
@@ -321,15 +322,15 @@ class CNNClassifier():
 			# confusion=tf.confusion_matrix(np.argmax(y_labels,axis=1), y_conv, num_classes=10)
 			# confusion = confusion_matrix_op(y_conv,np.argmax(y_labels,axis=1),num_classes=10)
 			y_conv_indices = np.argmax(y_conv, axis=1)
-			predicted_onehot=np.zeros((len(y_conv),10))
-			predicted_onehot[np.arange(len(y_conv)),y_conv_indices] = 1
+			predicted_onehot = np.zeros((len(y_conv), 10))
+			predicted_onehot[np.arange(len(y_conv)), y_conv_indices] = 1
 			# predicted_onehot[np.arange(len(y_labels)), y_labels] = 1
-			confusion = sklearn.metrics.confusion_matrix(np.argmax(y_labels,axis=1),y_conv_indices, labels=None, sample_weight=None)
-			sum_of_rest = np.diag(confusion[:-1]).sum()/ confusion[0:-1,0:-1].sum()
-			sum_of_9 = np.diag(confusion)[-1]/confusion[-1,:].sum()
+			confusion = sklearn.metrics.confusion_matrix(np.argmax(y_labels, axis=1), y_conv_indices, labels=None, sample_weight=None)
+			sum_of_rest = np.diag(confusion[:-1]).sum() / confusion[0:-1, 0:-1].sum()
+			sum_of_9 = np.diag(confusion)[-1] / confusion[-1, :].sum()
 			
-			print(confusion[-1:-1,-1:-1].sum())
-			print("8_classes accuracy:{}, 1_shot_accuracy:{}".format(sum_of_rest,sum_of_9))
+			print(confusion[-1:-1, -1:-1].sum())
+			print("8_classes accuracy:{}, 1_shot_accuracy:{}".format(sum_of_rest, sum_of_9))
 			self.confussion_list_8classes.append(sum_of_rest)
 			self.confussion_list_1_shot.append(sum_of_9)
 			# self.test_writer.add_summary(summary, counter)
@@ -371,13 +372,13 @@ class CNNClassifier():
 		plt.grid()
 		plt.show()
 		
-		name_figure = "classifier_results_seed_{}/classifier_MMinfoGAN_{}_{}".format(self.seed,self.fname, name_of_measure)
+		name_figure = "classifier_results_seed_{}/classifier_MMinfoGAN_{}_{}".format(self.seed, self.fname, name_of_measure)
 		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
 		plt.savefig(name_figure + ".png")
 		plt.close()
 	
-	def save_and_plot_results_cv(self, name_of_measure, array, color="b", marker="P") :
-		name_figure = "classifier_results_seed_{}/classifier_MMinfoGAN_{}_{}".format(self.seed,self.fname, name_of_measure)
+	def save_and_plot_results_cv(self, name_of_measure, array, color="b", marker="P"):
+		name_figure = "classifier_results_seed_{}/classifier_MMinfoGAN_{}_{}".format(self.seed, self.fname, name_of_measure)
 		pickle.dump(array, open("{}.pkl".format(name_figure), 'wb'))
 		
 		plt.Figure()
@@ -410,7 +411,7 @@ def parse_args():
 	parser.add_argument('--confidence_thresh', type=float, default=0.9)
 	parser.add_argument('--train_model', type=bool, default="True")
 	parser.add_argument('--seed', type=int, default=88)
-	parser.add_argument('--pref', type=str, default="",help="prefix experiment title")
+	parser.add_argument('--pref', type=str, default="", help="prefix experiment title")
 	
 	return parser.parse_args()
 
@@ -487,14 +488,13 @@ def main():
 	confidence_thresh = args.confidence_thresh
 	seed = args.seed
 	pref = args.pref
-	dir_results = '{}_classifier_results_seed_{}'.format(pref,seed)
+	dir_results = '{}_classifier_results_seed_{}'.format(pref, seed)
 	pkl_label_path = "{}{}/edited_labels_{}.pkl".format(dir, dir_results, fname)
 	pkl_path = "{}{}/edited_training_set_{}.pkl".format(dir, dir_results, fname)
 	
 	data_X = pickle.load(open(pkl_path, 'rb'))
 	data_y = pickle.load(open(pkl_label_path, 'rb'))
 	data_X_real, data_y_real = load_mnist(original_dataset_name)
-	
 	
 	X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real, test_size=0.2, random_state=seed)
 	# print("X_train_real={}, data_X={}, y_test_real={}, y_test={}".format(len(X_train_real), len(data_X), len(y_test_real), len(data_y)))
@@ -506,9 +506,9 @@ def main():
 	# X_test = np.append(X_test_real, X_test).reshape(-1, 784)
 	# y_test = np.append(y_test_real.reshape(-1, 10), y_test).reshape(-1, 10)
 	data_X, data_y = shuffle(data_X, data_y, random_state=seed)
-	c = CNNClassifier("custom", pkl_fname=fname, data_X=data_X, data_y=data_y, test_X=X_test_real, test_y=y_test_real,seed=seed,save_model=False)
-	accuracy_list=c.train(confidence_in_train=confidence_in_train)
-	
+	c = CNNClassifier("custom", pkl_fname=fname, data_X=data_X, data_y=data_y, test_X=X_test_real, test_y=y_test_real, seed=seed, save_model=False)
+	accuracy_list = c.train(confidence_in_train=confidence_in_train)
+
 
 def classify_1_missing_digit():
 	# parse arguments
@@ -530,41 +530,37 @@ def classify_1_missing_digit():
 	pkl_label_path_digit = "{}{}/edited_phase2_labels_{}.pkl".format(dir, dir_results, fname)
 	pkl_path_digit = "{}{}/edited_phase2_training_set_{}.pkl".format(dir, dir_results, fname)
 	
-	data_X_generated_9= pickle.load(open(pkl_path_digit, 'rb'))
+	data_X_generated_9 = pickle.load(open(pkl_path_digit, 'rb'))
 	
 	import matplotlib
 	matplotlib.use("Agg")
 	
-	data_y_generated_9= pickle.load(open(pkl_label_path_digit, 'rb'))
+	data_y_generated_9 = pickle.load(open(pkl_label_path_digit, 'rb'))
 	data_X_real, data_y_real = load_mnist(original_dataset_name)
 	
 	X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real, test_size=0.2, random_state=seed)
 	
 	train_indiceis_of_9 = np.where(np.argmax(y_train_real, 1) == ignored_label)
-	data_X_9 = X_train_real[train_indiceis_of_9][:1].reshape(-1,28,28,1)
-	data_y_9 = y_train_real[train_indiceis_of_9][:1].reshape(-1,10)
+	data_X_9 = X_train_real[train_indiceis_of_9][:1].reshape(-1, 28, 28, 1)
+	data_y_9 = y_train_real[train_indiceis_of_9][:1].reshape(-1, 10)
 	test_indiceis_of_9 = np.where(np.argmax(y_test_real, 1) == ignored_label)
 	X_test_9 = X_test_real[test_indiceis_of_9]
 	y_test_9 = y_test_real[test_indiceis_of_9]
 	
-	#rest
+	# rest
 	train_indiceis_of_rest = np.where(np.argmax(y_train_real, 1) != 9)
 	X_train_real_rest = X_train_real[train_indiceis_of_rest][0:6000]
 	y_train_real_rest = y_train_real[train_indiceis_of_rest][0:6000]
 	
 	test_indiceis_of_rest = np.where(np.argmax(y_test_real, 1) != 9)
 	X_test_real_rest = X_test_real[test_indiceis_of_rest]
-	y_test_real_rest= y_test_real[test_indiceis_of_rest]
+	y_test_real_rest = y_test_real[test_indiceis_of_rest]
 	
-	X_train_all = np.concatenate([data_X_9.reshape(-1,784),data_X_generated_9[:1000].reshape(-1,784),X_train_real_rest.reshape(-1,784)])
-	y_train_all = np.concatenate([data_y_9,data_y_generated_9[:1000],y_train_real_rest])
+	X_train_all = np.concatenate([data_X_9.reshape(-1, 784), data_X_generated_9[:1000].reshape(-1, 784), X_train_real_rest.reshape(-1, 784)])
+	y_train_all = np.concatenate([data_y_9, data_y_generated_9[:1000], y_train_real_rest])
 	
-	X_test_all = np.concatenate([X_test_9,X_test_real_rest])
-	y_test_all = np.concatenate([y_test_9,y_test_real_rest])
-	
-	
-	
-	
+	X_test_all = np.concatenate([X_test_9, X_test_real_rest])
+	y_test_all = np.concatenate([y_test_9, y_test_real_rest])
 	
 	# plt.imshow(X_test_all[0].reshape(28,28))
 	# plt.savefig("9_0test.png")
@@ -576,12 +572,13 @@ def classify_1_missing_digit():
 	# print(y_test_all[100])
 	# print(y_test_all[200])
 	
-	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_all, data_y=y_train_all, test_X=X_test_all, test_y=y_test_all,seed=seed,save_model=False)
-	accuracy_list=c.train(confidence_in_train=confidence_in_train)
+	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_all, data_y=y_train_all, test_X=X_test_all, test_y=y_test_all, seed=seed, save_model=False)
+	accuracy_list = c.train(confidence_in_train=confidence_in_train)
 	# c.plot_train_test_loss("accuracy_baseline_missing_digit", accuracy_list)
-	c.plot_train_test_loss("accuracy_gan_no_prior", accuracy_list)
+	# c.plot_train_test_loss("accuracy_gan_no_prior", accuracy_list)
 	c.plot_train_test_loss("accuracy_1_shot", c.confussion_list_1_shot)
 	c.plot_train_test_loss("accuracy_8_classes", c.confussion_list_8classes)
+
 
 def main_to_train_classifier():
 	# parse arguments
@@ -600,6 +597,7 @@ def main_to_train_classifier():
 	c.train(confidence_in_train=confidence_in_train)
 	c.test(X_test, y_test)
 
+
 def classify_1_missing_digit_baseline(num_classes=10):
 	# parse arguments
 	ignored_label = 9
@@ -613,11 +611,9 @@ def classify_1_missing_digit_baseline(num_classes=10):
 	
 	data_X_real, data_y_real = load_mnist(original_dataset_name)
 	
-	
 	X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real, test_size=0.2, random_state=seed)
 	
-	
-	#9s
+	# 9s
 	train_indiceis_of_9 = np.where(np.argmax(y_train_real, 1) == ignored_label)
 	data_X_9 = X_train_real[train_indiceis_of_9][:1]
 	data_y_9 = y_train_real[train_indiceis_of_9][:1]
@@ -626,23 +622,20 @@ def classify_1_missing_digit_baseline(num_classes=10):
 	X_test_9 = X_test_real[test_indiceis_of_9]
 	y_test_9 = y_test_real[test_indiceis_of_9]
 	
-	#rest
+	# rest
 	train_indiceis_of_rest = np.where(np.argmax(y_train_real, 1) != ignored_label)
 	X_train_real_rest = X_train_real[train_indiceis_of_rest][0:8000]
 	y_train_real_rest = y_train_real[train_indiceis_of_rest][0:8000]
 	
 	test_indiceis_of_rest = np.where(np.argmax(y_test_real, 1) != ignored_label)
 	X_test_real_rest = X_test_real[test_indiceis_of_rest]
-	y_test_real_rest= y_test_real[test_indiceis_of_rest]
+	y_test_real_rest = y_test_real[test_indiceis_of_rest]
 	
-	X_train_all = np.concatenate([data_X_9,X_train_real_rest])
-	y_train_all = np.concatenate([data_y_9,y_train_real_rest])
+	X_train_all = np.concatenate([data_X_9, X_train_real_rest])
+	y_train_all = np.concatenate([data_y_9, y_train_real_rest])
 	
-	X_test_all = np.concatenate([X_test_9,X_test_real_rest])
-	y_test_all = np.concatenate([y_test_9,y_test_real_rest])
-	
-	
-	
+	X_test_all = np.concatenate([X_test_9, X_test_real_rest])
+	y_test_all = np.concatenate([y_test_9, y_test_real_rest])
 	
 	# X_train_real= np.repeat(X_train_real[None], 64, axis=0).reshape(-1, 28, 28, 1)
 	# y_train_real = np.repeat(y_train_real[0], 64, axis=0).reshape(64, 10)
@@ -651,12 +644,13 @@ def classify_1_missing_digit_baseline(num_classes=10):
 	
 	# print(X_train_real.shape)
 	
-	
-	
-	print("Train size={}, test size={}".format(X_test_real.shape,X_train_real.shape))
-	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_all, data_y=y_train_all, test_X=X_test_all, test_y=y_test_all.reshape(-1,num_classes),seed=seed,save_model=False,num_classes=num_classes)
-	accuracy_list=c.train(confidence_in_train=confidence_in_train)
-	# c.plot_train_test_loss("accuracy_baseline_missing_digit_10classes", accuracy_list)
+	print("Train size={}, test size={}".format(X_test_real.shape, X_train_real.shape))
+	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_all, data_y=y_train_all, test_X=X_test_all, test_y=y_test_all.reshape(-1, num_classes), seed=seed, save_model=False,
+	                  num_classes=num_classes)
+	accuracy_list = c.train(confidence_in_train=confidence_in_train)
+
+
+# c.plot_train_test_loss("accuracy_baseline_missing_digit_10classes", accuracy_list)
 
 def classify_1_missing_digit_baseline_2classes(num_classes=10):
 	# parse arguments
@@ -671,53 +665,47 @@ def classify_1_missing_digit_baseline_2classes(num_classes=10):
 	
 	data_X_real, data_y_real = load_mnist(original_dataset_name)
 	
-	
 	X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(data_X_real, data_y_real, test_size=0.2, random_state=seed)
 	
-	
-	#9s
+	# 9s
 	train_indiceis_of_9 = np.where(np.argmax(y_train_real, 1) == ignored_label)
-	data_X_9 = X_train_real[train_indiceis_of_9][0:10].reshape(-1,28,28,1)
-	data_y_9 = y_train_real[train_indiceis_of_9][0:10].reshape(-1,10)
+	data_X_9 = X_train_real[train_indiceis_of_9][0:10].reshape(-1, 28, 28, 1)
+	data_y_9 = y_train_real[train_indiceis_of_9][0:10].reshape(-1, 10)
 	
 	repeat = 20
-	data_X_9= np.repeat(data_X_9[None], repeat, axis=0).reshape(-1, 28, 28, 1)
+	data_X_9 = np.repeat(data_X_9[None], repeat, axis=0).reshape(-1, 28, 28, 1)
 	data_y_9 = np.repeat(data_y_9[None], repeat, axis=0).reshape(-1, 10)
 	
 	test_indiceis_of_9 = np.where(np.argmax(y_test_real, 1) == ignored_label)
 	X_test_9 = X_test_real[test_indiceis_of_9]
 	y_test_9 = y_test_real[test_indiceis_of_9]
 	
-	#rest
+	# rest
 	train_indiceis_of_rest = np.where(np.argmax(y_train_real, 1) == 8)
 	X_train_real_rest = X_train_real[train_indiceis_of_rest][0:6000]
 	y_train_real_rest = y_train_real[train_indiceis_of_rest][0:6000]
 	
 	test_indiceis_of_rest = np.where(np.argmax(y_test_real, 1) == 8)
 	X_test_real_rest = X_test_real[test_indiceis_of_rest]
-	y_test_real_rest= y_test_real[test_indiceis_of_rest]
+	y_test_real_rest = y_test_real[test_indiceis_of_rest]
 	
-	X_train_all = np.concatenate([data_X_9,X_train_real_rest])
-	y_train_all = np.concatenate([data_y_9,y_train_real_rest])
+	X_train_all = np.concatenate([data_X_9, X_train_real_rest])
+	y_train_all = np.concatenate([data_y_9, y_train_real_rest])
 	
-	X_test_all = np.concatenate([X_test_9,X_test_real_rest])
-	y_test_all = np.concatenate([y_test_9,y_test_real_rest])
-	
-	
-	
-	
-	
+	X_test_all = np.concatenate([X_test_9, X_test_real_rest])
+	y_test_all = np.concatenate([y_test_9, y_test_real_rest])
 	
 	# X_train_real = np.repeat(X_train_real[None], 10, axis=0).reshape(-1, 28, 28, 1)
 	
 	# print(X_train_real.shape)
 	
-	
-	
-	print("\n\nTrain size={},{}, test size={},{}\n\n".format(X_train_all.shape,y_train_all.shape,X_test_all.shape,y_test_all.shape))
-	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_all, data_y=y_train_all, test_X=X_test_all, test_y=y_test_all.reshape(-1,num_classes),seed=seed,save_model=False,num_classes=num_classes)
-	accuracy_list=c.train(confidence_in_train=confidence_in_train)
+	print("\n\nTrain size={},{}, test size={},{}\n\n".format(X_train_all.shape, y_train_all.shape, X_test_all.shape, y_test_all.shape))
+	c = CNNClassifier("custom", pkl_fname=fname, data_X=X_train_all, data_y=y_train_all, test_X=X_test_all, test_y=y_test_all.reshape(-1, num_classes), seed=seed, save_model=False,
+	                  num_classes=num_classes)
+	accuracy_list = c.train(confidence_in_train=confidence_in_train)
 	c.plot_train_test_loss("accuracy_baseline_missing_digit_2classes", accuracy_list)
+
+
 if __name__ == '__main__':
 	# classify_1_missing_digit_baseline()  # classify_1_missing_digit_baseline_2classes()
 	classify_1_missing_digit()

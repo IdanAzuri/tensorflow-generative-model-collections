@@ -10,15 +10,13 @@ from functools import reduce
 
 from sklearn.utils import shuffle
 
-# SEED = 88
-# from Sampler import simplex
 from Sampler import MultivariateGaussianSampler
 
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 from matplotlib.legend_handler import HandlerLine2D
 
-from classifier import CNNClassifier, one_hot_encoder, CONFIDENCE_THRESHOLD
+from classifier import CNNClassifier, one_hot_encoder
 from ops import *
 from utils import *
 
@@ -44,14 +42,8 @@ def gradient_penalty(real, fake, f):
 def gram_matrix(v):
 	assert isinstance(v, tf.Tensor)
 	return tf.matmul(v, v, transpose_b=True)
-	# v.get_shape().assert_has_rank(4)
-	#
-	# dim = v.get_shape().as_list()
-	# v = tf.reshape(v, [dim[1] * dim[2], dim[3]])
-	# if dim[1] * dim[2] < dim[3]:
-	# 	return tf.matmul(v, v, transpose_b=True)
-	# else:
-	# 	return tf.matmul(v, v, transpose_a=True)
+
+
 
 
 
@@ -106,8 +98,7 @@ class MultiModalInfoGAN_phase2(object):
 			
 			# load mnist
 			self.data_X, self.data_y = load_mnist(self.dataset_name)
-
-
+			
 			self.n = 1
 			indiceis_of_9 = np.where(np.argmax(self.data_y, 1) == self.ignored_label)
 			indiceis_of_rest= np.where(np.argmax(self.data_y, 1) != self.ignored_label)
@@ -118,10 +109,10 @@ class MultiModalInfoGAN_phase2(object):
 			import matplotlib
 			matplotlib.use("Agg")
 			import matplotlib.pyplot as plt
-
+			
 			# plt.imshow(self.data_X_only9[0].reshape(28,28))
 			# plt.savefig("9_0.png")
-
+			
 			# self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			# self.data_y =  np.tile(self.data_y_only9, (100, 1))
 			self.data_X_only9 = np.repeat(self.data_X_only9[None], self.n * 1024, axis=0).reshape(-1, 28, 28, 1)
@@ -136,7 +127,7 @@ class MultiModalInfoGAN_phase2(object):
 		# All layers except the last two layers are shared by discriminator
 		# Number of nodes in the last layer is reduced by half. It gives better results.
 		with tf.variable_scope("classifier", reuse=reuse):
-			net = lrelu(bn(linear(x, 64, scope='c_fc1'), is_training=is_training, scope='c_bn1'))
+			net = bn(lrelu(linear(x, 64, scope='c_fc1')), is_training=is_training, scope='c_bn1')
 			out_logit = linear(net, self.y_dim, scope='c_fc2')
 			out = tf.nn.softmax(out_logit)
 			
@@ -156,14 +147,14 @@ class MultiModalInfoGAN_phase2(object):
 		else:
 			with tf.variable_scope("discriminator", reuse=reuse):
 				net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
-				net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
+				net = bn(lrelu(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2')), is_training=is_training, scope='d_bn2')
 				net = tf.reshape(net, [self.batch_size, -1])
-				net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
+				net = bn(lrelu(linear(net, 1024, scope='d_fc3')), is_training=is_training, scope='d_bn3')
 				out_logit = linear(net, 1, scope='d_fc4')
 				out = tf.nn.sigmoid(out_logit)
 		
 		return out, out_logit, net
-
+	
 	def generator(self, z, y, is_training=True, reuse=False):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
 		# Architecture : FC1024_BR-FC7x7x128_BR-(64)4dc2s_BR-(1)4dc2s_S
@@ -171,18 +162,19 @@ class MultiModalInfoGAN_phase2(object):
 			# merge noise and code
 			# y = tf.nn.softmax(y)
 			z = concat([z, y], 1)
-
-			self.layer1= lrelu(bn(linear(z, 1024, scope='retrain_g_fc1'), is_training=is_training, scope='retrain_g_bn1'))
-			self.layer2 = lrelu(bn(linear(self.layer1, 128 * self.input_height // 4 * self.input_width // 4, scope='retrain_g_fc2'), is_training=is_training, scope='retrain_g_bn2'))
+			
+			self.layer1 = bn(lrelu(linear(z, 1024, scope='g_fc1')), is_training=is_training, scope='g_bn1')
+			self.layer2 = bn(lrelu(linear(self.layer1, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2')), is_training=is_training,
+			                 scope='g_bn2')
 			self.layer3 = tf.reshape(self.layer2, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
-			self.layer4 = lrelu(
-				bn(deconv2d(self.layer3, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='retrain_g_dc3'), is_training=is_training, scope='retrain_g_bn3'))
-
-			out = tf.nn.sigmoid(deconv2d(self.layer4, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='retrain_g_dc4'))
+			self.layer4 = bn(lrelu(deconv2d(self.layer3, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3')),
+				is_training=is_training, scope='g_bn3')
+			
+			out = tf.nn.sigmoid(deconv2d(self.layer4, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
 			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
-
+			
 			return out
-		
+	
 	def fake_generator(self, z, y, is_training=True, reuse=False):
 		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
 		# Architecture : FC1024_BR-FC7x7x128_BR-(64)4dc2s_BR-(1)4dc2s_S
@@ -252,7 +244,7 @@ class MultiModalInfoGAN_phase2(object):
 		if self.wgan_gp:
 			d_loss_real = - tf.reduce_mean(D_real_logits)
 			d_loss_fake = tf.reduce_mean(D_fake_logits)
-		
+			
 			self.d_loss = d_loss_real + d_loss_fake
 			# get loss for generator
 			self.g_loss = - d_loss_fake
@@ -307,7 +299,7 @@ class MultiModalInfoGAN_phase2(object):
 		# optimizers
 		with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
 			self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss, var_list=d_vars)
-			regularization = self.phase_2_loss * 0 + self.gram_loss * 1e-6
+			regularization = self.phase_2_loss * 0 + self.gram_loss * 1e-5
 			self.g_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.g_loss + regularization, var_list=g_vars)
 			# self.p_optim = tf.train.AdamOptimizer(self.learning_rate * 0.2, beta1=self.beta1).minimize(self.phase_2_loss, var_list=p_vars)
 			self.q_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
@@ -334,7 +326,7 @@ class MultiModalInfoGAN_phase2(object):
 		tf.global_variables_initializer().run()
 		
 		# saver to save model
-
+		
 		# summary writer
 		# self.writer = tf.summary.FileWriter(self.log_dir + '/' + self.model_name, self.sess.graph)
 		
@@ -356,7 +348,7 @@ class MultiModalInfoGAN_phase2(object):
 		start_time = time.time()
 		for epoch in range(start_epoch, self.epoch):
 			# get batch data
-			for idx in range(3):#(start_batch_id, max(self.num_batches, 1)):
+			for idx in range(start_batch_id, max(self.num_batches, 1)):
 				batch_images = self.data_X[idx * self.batch_size:(idx + 1) * self.batch_size]
 				batch_images = batch_images.reshape(-1, 28, 28, 1)
 				
@@ -374,16 +366,16 @@ class MultiModalInfoGAN_phase2(object):
 				# self.writer.add_summary(summary_str, counter)
 				
 				# update G and Q network
-
+				
 				_,_, q_loss,g_loss, predicted_y = self.sess.run([self.g_optim,self.q_optim, self.q_loss,self.g_loss,self.get_y_variable()],
-					feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
-
+				                                                feed_dict={self.x: batch_images, self.z: batch_z, self.y_continuous: batch_chitinous_codes})
+				
 				
 				# display training status
 				counter += 1
 				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f,g_loss: %.8f,,q_loss: %.8f" % (
 					epoch, idx, self.num_batches, time.time() - start_time, d_loss,g_loss,q_loss))
-				# print("predicted y: {}".format(predicted_y))
+			# print("predicted y: {}".format(predicted_y))
 			
 			# After an epoch, start_batch_id is set to zero
 			# non-zero value is only for the first epoch after loading pre-trained model
@@ -393,7 +385,7 @@ class MultiModalInfoGAN_phase2(object):
 			# self.save(self.checkpoint_dir, counter)
 			
 			# show temporal results
-			if epoch % 100 == 0:
+			if epoch % 10 == 0:
 				self.visualize_results(epoch)
 		# plotting
 		self.create_dataset_from_GAN()
@@ -413,7 +405,7 @@ class MultiModalInfoGAN_phase2(object):
 		# y_one_hot = np.concatenate(
 		#     (y_simplex, np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))), axis=1)
 		# y_one_hot = np.concatenate((y_simplex, np.zeros((self.batch_size, self.len_continuous_code))), axis=1)
-
+		
 		batch_chitinous_codes = np.random.uniform(-1, 1, size=(self.batch_size, self.len_continuous_code))
 		z_sample = self.sampler.get_sample(self.batch_size, self.z_dim, self.sampler.n_distributions)
 		samples = self.sess.run(self.fake_images, feed_dict={self.z: z_sample, self.y_continuous: batch_chitinous_codes})  # samples_for_test.append(samples)
@@ -591,7 +583,7 @@ class MultiModalInfoGAN_phase2(object):
 		pickle.dump(generated_dataset, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
 		output_path = open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb')
 		pickle.dump(data_y_all, output_path)
-
+		
 		fname_trainingset = "generated_phase2_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}{}\n\n".format(len(generated_dataset), len(generated_labels), self.dir_results, fname_trainingset))
 		plt.imshow(generated_dataset[0].reshape(28,28))
@@ -622,21 +614,21 @@ class MultiModalInfoGAN_phase2(object):
 	
 	def load(self, checkpoint_dir):
 		print(" [*] Reading checkpoints... {}".format(os.path.join(checkpoint_dir, self.model_dir)))
-
+		
 		checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir)
 		ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
 		if ckpt and ckpt.model_checkpoint_path:
 			ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
 			# self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
 			# counter = int(next(re.finditer("(\d+)(?!.*\d)", ckpt_name)).group(0))
-
+			
 			reader = tf.train.NewCheckpointReader(os.path.join(checkpoint_dir, ckpt_name))
 			restore_dict = dict()
 			for v in tf.trainable_variables():
 				tensor_name = v.name.split(':')[0]
 				if reader.has_tensor(tensor_name):
 					restore_dict[tensor_name] = v
-
+			
 			# restore_dict['y_scope/y'] = self.get_y_variable()
 			self.saver = tf.train.Saver(restore_dict)
 			self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
@@ -645,8 +637,7 @@ class MultiModalInfoGAN_phase2(object):
 			print(" [*!] Failed to load the model")
 			self.saver = tf.train.Saver()
 		return False, 0
-
-
+	
 	# def load(self, checkpoint_dir):
 	# 	import re
 	# 	print(" [*] Reading checkpoints...")
@@ -662,7 +653,7 @@ class MultiModalInfoGAN_phase2(object):
 	# 	else:
 	# 		print(" [*] Failed to find a checkpoint")
 	# 		return False, 0
-
+	
 	def plot_train_test_loss(self, name_of_measure, array, color="b", marker="P"):
 		plt.Figure()
 		plt.title('{} {} score'.format(self.dataset_name, name_of_measure), fontsize=18)

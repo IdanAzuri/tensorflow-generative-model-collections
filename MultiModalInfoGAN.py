@@ -3,7 +3,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import glob
 import pickle
 import time
 import warnings
@@ -16,11 +15,9 @@ from sklearn.utils import shuffle
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 from matplotlib.legend_handler import HandlerLine2D
 
-import utils
 from classifier import CNNClassifier, one_hot_encoder, CONFIDENCE_THRESHOLD
 from ops import *
 from utils import *
-
 
 
 
@@ -45,7 +42,6 @@ def gradient_penalty(real, fake, f):
 
 class MultiModalInfoGAN(object):
 	model_name = "MultiModalInfoGAN"  # name for checkpoint
-
 	def __init__(self, sess, epoch, batch_size, z_dim, dataset_name, checkpoint_dir, result_dir, log_dir, sampler, seed, len_continuous_code=2, is_wgan_gp=False,
 	             dataset_creation_order=["czcc", "czrc", "rzcc", "rzrc"], SUPERVISED=True,pref=""):
 		self.ignored_lable = 9
@@ -91,14 +87,11 @@ class MultiModalInfoGAN(object):
 			self.c_dim = 1
 
 			# load mnist
-			self.data_X, self.data_y = load_mnist(self.dataset_name)
+			X_train_real, y_train_real = load_mnist(self.dataset_name)
 			# REMOVING 1 DIGIT
-			indiceis_of_9 = np.where(np.argmax(self.data_y, 1) == self.ignored_lable)
-			self.data_y_only9 = self.data_y[indiceis_of_9]
-			self.data_X_only9 = self.data_X[indiceis_of_9]
-			indiceis_to_keep = np.where(np.argmax(self.data_y, 1) != self.ignored_lable)
-			self.data_y = self.data_y[indiceis_to_keep]
-			self.data_X = self.data_X[indiceis_to_keep]
+			indiceis_to_keep = np.where(np.argmax(y_train_real, 1) != self.ignored_lable)
+			self.data_y = y_train_real[indiceis_to_keep]
+			self.data_X = X_train_real[indiceis_to_keep]
 			self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			self.num_batches = len(self.data_X) // self.batch_size
 			# self.placeholder_y = self.get_y_variable()
@@ -110,7 +103,7 @@ class MultiModalInfoGAN(object):
 		# All layers except the last two layers are shared by discriminator
 		# Number of nodes in the last layer is reduced by half. It gives better results.
 		with tf.variable_scope("classifier", reuse=reuse):
-			net = lrelu(bn(linear(x, 64, scope='c_fc1'), is_training=is_training, scope='c_bn1'))
+			net = bn(lrelu(linear(x, 64, scope='c_fc1')), is_training=is_training, scope='c_bn1')
 			out_logit = linear(net, self.y_dim, scope='c_fc2')
 			out = tf.nn.softmax(out_logit)
 			
@@ -130,9 +123,9 @@ class MultiModalInfoGAN(object):
 		else:
 			with tf.variable_scope("discriminator", reuse=reuse):
 				net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
-				net = lrelu(bn(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2'), is_training=is_training, scope='d_bn2'))
+				net = bn(lrelu(conv2d(net, 128, 4, 4, 2, 2, name='d_conv2')), is_training=is_training, scope='d_bn2')
 				net = tf.reshape(net, [self.batch_size, -1])
-				net = lrelu(bn(linear(net, 1024, scope='d_fc3'), is_training=is_training, scope='d_bn3'))
+				net = bn(lrelu(linear(net, 1024, scope='d_fc3')), is_training=is_training, scope='d_bn3')
 				out_logit = linear(net, 1, scope='d_fc4')
 				out = tf.nn.sigmoid(out_logit)
 			
@@ -145,14 +138,13 @@ class MultiModalInfoGAN(object):
 			# merge noise and code
 			z = concat([z, y], 1)
 			
-			net = lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
-			net = lrelu(bn(linear(net, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
-			net = tf.reshape(net, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
-			net = lrelu(
-				bn(deconv2d(net, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_n_dc3'), is_training=is_training, scope='g_bn3'))
+			self.layer1= bn(lrelu(linear(z, 1024, scope='g_fc1')), is_training=is_training, scope='g_bn1')
+			self.layer2 = bn(lrelu(linear(self.layer1, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2')), is_training=is_training, scope='g_bn2')
+			self.layer3 = tf.reshape(self.layer2, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
+			self.layer4 = bn(lrelu(
+				deconv2d(self.layer3, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3')), is_training=is_training, scope='g_bn3')
 			
-			out = tf.nn.sigmoid(deconv2d(net, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
-			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
+			out = tf.nn.sigmoid(deconv2d(self.layer4, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
 			
 			return out
 	
@@ -254,8 +246,8 @@ class MultiModalInfoGAN(object):
 		# graph inputs for visualize training results
 		self.sample_z = self.sampler.get_sample(self.batch_size, self.z_dim, self.sampler.n_distributions)  # np.random.uniform(-1, 1,
 		# size=(self.batch_size, self.z_dim))
-		self.test_labels = np.ones([self.batch_size, self.y_dim])
-		self.test_labels = self.data_y[0:self.batch_size]
+		# self.test_labels = np.ones([self.batch_size, self.y_dim])
+		# self.test_labels = self.data_y[0:self.batch_size]
 		
 		# saver to save model
 		self.saver = tf.train.Saver(tf.trainable_variables())
@@ -312,7 +304,6 @@ class MultiModalInfoGAN(object):
 			
 			# After an epoch, start_batch_id is set to zero
 			# non-zero value is only for the first epoch after loading pre-trained model
-			start_batch_id = 0
 			
 			# save model
 			self.save(self.checkpoint_dir, counter)

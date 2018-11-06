@@ -1,4 +1,3 @@
-import argparse
 import os
 
 import tensorflow as tf
@@ -88,6 +87,7 @@ def check_args(args):
 
 def main():
 	# parse arguments
+	global sampler_method
 	args = parse_args()
 	if args is None:
 		exit()
@@ -96,18 +96,18 @@ def main():
 	# open session
 	title_prefix = args.pref
 	models = [GAN, CGAN, infoGAN, ACGAN, EBGAN, WGAN, WGAN_GP, DRAGAN, LSGAN, BEGAN, VAE, CVAE, MultiModalInfoGAN, infoGAN, AEMultiModalInfoGAN, MultiModalInfoGAN_phase2]
-	# dataset_creation_order = args.dataset_order#.split(",")
-	# print("Main " ,args.dataset_order)
-	len_continuous_code = args.len_continuous_code
+	# Set args
 	print(args)
 	sampler = args.sampler
 	mu = args.mu
 	sigma = args.sigma
 	n_distributions = args.ndist
 	seed = args.seed
+	is_wgan_gp = args.wgan
+	
 	if sampler == 'uniform':
 		sampler_method = UniformSample()
-		sampler = "{}_{}".format(title_prefix, sampler)
+		sampler = "{}_uniform".format(title_prefix)
 	if sampler == 'multi-uniform':
 		sampler_method = MultiModalUniformSample()
 	elif sampler == 'multi-gaussian':
@@ -119,9 +119,8 @@ def main():
 	elif sampler == 'truncated':
 		sampler = "{}/mu_{}_sigma{}".format(sampler, mu, sigma)
 		sampler_method = TruncatedGaussianSample(mu=mu, sigma=sigma, n_distributions=n_distributions)
-	is_wgan_gp = args.wgan
+	
 	with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
-		
 		gan = None
 		for model in models:
 			if args.gan_type == model.model_name:
