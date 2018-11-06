@@ -400,8 +400,6 @@ class MultiModalInfoGAN(object):
 		generated_dataset_random_z_random_c = []
 		generated_labels_random_z_random_c = []
 		for label in range(self.len_discrete_code):
-			tmp = check_folder(self.result_dir + '/' + self.model_dir)
-			
 			for i in self.dataset_creation_order:
 				num_iter = max(datasetsize // len(self.dataset_creation_order), 10)
 				if i == 'czcc':
@@ -528,23 +526,16 @@ class MultiModalInfoGAN(object):
 		fname_labeles_edited = "edited_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		generated_dataset = np.asarray(generated_dataset).reshape(-1, 784)
 		generated_dataset, data_y_all = shuffle(generated_dataset, data_y_all, random_state=0)
-		pickle.dump(generated_dataset, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
+		
 		output_path = open("{}/{}.pkl".format(self.dir_results, fname_labeles_edited), 'wb')
+		pickle.dump(generated_dataset, open("{}/{}.pkl".format(self.dir_results, fname_trainingset_edited), 'wb'))
 		pickle.dump(data_y_all, output_path)
 		
 		fname_trainingset = "generated_training_set_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
-		print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}{}\n\n".format(len(generated_dataset), len(generated_labels), self.dir_results, fname_trainingset))
 		fname_labeles = "generated_labels_{}_{}_{}".format(self.dataset_name, type(self.sampler).__name__, params)
 		pickle.dump(np.asarray(generated_dataset), open(self.dir_results + "/{}.pkl".format(fname_trainingset), 'wb'))
-		# np.asarray(generated_labels).reshape(np.asarray(generated_dataset).shape[:2])
 		pickle.dump(np.asarray(generated_labels), open(self.dir_results + "/{}.pkl".format(fname_labeles), 'wb'))
-
-
-
-
-		limit = min(len(self.data_X_only9) // self.len_discrete_code, 2)
-		dummy_labels = one_hot_encoder(np.random.randint(0, self.len_discrete_code, size=(limit)))  # no meaning for the labels
-		_, confidence, _, arg_max = self.pretrained_classifier.test(self.data_X_only9[:limit].reshape(-1, 784), dummy_labels.reshape(-1, 10), is_arg_max=True)
+		print("\n\nSAMPLES SIZE={},LABELS={},SAVED TRAINING SET {}{}\n\n".format(len(generated_dataset), len(generated_labels), self.dir_results, fname_trainingset))
 		return
 	
 	def get_model_dir(self):
