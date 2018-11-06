@@ -282,7 +282,8 @@ class MultiModalInfoGAN(object):
 				
 				# display training status
 				counter += 1
-				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss,))
+				if idx % 50 == 0:
+					print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss,))
 			
 			# After an epoch, start_batch_id is set to zero
 			# non-zero value is only for the first epoch after loading pre-trained model
