@@ -10,8 +10,6 @@ from functools import reduce
 
 from sklearn.utils import shuffle
 
-from Sampler import MultivariateGaussianSampler
-
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 from matplotlib.legend_handler import HandlerLine2D
@@ -77,7 +75,7 @@ class MultiModalInfoGAN_phase2(object):
 		# train
 		self.learning_rate = 0.0002
 		self.beta1 = 0.5
-		self.sampler_with_big_sigma= MultivariateGaussianSampler(mu=0.8, sigma=0.5, n_distributions=3)
+		# self.sampler_with_big_sigma= MultivariateGaussianSampler(mu=0.8, sigma=0.5, n_distributions=3)
 		# test
 		self.sample_num = 64  # number of generated images to be saved
 		
@@ -102,30 +100,25 @@ class MultiModalInfoGAN_phase2(object):
 			self.n = 1
 			indiceis_of_9 = np.where(np.argmax(self.data_y, 1) == self.ignored_label)
 			indiceis_of_rest= np.where(np.argmax(self.data_y, 1) != self.ignored_label)
-			self.batch_size = self.batch_size#min(self.batch_size, self.n * 4)
+			self.batch_size = self.batch_size
 			# self.data_y_only9 = self.data_y[indiceis_of_9][:self.n]
 			self.data_X_only9 = self.data_X[indiceis_of_9][:self.n]
 			self.data_X_rest = self.data_X[indiceis_of_rest]
-			import matplotlib
-			matplotlib.use("Agg")
-			import matplotlib.pyplot as plt
-			
+			# import matplotlib
+			# matplotlib.use("Agg")
+			# import matplotlib.pyplot as plt
 			# plt.imshow(self.data_X_only9[0].reshape(28,28))
 			# plt.savefig("9_0.png")
 			
 			# self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			# self.data_y =  np.tile(self.data_y_only9, (100, 1))
 			self.data_X_only9 = np.repeat(self.data_X_only9[None], self.n * 1024, axis=0).reshape(-1, 28, 28, 1)
-			self.data_X = np.concatenate([self.data_X_only9,self.data_X_rest])
+			# self.data_X = np.concatenate([self.data_X_only9,self.data_X_rest])
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
 		self.model_dir = self.get_model_dir()
 	
 	def classifier(self, x, is_training=True, reuse=False):
-		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
-		# Architecture : (64)5c2s-(128)5c2s_BL-FC1024_BL-FC128_BL-FC12S’
-		# All layers except the last two layers are shared by discriminator
-		# Number of nodes in the last layer is reduced by half. It gives better results.
 		with tf.variable_scope("classifier", reuse=reuse):
 			net = lrelu(bn(linear(x, 64, scope='c_fc1'), is_training=is_training, scope='c_bn1'))
 			out_logit = linear(net, self.y_dim, scope='c_fc2')
@@ -134,8 +127,6 @@ class MultiModalInfoGAN_phase2(object):
 			return out, out_logit
 	
 	def discriminator(self, x, is_training=True, reuse=True):
-		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
-		# Architecture : (64)4c2s-(128)4c2s_BL-FC1024_BL-FC1_S
 		if self.wgan_gp:
 			with tf.variable_scope("wgan_discriminator", reuse=reuse):
 				net = lrelu(conv2d(x, 64, 4, 4, 2, 2, name='d_conv1'))
@@ -156,18 +147,16 @@ class MultiModalInfoGAN_phase2(object):
 		return out, out_logit, net
 	
 	def generator(self, z, y, is_training=True, reuse=False):
-		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
-		# Architecture : FC1024_BR-FC7x7x128_BR-(64)4dc2s_BR-(1)4dc2s_S
 		with tf.variable_scope("generator", reuse=reuse):
-			# merge noise and code
-			# y = tf.nn.softmax(y)
+			# y = tf.nn.softmax(y) #maybenormalize will help here?
+			
 			z = concat([z, y], 1)
 			
 			self.layer1= lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
 			self.layer2 = lrelu(bn(linear(self.layer1, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
 			self.layer3 = tf.reshape(self.layer2, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
 			self.layer4 = lrelu(
-				bn(deconv2d(self.layer3, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training, scope='g_bn3'))
+				bn(deconv2d(self.layer3, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_shared_dc3'), is_training=is_training, scope='g_shared_bn3'))
 			
 			out = tf.nn.sigmoid(deconv2d(self.layer4, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
 			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
@@ -175,8 +164,6 @@ class MultiModalInfoGAN_phase2(object):
 			return out
 	
 	def fake_generator(self, z, y, is_training=True, reuse=False):
-		# Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
-		# Architecture : FC1024_BR-FC7x7x128_BR-(64)4dc2s_BR-(1)4dc2s_S
 		with tf.variable_scope("fake_generator", reuse=reuse):
 			# merge noise and code
 			# y = tf.nn.softmax(y)
@@ -223,8 +210,6 @@ class MultiModalInfoGAN_phase2(object):
 		
 		self.y = self.get_y_variable()
 		
-		# self.y = tf.Variable(tf.float32, [bs, self.y_dim], name='y')
-		
 		""" Loss Function """
 		## 1. GAN Loss
 		# output of D for real images
@@ -241,34 +226,37 @@ class MultiModalInfoGAN_phase2(object):
 		# get loss for generator
 		self.g_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_fake_logits, labels=tf.ones_like(D_fake)))
 		if self.wgan_gp:
-			d_loss_real = - tf.reduce_mean(D_real_logits)
-			d_loss_fake = tf.reduce_mean(D_fake_logits)
+			d_loss_real_wgan = - tf.reduce_mean(D_real_logits)
+			d_loss_fake_wgan = tf.reduce_mean(D_fake_logits)
 			
-			self.d_loss = d_loss_real + d_loss_fake
+			self.d_loss = d_loss_real_wgan + d_loss_fake_wgan
 			# get loss for generator
-			self.g_loss = - d_loss_fake
+			self.g_loss = - d_loss_fake_wgan
 			wd = tf.reduce_mean(D_real_logits) - tf.reduce_mean(D_fake_logits)
 			gp = gradient_penalty(self.x, self.x_, self.discriminator)
 			self.d_loss = -wd + gp * 10.0
 			self.g_loss = -tf.reduce_mean(D_fake_logits)
+		# Added reconstruction loss
 		self.fake_images = self.generator(self.z, self.get_y_variable(), is_training=False, reuse=True)
 		self.phase_2_loss = tf.losses.mean_squared_error(self.x, self.fake_images)
 		
 		#Tryign gram
 		self.x_2 = self.fake_generator(self.x, self.get_y_variable(), is_training=True, reuse=False)
-		var_pool = [self.layer1,self.layer2,self.layer3,self.layer4]
-		sty_pool = [self.layer1_fake,self.layer2_fake,self.layer3_fake,self.layer4_fake]
-		factor = 1000
+		random_target_idx = np.random.choice(len(self.data_X_rest),self.batch_size)
+		self.content_loss = tf.reduce_mean(tf.reduce_sum(tf.square(self.data_X_rest[random_target_idx] - self.x_2), axis=1)) * 1e-4  # target - predicted_source
+		var_pool = [self.layer4]  # excluded first layers to get inner meaning
+		sty_pool = [self.layer4_fake]
+		factor = 1e-3
 		style_cost_array = []
-		len = var_pool.__len__()
-		for i in range(len):
+		len_ = var_pool.__len__()
+		for i in range(len_):
 			dim = var_pool[i].get_shape().as_list()
 			size = reduce(lambda x, y: x * y, dim)
 			G1 = gram_matrix(var_pool[i])
 			G2 = gram_matrix(sty_pool[i])
 			layer_gram_lost = tf.nn.l2_loss(G1 - G2)
 			style_cost_array.append(layer_gram_lost)
-		self.gram_loss = reduce(lambda x, y: x + y, style_cost_array) / len * factor
+		self.gram_loss = np.sum(np.asarray(style_cost_array)) * len_ * factor
 		
 		## 2. Information Loss
 		code_fake, code_logit_fake = self.classifier(input4classifier_fake, is_training=True, reuse=False)
@@ -291,14 +279,14 @@ class MultiModalInfoGAN_phase2(object):
 		# divide trainable variables into a group for D and a group for G
 		t_vars = tf.trainable_variables()
 		d_vars = [var for var in t_vars if 'd_' in var.name]
-		g_vars = [var for var in t_vars if( 'g_' in var.name) or ('y_' in var.name)] #updating only the y, when g_ is const
+		g_vars = [var for var in t_vars if ('g_shared' in var.name) or ('y_' in var.name)]  #updating only the y, when g_ is const
 		p_vars = [var for var in t_vars if 'y' in var.name]
 		q_vars = [var for var in t_vars if ('d_' in var.name) or ('c_' in var.name)]
-		
+ 	
 		# optimizers
 		with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
 			self.d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.d_loss, var_list=d_vars)
-			regularization = self.phase_2_loss * 0 + self.gram_loss * 1e-5
+			regularization = self.phase_2_loss * 0 + (self.gram_loss + self.content_loss)* 0
 			self.g_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.g_loss + regularization, var_list=g_vars)
 			# self.p_optim = tf.train.AdamOptimizer(self.learning_rate * 0.2, beta1=self.beta1).minimize(self.phase_2_loss, var_list=p_vars)
 			self.q_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=self.beta1).minimize(self.q_loss, var_list=q_vars)
