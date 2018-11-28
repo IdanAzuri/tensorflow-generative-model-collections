@@ -153,8 +153,9 @@ class MultiModalInfoGAN_phase2(object):
 			z = concat([z, y], 1)
 			
 			self.layer1= lrelu(bn(linear(z, 1024, scope='g_fc1'), is_training=is_training, scope='g_bn1'))
-			self.layer2 = lrelu(bn(linear(self.layer1, 128 * self.input_height // 4 * self.input_width // 4, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
-			self.layer3 = tf.reshape(self.layer2, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
+			self.layer_2_size = 128 * self.input_height // 4 * self.input_width // 4
+			self.layer2 = lrelu(bn(linear(self.layer1, self.layer_2_size, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
+			self.layer3 = tf.reshape(self.layer2, [self.batch_size, self.input_height // 4, self.input_width // 4, 128])
 			self.layer4 = lrelu(
 				bn(deconv2d(self.layer3, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_shared_dc3'), is_training=is_training, scope='g_shared_bn3'))
 			
@@ -173,7 +174,7 @@ class MultiModalInfoGAN_phase2(object):
 			self.layer2_fake = lrelu(bn(linear(self.layer1, 128 * self.input_height // 4 * self.input_width // 4, scope='fake_g_fc2'), is_training=is_training, scope='fake_g_bn2'))
 			self.layer3_fake = tf.reshape(self.layer2, [self.batch_size, int(self.input_height // 4), int(self.input_width // 4), 128])
 			self.layer4_fake = lrelu(
-				bn(deconv2d(self.layer3, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='fake_g_dc3'), is_training=is_training, scope='fake_g_bn3'))
+				bn(deconv2d(self.layer3, [self.batch_size, self.input_height // 2, self.input_width // 2, 64], 4, 4, 2, 2, name='fake_g_dc3'), is_training=is_training, scope='fake_g_bn3'))
 			
 			out = tf.nn.sigmoid(deconv2d(self.layer4, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='fake_g_dc4'))
 			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
@@ -244,9 +245,10 @@ class MultiModalInfoGAN_phase2(object):
 		self.x_2 = self.fake_generator(self.x, self.get_y_variable(), is_training=True, reuse=False)
 		random_target_idx = np.random.choice(len(self.data_X_rest),self.batch_size)
 		self.content_loss = tf.reduce_mean(tf.reduce_sum(tf.square(self.data_X_rest[random_target_idx] - self.x_2), axis=1)) * 1e-4  # target - predicted_source
-		var_pool = [self.layer4]  # excluded first layers to get inner meaning
-		sty_pool = [self.layer4_fake]
-		factor = 1e-3
+		var_pool = [self.layer1,self.layer2, self.layer4]  # excluded first layers to get inner meaning
+		sty_pool = [self.layer1_fake,self.layer2_fake, self.layer4_fake]
+		weights = [1024,self.layer_2_size,14*14*64]
+		factor = 1e-4
 		style_cost_array = []
 		len_ = var_pool.__len__()
 		for i in range(len_):
@@ -254,9 +256,9 @@ class MultiModalInfoGAN_phase2(object):
 			size = reduce(lambda x, y: x * y, dim)
 			G1 = gram_matrix(var_pool[i])
 			G2 = gram_matrix(sty_pool[i])
-			layer_gram_lost = tf.nn.l2_loss(G1 - G2)
+			layer_gram_lost = tf.nn.l2_loss(G1 - G2) * weights[i]
 			style_cost_array.append(layer_gram_lost)
-		self.gram_loss = np.sum(np.asarray(style_cost_array)) * len_ * factor
+		self.gram_loss = np.sum(np.asarray(style_cost_array)) * (len_ * factor)
 		
 		## 2. Information Loss
 		code_fake, code_logit_fake = self.classifier(input4classifier_fake, is_training=True, reuse=False)
