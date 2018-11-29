@@ -157,7 +157,7 @@ class MultiModalInfoGAN_phase2(object):
 			self.layer2 = lrelu(bn(linear(self.layer1, self.layer_2_size, scope='g_fc2'), is_training=is_training, scope='g_bn2'))
 			self.layer3 = tf.reshape(self.layer2, [self.batch_size, self.input_height // 4, self.input_width // 4, 128])
 			self.layer4 = lrelu(
-				bn(deconv2d(self.layer3, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_shared_dc3'), is_training=is_training, scope='g_shared_bn3'))
+				bn(deconv2d(self.layer3, [self.batch_size, int(self.input_height // 2), int(self.input_width // 2), 64], 4, 4, 2, 2, name='g_dc3'), is_training=is_training, scope='g_bn3'))
 			
 			out = tf.nn.sigmoid(deconv2d(self.layer4, [self.batch_size, self.input_height, self.input_width, self.c_dim], 4, 4, 2, 2, name='g_dc4'))
 			# out = tf.reshape(out, ztf.stack([self.batch_size, 784]))
@@ -281,7 +281,7 @@ class MultiModalInfoGAN_phase2(object):
 		# divide trainable variables into a group for D and a group for G
 		t_vars = tf.trainable_variables()
 		d_vars = [var for var in t_vars if 'd_' in var.name]
-		g_vars = [var for var in t_vars if ('g_shared' in var.name) or ('y_' in var.name)]  #updating only the y, when g_ is const
+		g_vars = [var for var in t_vars if ('g_' in var.name) or ('y_' in var.name)]  #updating only the y, when g_ is const
 		p_vars = [var for var in t_vars if 'y' in var.name]
 		q_vars = [var for var in t_vars if ('d_' in var.name) or ('c_' in var.name)]
  	
