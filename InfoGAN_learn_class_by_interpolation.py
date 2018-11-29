@@ -113,6 +113,7 @@ class MultiModalInfoGAN_phase2(object):
 			# self.data_y = np.delete(self.data_y, self.data_y.shape[1] - 1, axis=1)
 			# self.data_y =  np.tile(self.data_y_only9, (100, 1))
 			self.data_X_only9 = np.repeat(self.data_X_only9[None], self.n * 1024, axis=0).reshape(-1, 28, 28, 1)
+			self.data_X = self.data_X_only9
 			# self.data_X = np.concatenate([self.data_X_only9,self.data_X_rest])
 			# get number of batches for a single epoch
 			self.num_batches = len(self.data_X) // self.batch_size
@@ -243,8 +244,8 @@ class MultiModalInfoGAN_phase2(object):
 		
 		#Tryign gram
 		self.x_2 = self.fake_generator(self.x, self.get_y_variable(), is_training=True, reuse=False)
-		random_target_idx = np.random.choice(len(self.data_X_rest),self.batch_size)
-		self.content_loss = tf.reduce_mean(tf.reduce_sum(tf.square(self.data_X_rest[random_target_idx] - self.x_2), axis=1)) * 1e-4  # target - predicted_source
+		random_target_idx = np.random.choice(len(self.data_X), self.batch_size)
+		self.content_loss = tf.reduce_mean(tf.reduce_sum(tf.square(self.data_X[random_target_idx] - self.x_2), axis=1)) * 1e-4  # target - predicted_source
 		var_pool = [self.layer1,self.layer2, self.layer4]  # excluded first layers to get inner meaning
 		sty_pool = [self.layer1_fake,self.layer2_fake, self.layer4_fake]
 		weights = [1024,self.layer_2_size,14*14*64]
@@ -361,9 +362,10 @@ class MultiModalInfoGAN_phase2(object):
 				
 				
 				# display training status
-				counter += 1
-				print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f,g_loss: %.8f,,q_loss: %.8f" % (
-					epoch, idx, self.num_batches, time.time() - start_time, d_loss,g_loss,q_loss))
+				if idx % 10 == 0:
+					counter += 1
+					print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f,g_loss: %.8f,,q_loss: %.8f" % (
+						epoch, idx, self.num_batches, time.time() - start_time, d_loss, g_loss, q_loss))
 			# print("predicted y: {}".format(predicted_y))
 			
 			# After an epoch, start_batch_id is set to zero
